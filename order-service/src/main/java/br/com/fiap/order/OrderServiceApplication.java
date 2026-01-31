@@ -1,4 +1,4 @@
-package br.com.fiap.order_service;
+package br.com.fiap.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
