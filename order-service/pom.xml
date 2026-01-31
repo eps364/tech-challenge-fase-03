@@ -10,10 +10,10 @@
 	</parent>
 
 	<groupId>br.com.fiap</groupId>
-	<artifactId>auth-service</artifactId>
+	<artifactId>order-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>auth-service</name>
-	<description>Autentication Service </description>
+	<name>order-service</name>
+	<description>Order service</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -40,7 +40,6 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
-
 	</dependencies>
 
 	<build>

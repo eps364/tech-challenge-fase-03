@@ -83,7 +83,7 @@
       "id": "4S20AVSFCto1-XVcz4E9v",
       "type": "rectangle",
       "x": 247.9999979999999,
-      "y": 406,
+      "y": 405,
       "width": 203.6683417085427,
       "height": 61,
       "angle": 0,
@@ -101,8 +101,8 @@
         "type": 3
       },
       "seed": 2028340425,
-      "version": 329,
-      "versionNonce": 802653848,
+      "version": 330,
+      "versionNonce": 900156359,
       "isDeleted": false,
       "boundElements": [
         {
@@ -118,7 +118,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1769793426191,
+      "updated": 1769880675000,
       "link": null,
       "locked": false
     },
@@ -126,9 +126,9 @@
       "id": "Q6qLj3DZep714z_zQS5Et",
       "type": "text",
       "x": 281.42423385671265,
-      "y": 424,
+      "y": 410.5,
       "width": 136.8198699951172,
-      "height": 25,
+      "height": 50,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -142,20 +142,20 @@
       "index": "a8",
       "roundness": null,
       "seed": 1946175559,
-      "version": 300,
-      "versionNonce": 224064408,
+      "version": 304,
+      "versionNonce": 265521799,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1769793426191,
+      "updated": 1769880677254,
       "link": null,
       "locked": false,
-      "text": "pedido-service",
+      "text": "pedido-service\norder-service",
       "fontSize": 20,
       "fontFamily": 5,
       "textAlign": "center",
       "verticalAlign": "middle",
       "containerId": "4S20AVSFCto1-XVcz4E9v",
-      "originalText": "pedido-service",
+      "originalText": "pedido-service\norder-service",
       "autoResize": true,
       "lineHeight": 1.25
     },
@@ -908,9 +908,9 @@
       "id": "vT236vINciekLrLd8-WxB",
       "type": "arrow",
       "x": 456.6682149481444,
-      "y": 435.7452794490873,
+      "y": 434.7452794490873,
       "width": 114.0817850518556,
-      "height": 0.004720550912679755,
+      "height": 1.0047205509126798,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -924,11 +924,11 @@
       "index": "aL",
       "roundness": null,
       "seed": 1211200647,
-      "version": 96,
-      "versionNonce": 568901784,
+      "version": 97,
+      "versionNonce": 966673927,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1769793426199,
+      "updated": 1769880675007,
       "link": null,
       "locked": false,
       "points": [
@@ -937,8 +937,16 @@
           0
         ],
         [
+          61.0409549061269,
+          0
+        ],
+        [
+          61.0409549061269,
+          1.0047205509126798
+        ],
+        [
           114.0817850518556,
-          0.004720550912679755
+          1.0047205509126798
         ]
       ],
       "lastCommittedPoint": null,
