@@ -1,13 +1,75 @@
 services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
   procpag:
-    image: docker.io/erickemprobr/procpag:latest 
+    # image: docker.io/erickemprobr/procpag:latest
+    # https://github.com/proferickmuller/go-procpag
+    image: go-procpag
     ports: 
     - "8089:8089"
     networks:
     - fase3net
 
-  # adicione os seus outros serviços aqui
-  # faça com que todos os serviços usem a mesma rede 'fase3net'
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - fase3net
+    depends_on:
+      - postgres
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - postgres
+
+  order-service:
+    build:
+      context: .
+      dockerfile: ./order-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - postgres
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./payment-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - postgres
+
+  restaurant-service:
+    build:
+      context: .
+      dockerfile: ./restaurant-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - postgres
 
 networks:
   fase3net:
+
+volumes:
+  postgres_data:
