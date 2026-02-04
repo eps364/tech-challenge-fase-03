@@ -15,7 +15,9 @@ services:
   procpag:
     # image: docker.io/erickemprobr/procpag:latest
     # https://github.com/proferickmuller/go-procpag
-    image: go-procpag
+    # image: go-procpag
+    image: docker.io/erickemprobr/procpag:latest
+    platform: linux/amd64
     ports: 
     - "8089:8089"
     networks:
