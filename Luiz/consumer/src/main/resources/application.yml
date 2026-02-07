@@ -2,6 +2,13 @@ server:
   port: 8081
 app:
   topic: demo-topic
+  queues:
+    main: demo-queue
+    dlq: demo-queue.dlq
+    error: demo-queue.error
+  retry:
+    max-attempts: 3
+    delay-ms: 2000
 
 spring:
   kafka:
