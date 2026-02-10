@@ -1,0 +1,61 @@
+{
+  "vhosts": [
+    { "name": "/" }
+  ],
+  "users": [
+    {
+      "name": "guest",
+      "password": "guest",
+      "tags": "administrator"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    { "name": "ex.main", "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "ex.retry", "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} },
+    { "name": "ex.error", "vhost": "/", "type": "direct", "durable": true, "auto_delete": false, "internal": false, "arguments": {} }
+  ],
+  "queues": [
+    {
+      "name": "demo-queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "ex.retry",
+        "x-dead-letter-routing-key": "demo-queue.dlq"
+      }
+    },
+    {
+      "name": "demo-queue.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 2000,
+        "x-dead-letter-exchange": "ex.main",
+        "x-dead-letter-routing-key": "demo-queue"
+      }
+    },
+    {
+      "name": "demo-queue.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    { "source": "ex.main", "vhost": "/", "destination": "demo-queue", "destination_type": "queue", "routing_key": "demo-queue", "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "demo-queue.dlq", "destination_type": "queue", "routing_key": "demo-queue.dlq", "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "demo-queue.error", "destination_type": "queue", "routing_key": "demo-queue.error", "arguments": {} }
+  ]
+}
