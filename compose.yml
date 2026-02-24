@@ -1,13 +1,25 @@
 services:
   procpag:
-    image: docker.io/erickemprobr/procpag:latest 
-    ports: 
-    - "8089:8089"
+    image: docker.io/erickemprobr/procpag:latest
+    ports:
+      - "8089:8089"
     networks:
-    - fase3net
+      - fase3net
 
-  # adicione os seus outros serviços aqui
-  # faça com que todos os serviços usem a mesma rede 'fase3net'
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+    volumes:
+      - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >
+        -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+    networks:
+      - fase3net
 
 networks:
   fase3net:
+    driver: bridge
