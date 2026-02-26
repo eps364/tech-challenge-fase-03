@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: clientes
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+app:
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orquestradorClientes: Orquestrador-Clientes.queue
+      out:
+        clientesOrquestrador: Clientes-Orquestrador.queue
