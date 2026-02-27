@@ -1,0 +1,28 @@
+app:
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orquestradorRestaurantes: Orquestrador-Restaurantes.queue
+      out:
+        restaurantesOrquestrador: Restaurantes-Orquestrador.queue
+
+spring:
+  application:
+    name: restaurantes
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/restaurantes
+    username: restaurantes
+    password: restaurantes
+  jpa:
+    hibernate:
+      ddl-auto: validate
