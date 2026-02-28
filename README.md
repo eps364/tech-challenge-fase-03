@@ -34,6 +34,12 @@ Para parar:
 docker compose down
 ```
 
+## Modo desenvolvimento
+
+Para desenvolvimento com hot reload em containers, use o guia:
+
+- [docs/development.md](docs/development.md)
+
 ## Endereços dos serviços
 
 - Keycloak: http://localhost:8000
