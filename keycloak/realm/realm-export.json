@@ -1,0 +1,124 @@
+{
+  "realm": "tech-challenge",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "api-gateway",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-gateway-secret",
+      "serviceAccountsEnabled": true,
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"]
+    },
+    {
+      "clientId": "auth-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "auth-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "order-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "order-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "payment-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "payment-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "restaurant-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "restaurant-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "frontend-client",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:3000/*", "http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:3000", "http://localhost:8080"]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "user",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "cliente",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "cliente",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "dono",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dono",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "gerente",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "gerente",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role"
+      },
+      {
+        "name": "user",
+        "description": "User role"
+      }
+    ]
+  }
+}
