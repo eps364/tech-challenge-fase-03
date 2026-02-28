@@ -64,7 +64,10 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["admin"]
+      "realmRoles": ["admin"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     },
     {
       "username": "user",
@@ -81,7 +84,10 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["user"]
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     },
     {
       "username": "cliente",
@@ -98,7 +104,10 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["user"]
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     },
     {
       "username": "dono",
@@ -115,7 +124,10 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["user", "owner"]
+      "realmRoles": ["user", "owner"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     },
     {
       "username": "gerente",
@@ -132,7 +144,10 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["user"]
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     }
   ],
   "roles": {
