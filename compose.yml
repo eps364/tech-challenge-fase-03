@@ -1,3 +1,5 @@
+name: tech-challenge-fase-03
+
 services:
 
   keycloak:
@@ -42,16 +44,47 @@ services:
     networks:
       - fase3net
 
-  postgres:
+  auth-service-db:
     image: postgres:15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: techchallenge
-    ports:
-      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - auth_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  order-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - order_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  payment-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - payment_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  restaurant-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - restaurant_service_db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -61,7 +94,7 @@ services:
     # image: go-procpag
     image: docker.io/erickemprobr/procpag:latest
     platform: linux/amd64
-    ports: 
+    ports:
     - "8089:8089"
     networks:
     - fase3net
@@ -70,6 +103,8 @@ services:
     build:
       context: .
       dockerfile: ./service-registry/Dockerfile
+    ports:
+      - "8762:8762"
     networks:
       - fase3net
 
@@ -82,7 +117,6 @@ services:
     networks:
       - fase3net
     depends_on:
-      - postgres
       - service-registry
 
   auth-service:
@@ -92,7 +126,7 @@ services:
     networks:
       - fase3net
     depends_on:
-      - postgres
+      - auth-service-db
       - service-registry
 
   order-service:
@@ -102,7 +136,7 @@ services:
     networks:
       - fase3net
     depends_on:
-      - postgres
+      - order-service-db
       - service-registry
 
   payment-service:
@@ -112,7 +146,7 @@ services:
     networks:
       - fase3net
     depends_on:
-      - postgres
+      - payment-service-db
       - service-registry
 
   restaurant-service:
@@ -122,12 +156,15 @@ services:
     networks:
       - fase3net
     depends_on:
-      - postgres
+      - restaurant-service-db
       - service-registry
 
 networks:
   fase3net:
 
 volumes:
-  postgres_data:
+  auth_service_db_data:
+  order_service_db_data:
+  payment_service_db_data:
+  restaurant_service_db_data:
   keycloak_db_data:
