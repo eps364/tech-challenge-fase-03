@@ -3,8 +3,8 @@ services:
   keycloak:
     #image: quay.io/keycloak/keycloak:21.1
     build:
-      context: ./container
-      dockerfile: Dockerfile.keycloak
+      context: ./containers-config
+      dockerfile: ./keycloak/Dockerfile.keycloak
     command: start-dev --import-realm
     ports:
       - 8000:8080
@@ -17,7 +17,7 @@ services:
       - KC_DB_PASSWORD=root
       - KC_IMPORT_REALM=realm-export.json
     volumes:
-      - ./keycloak/realm:/opt/keycloak/data/import
+      - ./containers-config/keycloak/realm:/opt/keycloak/data/import
     depends_on:
       keycloak-db:
         condition: service_healthy
