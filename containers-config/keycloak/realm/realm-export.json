@@ -43,6 +43,7 @@
       "clientId": "frontend-client",
       "enabled": true,
       "publicClient": true,
+      "directAccessGrantsEnabled": true,
       "redirectUris": ["http://localhost:3000/*", "http://localhost:8080/*"],
       "webOrigins": ["http://localhost:3000", "http://localhost:8080"]
     }
@@ -51,6 +52,11 @@
     {
       "username": "admin",
       "enabled": true,
+      "emailVerified": true,
+      "email": "admin@techchallenge.local",
+      "firstName": "Admin",
+      "lastName": "User",
+      "requiredActions": [],
       "credentials": [
         {
           "type": "password",
@@ -63,6 +69,11 @@
     {
       "username": "user",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user@techchallenge.local",
+      "firstName": "Default",
+      "lastName": "User",
+      "requiredActions": [],
       "credentials": [
         {
           "type": "password",
@@ -75,6 +86,11 @@
     {
       "username": "cliente",
       "enabled": true,
+      "emailVerified": true,
+      "email": "cliente@techchallenge.local",
+      "firstName": "Cliente",
+      "lastName": "User",
+      "requiredActions": [],
       "credentials": [
         {
           "type": "password",
@@ -87,6 +103,11 @@
     {
       "username": "dono",
       "enabled": true,
+      "emailVerified": true,
+      "email": "dono@techchallenge.local",
+      "firstName": "Dono",
+      "lastName": "User",
+      "requiredActions": [],
       "credentials": [
         {
           "type": "password",
@@ -94,11 +115,16 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["user"]
+      "realmRoles": ["user", "owner"]
     },
     {
       "username": "gerente",
       "enabled": true,
+      "emailVerified": true,
+      "email": "gerente@techchallenge.local",
+      "firstName": "Gerente",
+      "lastName": "User",
+      "requiredActions": [],
       "credentials": [
         {
           "type": "password",
@@ -118,6 +144,10 @@
       {
         "name": "user",
         "description": "User role"
+      },
+      {
+        "name": "owner",
+        "description": "Owner role"
       }
     ]
   }
