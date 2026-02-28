@@ -88,6 +88,20 @@ services:
     networks:
       - fase3net
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # Management UI
+    volumes:
+      - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >
+        -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+    networks:
+      - fase3net
+
   procpag:
     # image: docker.io/erickemprobr/procpag:latest
     # https://github.com/proferickmuller/go-procpag
@@ -138,6 +152,7 @@ services:
     depends_on:
       - order-service-db
       - service-registry
+      - rabbitmq
 
   payment-service:
     build:
@@ -148,6 +163,7 @@ services:
     depends_on:
       - payment-service-db
       - service-registry
+      - rabbitmq
 
   restaurant-service:
     build:
@@ -158,6 +174,7 @@ services:
     depends_on:
       - restaurant-service-db
       - service-registry
+      - rabbitmq
 
 networks:
   fase3net:

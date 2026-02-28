@@ -38,6 +38,8 @@
 		<module>order-service</module>
 		<module>payment-service</module>
 		<module>restaurant-service</module>
+		<module>orchestrator-service</module>
+		<module>client-service</module>
 	</modules>
 
 	<properties>

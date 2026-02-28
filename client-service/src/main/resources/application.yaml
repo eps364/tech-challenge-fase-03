@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: clientes
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+  datasource:
+    url: jdbc:postgresql://postgres:5432/clientes
+    driver-class-name: org.postgresql.Driver
+    username: clientes
+    password: clientes
+  jpa:
+    hibernate:
+      ddl-auto: validate
+app:
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orquestradorClientes: Orquestrador-Clientes.queue
+      out:
+        clientesOrquestrador: Clientes-Orquestrador.queue

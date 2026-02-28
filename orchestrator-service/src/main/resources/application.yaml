@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: orquestrador
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+    listener:
+      simple:
+        default-requeue-rejected: false

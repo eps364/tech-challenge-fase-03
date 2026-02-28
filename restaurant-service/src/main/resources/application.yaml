@@ -6,6 +6,32 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8000/realms/tech-challenge
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/restaurantes
+    username: restaurantes
+    password: restaurantes
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+
+app:
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orquestradorRestaurantes: Orquestrador-Restaurantes.queue
+      out:
+        restaurantesOrquestrador: Restaurantes-Orquestrador.queue
 
 server:
   port: 0
