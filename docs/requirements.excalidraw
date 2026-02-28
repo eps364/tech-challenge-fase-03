@@ -717,8 +717,8 @@
     {
       "id": "tcrKgewT1KzQPUScYtscA",
       "type": "rectangle",
-      "x": 582.5,
-      "y": 637.75,
+      "x": 583.5,
+      "y": 683.75,
       "width": 323,
       "height": 90,
       "angle": 0,
@@ -736,8 +736,8 @@
         "type": 3
       },
       "seed": 537571049,
-      "version": 346,
-      "versionNonce": 710570311,
+      "version": 400,
+      "versionNonce": 1345781384,
       "isDeleted": false,
       "boundElements": [
         {
@@ -753,15 +753,15 @@
           "type": "arrow"
         }
       ],
-      "updated": 1769724418689,
+      "updated": 1770766370253,
       "link": null,
       "locked": false
     },
     {
       "id": "CBE8GUFOtgRfn00LuuRBg",
       "type": "text",
-      "x": 587.5,
-      "y": 652.75,
+      "x": 588.5,
+      "y": 698.75,
       "width": 278.33575439453125,
       "height": 60,
       "angle": 0,
@@ -777,11 +777,11 @@
       "index": "aGt",
       "roundness": null,
       "seed": 1047187495,
-      "version": 319,
-      "versionNonce": 1017819239,
+      "version": 373,
+      "versionNonce": 887483784,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1769724418689,
+      "updated": 1770766370253,
       "link": null,
       "locked": false,
       "text": "recebe um aviso de que o pedido foi\nconfirmado e começa a preparar o\npedido",
@@ -870,8 +870,8 @@
       "type": "arrow",
       "x": 457.6646159584153,
       "y": 648.8743841005761,
-      "width": 118.38366849217209,
-      "height": 32.99361742395956,
+      "width": 119.38366849217209,
+      "height": 78.99361742395956,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -885,11 +885,11 @@
       "index": "aK",
       "roundness": null,
       "seed": 1176205575,
-      "version": 127,
-      "versionNonce": 1113433283,
+      "version": 182,
+      "versionNonce": 601816200,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1770158799612,
+      "updated": 1770766370254,
       "link": null,
       "locked": false,
       "points": [
@@ -898,16 +898,16 @@
           0
         ],
         [
-          59.91955415967516,
+          60.41955415967516,
           0
         ],
         [
-          59.91955415967516,
-          32.99361742395956
+          60.41955415967516,
+          78.99361742395956
         ],
         [
-          118.38366849217209,
-          32.99361742395956
+          119.38366849217209,
+          78.99361742395956
         ]
       ],
       "lastCommittedPoint": null,
