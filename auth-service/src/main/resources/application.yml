@@ -1,6 +1,11 @@
 spring:
   application:
     name: auth-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8000/realms/tech-challenge
 
 server:
   port: 0
@@ -18,9 +23,8 @@ eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://service-registry:8762/eureka
 
   instance:
-    hostname: localhost
-    prefer-ip-address: false
+    prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
