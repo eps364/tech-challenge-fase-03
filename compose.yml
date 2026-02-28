@@ -1,13 +1,170 @@
+name: tech-challenge-fase-03
+
 services:
+
+  keycloak:
+    #image: quay.io/keycloak/keycloak:21.1
+    build:
+      context: ./containers-config
+      dockerfile: ./keycloak/Dockerfile.keycloak
+    command: start-dev --import-realm --http-port=8000
+    ports:
+      - 8000:8000
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
+      - KC_DB_USERNAME=root
+      - KC_DB_PASSWORD=root
+      - KC_IMPORT_REALM=realm-export.json
+    volumes:
+      - ./containers-config/keycloak/realm:/opt/keycloak/data/import
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - fase3net
+  
+  keycloak-db:
+    image: postgres:15
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fase3net
+
+  auth-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - auth_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  order-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - order_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  payment-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - payment_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  restaurant-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - restaurant_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
   procpag:
-    image: docker.io/erickemprobr/procpag:latest 
-    ports: 
+    # image: docker.io/erickemprobr/procpag:latest
+    # https://github.com/proferickmuller/go-procpag
+    # image: go-procpag
+    image: docker.io/erickemprobr/procpag:latest
+    platform: linux/amd64
+    ports:
     - "8089:8089"
     networks:
     - fase3net
 
-  # adicione os seus outros serviços aqui
-  # faça com que todos os serviços usem a mesma rede 'fase3net'
+  service-registry:
+    build:
+      context: .
+      dockerfile: ./service-registry/Dockerfile
+    ports:
+      - "8762:8762"
+    networks:
+      - fase3net
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - fase3net
+    depends_on:
+      - service-registry
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - auth-service-db
+      - service-registry
+
+  order-service:
+    build:
+      context: .
+      dockerfile: ./order-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - order-service-db
+      - service-registry
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./payment-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - payment-service-db
+      - service-registry
+
+  restaurant-service:
+    build:
+      context: .
+      dockerfile: ./restaurant-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - restaurant-service-db
+      - service-registry
 
 networks:
   fase3net:
+
+volumes:
+  auth_service_db_data:
+  order_service_db_data:
+  payment_service_db_data:
+  restaurant_service_db_data:
+  keycloak_db_data:

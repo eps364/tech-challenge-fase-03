@@ -1,0 +1,169 @@
+{
+  "realm": "tech-challenge",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "api-gateway",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-gateway-secret",
+      "serviceAccountsEnabled": true,
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"]
+    },
+    {
+      "clientId": "auth-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "auth-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "order-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "order-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "payment-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "payment-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "restaurant-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "restaurant-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "frontend-client",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:3000/*", "http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:3000", "http://localhost:8080"]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "admin@techchallenge.local",
+      "firstName": "Admin",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
+    },
+    {
+      "username": "user",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "user@techchallenge.local",
+      "firstName": "Default",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
+    },
+    {
+      "username": "cliente",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "cliente@techchallenge.local",
+      "firstName": "Cliente",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "cliente",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
+    },
+    {
+      "username": "dono",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "dono@techchallenge.local",
+      "firstName": "Dono",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dono",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user", "owner"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
+    },
+    {
+      "username": "gerente",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "gerente@techchallenge.local",
+      "firstName": "Gerente",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "gerente",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role"
+      },
+      {
+        "name": "user",
+        "description": "User role"
+      },
+      {
+        "name": "owner",
+        "description": "Owner role"
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Keycloak - Account Profile
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{keycloak_url}}/realms/{{realm}}/account/
+  body: none
+  auth: none
+}
+
+headers {
+  Host: {{keycloak_host}}
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
