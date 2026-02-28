@@ -5,9 +5,9 @@ services:
     build:
       context: ./containers-config
       dockerfile: ./keycloak/Dockerfile.keycloak
-    command: start-dev --import-realm
+    command: start-dev --import-realm --http-port=8000
     ports:
-      - 8000:8080
+      - 8000:8000
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -66,6 +66,13 @@ services:
     networks:
     - fase3net
 
+  service-registry:
+    build:
+      context: .
+      dockerfile: ./service-registry/Dockerfile
+    networks:
+      - fase3net
+
   api-gateway:
     build:
       context: .
@@ -76,6 +83,7 @@ services:
       - fase3net
     depends_on:
       - postgres
+      - service-registry
 
   auth-service:
     build:
@@ -85,6 +93,7 @@ services:
       - fase3net
     depends_on:
       - postgres
+      - service-registry
 
   order-service:
     build:
@@ -94,6 +103,7 @@ services:
       - fase3net
     depends_on:
       - postgres
+      - service-registry
 
   payment-service:
     build:
@@ -103,6 +113,7 @@ services:
       - fase3net
     depends_on:
       - postgres
+      - service-registry
 
   restaurant-service:
     build:
@@ -112,6 +123,7 @@ services:
       - fase3net
     depends_on:
       - postgres
+      - service-registry
 
 networks:
   fase3net:
