@@ -1,0 +1,16 @@
+meta {
+  name: Payment Service - Private
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{base_url}}/payment-service/test/private
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}

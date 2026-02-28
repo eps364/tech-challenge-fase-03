@@ -1,0 +1,16 @@
+meta {
+  name: Order Service - Private
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{base_url}}/order-service/test/private
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
