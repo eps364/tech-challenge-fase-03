@@ -9,11 +9,13 @@
 | ProcPag | http://localhost:8089/openapi.yml | N/A | N/A | Endpoint OpenAPI documentado no `README.md`. |
 | Keycloak DB | localhost:5433 (PostgreSQL) | root | root | Banco do Keycloak (`keycloak-db`). |
 | Auth Service DB | host interno Docker: `auth-service-db:5432` | postgres | password | Serviço de banco dedicado no Docker Compose. |
+| Client Service DB | host interno Docker: `client-service-db:5432` | postgres | password | Serviço de banco dedicado no Docker Compose. |
+| Catalog Service DB | host interno Docker: `catalog-service-db:5432` | postgres | password | Serviço de banco dedicado no Docker Compose. |
 | Order Service DB | host interno Docker: `order-service-db:5432` | postgres | password | Serviço de banco dedicado no Docker Compose. |
 | Payment Service DB | host interno Docker: `payment-service-db:5432` | postgres | password | Serviço de banco dedicado no Docker Compose. |
 | Restaurant Service DB | host interno Docker: `restaurant-service-db:5432` | postgres | password | Serviço de banco dedicado no Docker Compose. |
 
 ## Observação rápida
 
-- Os bancos `auth-service-db`, `order-service-db`, `payment-service-db` e `restaurant-service-db` estão acessíveis internamente na rede Docker (`fase3net`).
+- Os bancos `auth-service-db`, `client-service-db`, `catalog-service-db`, `order-service-db`, `payment-service-db` e `restaurant-service-db` estão acessíveis internamente na rede Docker (`fase3net`).
 - Para acessar esses bancos via host local, adicione mapeamento de portas no `compose.yml`.
