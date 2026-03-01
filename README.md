@@ -9,6 +9,8 @@ Este repositório contém os serviços:
 - `service-registry` (Eureka)
 - `api-gateway`
 - `auth-service`
+- `client-service`
+- `catalog-service`
 - `order-service`
 - `payment-service`
 - `restaurant-service`
@@ -53,11 +55,17 @@ A tabela completa de serviços, URLs e credenciais está em:
 
 - [docs/services/services.md](docs/services/services.md)
 
+Resumo de microservices, endpoints, permissões e acesso via gateway:
+
+- [docs/microservices.md](docs/microservices.md)
+
 ## Banco de dados
 
 Cada microsserviço de domínio utiliza um Postgres dedicado no Compose:
 
 - `auth-service-db`
+- `client-service-db`
+- `catalog-service-db`
 - `order-service-db`
 - `payment-service-db`
 - `restaurant-service-db`
@@ -74,7 +82,7 @@ Todos usam o mesmo padrão de credenciais:
 Você pode subir somente dependências em Docker e rodar os apps com Maven Wrapper:
 
 ```bash
-docker compose up -d keycloak keycloak-db auth-service-db order-service-db payment-service-db restaurant-service-db
+docker compose up -d keycloak keycloak-db auth-service-db client-service-db catalog-service-db order-service-db payment-service-db restaurant-service-db
 ./mvnw spring-boot:run
 ```
 

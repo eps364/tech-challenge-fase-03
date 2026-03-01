@@ -1,0 +1,89 @@
+@startuml
+title Tech Challenge Fase 03 - Sequência Atual (Autenticação + Pedido/Pagamento + Resiliência)
+
+actor Cliente
+participant "API Gateway\n:8761" as APIGW
+participant "Service Registry\nEureka :8762" as EUREKA
+participant "Auth Service" as AUTH
+database "Auth DB\nPostgres" as AUTHDB
+participant "Keycloak\n:8000" as KC
+database "Keycloak DB" as KCDB
+participant "Order Service" as ORDER
+database "Order DB\nPostgres" as ORDERDB
+participant "Restaurant Service" as REST
+database "Restaurant DB\nPostgres" as RESTDB
+participant "Payment Service" as PAY
+database "Payment DB\nPostgres" as PAYDB
+participant "ProcPag\n:8089" as PROCPAG
+queue "Kafka" as KAFKA
+participant "Payment Worker\n(reprocessamento)" as WORKER
+
+== Inicialização ==
+APIGW -> EUREKA: registra instância
+AUTH -> EUREKA: registra instância
+ORDER -> EUREKA: registra instância
+REST -> EUREKA: registra instância
+PAY -> EUREKA: registra instância
+
+== Autenticação ==
+Cliente -> APIGW: POST /auth/login
+APIGW -> EUREKA: resolve auth-service
+APIGW -> AUTH: encaminha login
+AUTH -> AUTHDB: consulta/atualiza contexto local (quando aplicável)
+AUTH -> KC: autentica usuário
+KC -> KCDB: consulta realm/usuário
+KCDB --> KC: dados de autenticação
+KC --> AUTH: JWT / erro
+AUTH --> APIGW: resposta de autenticação
+APIGW --> Cliente: token JWT
+
+== Acesso protegido ==
+Cliente -> APIGW: POST /orders (Bearer JWT)
+APIGW -> APIGW: valida JWT e perfil de acesso
+
+== Pedido e pagamento ==
+APIGW -> EUREKA: resolve order-service
+APIGW -> ORDER: cria pedido
+ORDER -> ORDERDB: persiste pedido inicial
+
+ORDER -> EUREKA: resolve restaurant-service
+ORDER -> REST: valida restaurante/itens
+REST -> RESTDB: consulta dados de restaurante
+RESTDB --> REST: dados do restaurante
+REST --> ORDER: validação OK
+
+ORDER -> KAFKA: publica pedido.criado
+PAY -> KAFKA: consome pedido.criado
+PAY -> PAYDB: cria transação local
+
+group Resiliência no pagamento
+PAY -> PROCPAG: chamada externa com Retry/Timeout/Circuit Breaker
+end
+
+alt pagamento autorizado
+	PROCPAG --> PAY: autorizado
+	PAY -> PAYDB: transação = PAGO
+	PAY -> KAFKA: publica pagamento.aprovado
+	ORDER -> KAFKA: consome pagamento.aprovado
+	ORDER -> ORDERDB: pedido = PAGO
+	ORDER --> APIGW: status final
+	APIGW --> Cliente: 201 Created + PAGO
+else falha/timeout/circuito aberto
+	PROCPAG --> PAY: erro / indisponível
+	PAY -> PAYDB: transação = PENDENTE
+	PAY -> KAFKA: publica pagamento.pendente
+	ORDER -> KAFKA: consome pagamento.pendente
+	ORDER -> ORDERDB: pedido = PENDENTE_PAGAMENTO
+	ORDER --> APIGW: pedido aceito com pendência
+	APIGW --> Cliente: 201 Created + PENDENTE_PAGAMENTO
+
+	== Reprocessamento automático ==
+	WORKER -> KAFKA: consome pagamento.pendente
+	WORKER -> PROCPAG: nova tentativa de cobrança
+	PROCPAG --> WORKER: autorizado
+	WORKER -> KAFKA: publica pagamento.aprovado
+	ORDER -> KAFKA: consome pagamento.aprovado
+	ORDER -> ORDERDB: pedido = PAGO
+end
+
+@enduml

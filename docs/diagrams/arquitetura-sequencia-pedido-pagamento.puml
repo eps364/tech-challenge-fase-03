@@ -1,0 +1,67 @@
+@startuml
+title Tech Challenge Fase 03 - Sequência de Pedido e Pagamento (Eventos + Resiliência)
+
+actor Cliente
+participant "API Gateway\n:8761" as APIGW
+participant "Service Registry\nEureka :8762" as EUREKA
+participant "Order Service" as ORDER
+database "Order DB\nPostgres" as ORDERDB
+participant "Restaurant Service" as REST
+database "Restaurant DB\nPostgres" as RESTDB
+participant "Payment Service" as PAY
+database "Payment DB\nPostgres" as PAYDB
+participant "ProcPag\n:8089" as PROCPAG
+queue "Kafka" as KAFKA
+participant "Payment Worker\n(reprocessamento)" as WORKER
+
+== Criação do pedido ==
+Cliente -> APIGW: POST /orders (Bearer JWT)
+APIGW -> EUREKA: resolve order-service
+APIGW -> ORDER: cria pedido
+ORDER -> ORDERDB: persiste pedido inicial
+
+== Validação de restaurante ==
+ORDER -> EUREKA: resolve restaurant-service
+ORDER -> REST: valida restaurante/itens
+REST -> RESTDB: consulta dados
+RESTDB --> REST: dados do restaurante
+REST --> ORDER: validação OK
+
+== Evento de criação ==
+ORDER -> KAFKA: publica evento pedido.criado
+
+== Processamento assíncrono de pagamento ==
+PAY -> KAFKA: consome pedido.criado
+PAY -> PAYDB: cria transação local
+
+group Resiliência (Retry + Timeout + Circuit Breaker)
+PAY -> PROCPAG: processa cobrança
+end
+
+alt pagamento autorizado
+	PROCPAG --> PAY: autorizado
+	PAY -> PAYDB: atualiza transação = PAGO
+	PAY -> KAFKA: publica pagamento.aprovado
+	ORDER -> KAFKA: consome pagamento.aprovado
+	ORDER -> ORDERDB: atualiza pedido = PAGO
+	ORDER --> APIGW: pedido atualizado
+	APIGW --> Cliente: status final = PAGO
+else falha/timeout/circuito aberto
+	PROCPAG --> PAY: erro / indisponível
+	PAY -> PAYDB: atualiza transação = PENDENTE
+	PAY -> KAFKA: publica pagamento.pendente
+	ORDER -> KAFKA: consome pagamento.pendente
+	ORDER -> ORDERDB: atualiza pedido = PENDENTE_PAGAMENTO
+	ORDER --> APIGW: pedido aceito com pendência
+	APIGW --> Cliente: status = PENDENTE_PAGAMENTO
+
+	== Reprocessamento automático ==
+	WORKER -> KAFKA: consome pagamento.pendente
+	WORKER -> PROCPAG: tenta novamente cobrança
+	PROCPAG --> WORKER: autorizado
+	WORKER -> KAFKA: publica pagamento.aprovado
+	ORDER -> KAFKA: consome pagamento.aprovado
+	ORDER -> ORDERDB: atualiza pedido = PAGO
+end
+
+@enduml

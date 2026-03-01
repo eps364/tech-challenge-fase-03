@@ -1,0 +1,16 @@
+meta {
+  name: Catalog Service - Private
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{base_url}}/catalog-service/test/private
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
