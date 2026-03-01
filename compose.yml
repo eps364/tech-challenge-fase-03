@@ -55,6 +55,28 @@ services:
     networks:
       - fase3net
 
+  client-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - client_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
+  catalog-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: techchallenge
+    volumes:
+      - catalog_service_db_data:/var/lib/postgresql/data
+    networks:
+      - fase3net
+
   order-service-db:
     image: postgres:15
     environment:
@@ -129,6 +151,26 @@ services:
       - auth-service-db
       - service-registry
 
+  client-service:
+    build:
+      context: .
+      dockerfile: ./client-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - client-service-db
+      - service-registry
+
+  catalog-service:
+    build:
+      context: .
+      dockerfile: ./catalog-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      - catalog-service-db
+      - service-registry
+
   order-service:
     build:
       context: .
@@ -164,6 +206,8 @@ networks:
 
 volumes:
   auth_service_db_data:
+  client_service_db_data:
+  catalog_service_db_data:
   order_service_db_data:
   payment_service_db_data:
   restaurant_service_db_data:
