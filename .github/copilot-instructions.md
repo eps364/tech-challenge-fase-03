@@ -30,6 +30,7 @@ Sempre considerar estes itens como obrigatórios nas sugestões do Copilot:
 - código-fonte versionado de todos os componentes implementados.
 - criação de diagramas de sequencia na pasta `docs/diagrams` para ilustrar os fluxos de pedido e pagamento, destacando os eventos e pontos de resiliência.
 - cada microserviço deve respeitar a arquitetura limpa, com separação clara entre domínio e infraestrutura, e seguir as melhores práticas de segurança e resiliência (pastas core/infra)
+- cada microservice possue um banco de dados dedicado, seguindo o padrão de nomenclatura `<service-name>-db` e utilizando as mesmas credenciais (postgres/password) para facilitar a configuração e execução via Docker Compose.
 
 ## 4) Requisitos Funcionais (RF)
 
