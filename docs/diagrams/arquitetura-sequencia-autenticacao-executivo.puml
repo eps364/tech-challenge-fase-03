@@ -1,0 +1,24 @@
+@startuml
+title Autenticação e Acesso Seguro - Visão Executiva
+
+autonumber
+actor Cliente
+participant "API Gateway" as APIGW
+participant "Auth Service" as AUTH
+participant "Keycloak" as KC
+participant "Order Service" as ORDER
+
+Cliente -> APIGW: Login (endpoint aberto)
+APIGW -> AUTH: Encaminha autenticação
+AUTH -> KC: Valida credenciais
+KC --> AUTH: Retorna token JWT
+AUTH --> APIGW: Resposta de login
+APIGW --> Cliente: Token de acesso
+
+Cliente -> APIGW: Requisição protegida com Bearer JWT
+APIGW -> APIGW: Valida token e perfil
+APIGW -> ORDER: Encaminha para serviço protegido
+ORDER --> APIGW: Resposta de negócio
+APIGW --> Cliente: Resposta autorizada
+
+@enduml
