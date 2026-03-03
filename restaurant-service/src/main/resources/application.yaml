@@ -1,6 +1,37 @@
 spring:
   application:
     name: restaurant-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8000/realms/tech-challenge
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+  datasource:
+    url: jdbc:postgresql://restaurant-service-db:5432/restaurant-service-db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+
+app:
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orquestradorRestaurantes: Orquestrador-Restaurantes.queue
+      out:
+        restaurantesOrquestrador: Restaurantes-Orquestrador.queue
 
 server:
   port: 0
@@ -18,9 +49,8 @@ eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://service-registry:8762/eureka
 
   instance:
-    hostname: localhost
-    prefer-ip-address: false
+    prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

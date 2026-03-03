@@ -1,0 +1,96 @@
+services:
+  service-registry:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/service-registry
+    command: mvn spring-boot:run
+    volumes:
+      - ./service-registry:/workspace/service-registry
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  api-gateway:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/api-gateway
+    command: mvn spring-boot:run
+    volumes:
+      - ./api-gateway:/workspace/api-gateway
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  auth-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/auth-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./auth-service:/workspace/auth-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  client-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/client-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./client-service:/workspace/client-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  catalog-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/catalog-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./catalog-service:/workspace/catalog-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  order-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/order-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./order-service:/workspace/order-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  payment-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/payment-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./payment-service:/workspace/payment-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  restaurant-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/restaurant-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./restaurant-service:/workspace/restaurant-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev

@@ -1,6 +1,50 @@
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth-service/**
+          filters:
+            - StripPrefix=1
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - StripPrefix=1
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payment-service/**
+          filters:
+            - StripPrefix=1
+        - id: restaurant-service
+          uri: lb://RESTAURANT-SERVICE
+          predicates:
+            - Path=/restaurant-service/**
+          filters:
+            - StripPrefix=1
+        - id: client-service
+          uri: lb://CLIENT-SERVICE
+          predicates:
+            - Path=/client-service/**
+          filters:
+            - StripPrefix=1
+        - id: catalog-service
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/catalog-service/**
+          filters:
+            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8000/realms/tech-challenge
 
 server:
   port: 8761
@@ -8,4 +52,8 @@ server:
 eureka:
   client:
     register-with-eureka: false
-    fetch-registry: false
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8762/eureka
+
+

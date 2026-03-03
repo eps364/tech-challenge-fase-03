@@ -1,0 +1,16 @@
+meta {
+  name: Restaurant Service - Private
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{base_url}}/restaurant-service/test/private
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}

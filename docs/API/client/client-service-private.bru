@@ -1,0 +1,16 @@
+meta {
+  name: Client Service - Private
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{base_url}}/client-service/test/private
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}

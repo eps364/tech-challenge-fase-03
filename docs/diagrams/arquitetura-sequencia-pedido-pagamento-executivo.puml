@@ -1,0 +1,43 @@
+@startuml
+title Pedido e Pagamento - Visão Executiva (Eventos e Resiliência)
+
+autonumber
+actor Cliente
+participant "API Gateway" as APIGW
+participant "Order Service" as ORDER
+participant "Restaurant Service" as REST
+participant "Payment Service" as PAY
+participant "ProcPag" as PROCPAG
+queue "Kafka" as KAFKA
+participant "Worker" as WORKER
+
+Cliente -> APIGW: Cria pedido
+APIGW -> ORDER: Encaminha requisição
+ORDER -> REST: Valida restaurante/itens
+REST --> ORDER: Validação OK
+ORDER -> KAFKA: Publica pedido.criado
+PAY -> KAFKA: Consome pedido.criado
+
+alt Pagamento aprovado
+	PAY -> PROCPAG: Processa cobrança
+	PROCPAG --> PAY: Aprovado
+	PAY -> KAFKA: Publica pagamento.aprovado
+	ORDER -> KAFKA: Atualiza status para PAGO
+	ORDER --> APIGW: Pedido pago
+	APIGW --> Cliente: Status PAGO
+else Falha no pagamento
+	PAY -> PROCPAG: Tenta cobrança
+	PROCPAG --> PAY: Erro/timeout
+	PAY -> KAFKA: Publica pagamento.pendente
+	ORDER -> KAFKA: Atualiza status para PENDENTE_PAGAMENTO
+	ORDER --> APIGW: Pedido com pendência
+	APIGW --> Cliente: Status PENDENTE_PAGAMENTO
+
+	WORKER -> KAFKA: Reprocessa pendências
+	WORKER -> PROCPAG: Nova tentativa
+	PROCPAG --> WORKER: Aprovado
+	WORKER -> KAFKA: Publica pagamento.aprovado
+	ORDER -> KAFKA: Atualiza status final para PAGO
+end
+
+@enduml
