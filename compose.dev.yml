@@ -35,6 +35,30 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
 
+  client-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/client-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./client-service:/workspace/client-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  catalog-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace/catalog-service
+    command: mvn spring-boot:run
+    volumes:
+      - ./catalog-service:/workspace/catalog-service
+      - ./pom.xml:/workspace/pom.xml:ro
+      - ~/.m2:/root/.m2
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
   order-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21

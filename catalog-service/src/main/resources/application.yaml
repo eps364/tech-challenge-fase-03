@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: catalog-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8000/realms/tech-challenge
+
+server:
+  port: 0
+
+# Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+
+# Eurika configuration
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://service-registry:8762/eureka
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

@@ -17,7 +17,9 @@ public class SecurityConfig {
                     "/auth-service/test/public",
                     "/order-service/test/public",
                     "/payment-service/test/public",
-                    "/restaurant-service/test/public"
+                    "/restaurant-service/test/public",
+                    "/client-service/test/public",
+                    "/catalog-service/test/public"
                 ).permitAll()
                 .anyExchange().authenticated()
             )
