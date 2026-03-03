@@ -1,6 +1,11 @@
 spring:
   application:
-    name: clientes
+    name: client-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8000/realms/tech-challenge
   rabbitmq:
     host: rabbitmq
     port: 5672
@@ -25,3 +30,23 @@ app:
         orquestradorClientes: Orquestrador-Clientes.queue
       out:
         clientesOrquestrador: Clientes-Orquestrador.queue
+
+server:
+  port: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://service-registry:8762/eureka
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
