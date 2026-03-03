@@ -1,7 +1,7 @@
-package br.com.fiap.orquestrador.infra.messaging.producer;
+package br.com.fiap.orchestrator.infra.messaging.producer;
 
-import br.com.fiap.orquestrador.core.dto.MensagemFila;
-import br.com.fiap.orquestrador.core.gateway.QueuePublisherPort;
+import br.com.fiap.orchestrator.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 

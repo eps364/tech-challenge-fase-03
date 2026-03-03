@@ -1,7 +1,8 @@
 
+package br.com.fiap.orchestrator.infra.web.controller;
 
-import br.com.fiap.orquestrador.core.dto.MensagemFila;
-import br.com.fiap.orquestrador.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
+import br.com.fiap.orchestrator.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

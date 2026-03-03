@@ -1,4 +1,4 @@
-package br.com.fiap.orquestrador.core.valueobject;
+package br.com.fiap.orchestrator.core.valueobject;
 
 public final class RoutingKeys {
     private RoutingKeys() {}

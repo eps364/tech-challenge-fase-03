@@ -63,12 +63,12 @@ Resumo de microservices, endpoints, permissões e acesso via gateway:
 
 Cada microsserviço de domínio utiliza um Postgres dedicado no Compose:
 
-- `auth-service-db`
-- `client-service-db`
-- `catalog-service-db`
-- `order-service-db`
-- `payment-service-db`
-- `restaurant-service-db`
+- `auth-service-db` (banco: `auth-service-db`)
+- `client-service-db` (banco: `client-service-db`)
+- `catalog-service-db` (banco: `catalog-service-db`)
+- `order-service-db` (banco: `order-service-db`)
+- `payment-service-db` (banco: `payment-service-db`)
+- `restaurant-service-db` (banco: `restaurant-service-db`)
 
 Todos usam o mesmo padrão de credenciais:
 

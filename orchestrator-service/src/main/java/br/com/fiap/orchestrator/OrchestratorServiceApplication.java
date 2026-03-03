@@ -1,4 +1,4 @@
-package br.com.fiap.orquestrador;
+package br.com.fiap.orchestrator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

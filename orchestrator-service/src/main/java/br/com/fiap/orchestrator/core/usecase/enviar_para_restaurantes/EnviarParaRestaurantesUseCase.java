@@ -1,8 +1,8 @@
-package br.com.fiap.orquestrador.core.usecase.enviar_para_restaurantes;
+package br.com.fiap.orchestrator.core.usecase.enviar_para_restaurantes;
 
-import br.com.fiap.orquestrador.core.dto.MensagemFila;
-import br.com.fiap.orquestrador.core.gateway.QueuePublisherPort;
-import br.com.fiap.orquestrador.core.valueobject.RoutingKeys;
+import br.com.fiap.orchestrator.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
+import br.com.fiap.orchestrator.core.valueobject.RoutingKeys;
 
 public class EnviarParaRestaurantesUseCase {
 

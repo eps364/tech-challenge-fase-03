@@ -1,4 +1,4 @@
-package br.com.fiap.orquestrador.core.dto;
+package br.com.fiap.orchestrator.core.dto;
 
 import java.time.Instant;
 import java.util.Map;

@@ -1,9 +1,9 @@
-package br.com.fiap.orquestrador.infra.config;
+package br.com.fiap.orchestrator.infra.config;
 
-import br.com.fiap.orquestrador.core.gateway.QueuePublisherPort;
-import br.com.fiap.orquestrador.core.usecase.enviar_para_clientes.EnviarParaClientesUseCase;
-import br.com.fiap.orquestrador.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
-import br.com.fiap.orquestrador.core.usecase.enviar_para_restaurantes.EnviarParaRestaurantesUseCase;
+import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
+import br.com.fiap.orchestrator.core.usecase.enviar_para_clientes.EnviarParaClientesUseCase;
+import br.com.fiap.orchestrator.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
+import br.com.fiap.orchestrator.core.usecase.enviar_para_restaurantes.EnviarParaRestaurantesUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

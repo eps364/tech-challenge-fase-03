@@ -1,6 +1,6 @@
-package br.com.fiap.orquestrador.infra.messaging.consumer;
+package br.com.fiap.orchestrator.infra.messaging.consumer;
 
-import br.com.fiap.orquestrador.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.dto.MensagemFila;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

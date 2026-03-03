@@ -5,7 +5,7 @@ services:
   keycloak:
     #image: quay.io/keycloak/keycloak:21.1
     build:
-      context: ./containers-config
+      context: ./docker
       dockerfile: ./keycloak/Dockerfile.keycloak
     command: start-dev --import-realm --http-port=8000
     ports:
@@ -19,7 +19,7 @@ services:
       - KC_DB_PASSWORD=root
       - KC_IMPORT_REALM=realm-export.json
     volumes:
-      - ./containers-config/keycloak/realm:/opt/keycloak/data/import
+      - ./docker/keycloak/realm:/opt/keycloak/data/import
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -49,9 +49,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: techchallenge
+      POSTGRES_DB: auth-service-db
     volumes:
-      - auth_service_db_data:/var/lib/postgresql/data
+      - auth-service-db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -60,9 +60,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: techchallenge
+      POSTGRES_DB: client-service-db
     volumes:
-      - client_service_db_data:/var/lib/postgresql/data
+      - client-service-db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -71,9 +71,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: techchallenge
+      POSTGRES_DB: catalog-service-db
     volumes:
-      - catalog_service_db_data:/var/lib/postgresql/data
+      - catalog-service-db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -82,9 +82,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: techchallenge
+      POSTGRES_DB: order-service-db
     volumes:
-      - order_service_db_data:/var/lib/postgresql/data
+      - order-service-db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -93,9 +93,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: techchallenge
+      POSTGRES_DB: payment-service-db
     volumes:
-      - payment_service_db_data:/var/lib/postgresql/data
+      - payment-service-db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -104,9 +104,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: techchallenge
+      POSTGRES_DB: restaurant-service-db
     volumes:
-      - restaurant_service_db_data:/var/lib/postgresql/data
+      - restaurant-service-db_data:/var/lib/postgresql/data
     networks:
       - fase3net
 
@@ -222,10 +222,10 @@ networks:
   fase3net:
 
 volumes:
-  auth_service_db_data:
-  client_service_db_data:
-  catalog_service_db_data:
-  order_service_db_data:
-  payment_service_db_data:
-  restaurant_service_db_data:
+  auth-service-db_data:
+  client-service-db_data:
+  catalog-service-db_data:
+  order-service-db_data:
+  payment-service-db_data:
+  restaurant-service-db_data:
   keycloak_db_data:

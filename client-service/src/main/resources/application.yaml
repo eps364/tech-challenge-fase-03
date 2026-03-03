@@ -10,10 +10,10 @@ spring:
       simple:
         default-requeue-rejected: false
   datasource:
-    url: jdbc:postgresql://postgres:5432/clientes
+    url: jdbc:postgresql://client-service-db:5432/client-service-db
     driver-class-name: org.postgresql.Driver
-    username: clientes
-    password: clientes
+    username: postgres
+    password: password
   jpa:
     hibernate:
       ddl-auto: validate
