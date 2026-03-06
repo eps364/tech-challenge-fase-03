@@ -1,23 +1,16 @@
-package br.com.fiap.client.core.domain;
+package br.com.fiap.orchestrator.core.domain;
 
-import java.util.UUID;
+import br.com.fiap.orchestrator.core.dto.PriceEvent;
 
-public class Cliente {
-    private final UUID id;
-    private final String nome;
-    private final boolean ativo;
+import java.time.LocalDateTime;
 
-    public Cliente(UUID id, String nome, boolean ativo) {
-        this.id = id;
-        this.nome = nome;
-        this.ativo = ativo;
-    }
-
-    public UUID getId() { return id; }
-    public String getNome() { return nome; }
-    public boolean isAtivo() { return ativo; }
-
-    public Cliente ativar() {
-        return new Cliente(this.id, this.nome, true);
-    }
+public class Request {
+    private String clientId;
+    private String cpf;
+    private String restaurantId;
+    private String foodId;
+    private Address address;
+    private PriceEvent price;
+    private String paymentMode;
+    private LocalDateTime requestDate;
 }

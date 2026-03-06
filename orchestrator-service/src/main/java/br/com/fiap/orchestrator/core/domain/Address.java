@@ -1,11 +1,11 @@
-package br.com.fiap.orchestrator.core.dto;
+package br.com.fiap.orchestrator.core.domain;
 
-public record AddressEvent(
-        String street,
-         String number,
-         String city,
-         String neighborhood,
-         String country,
-         String state,
-         String zipCode
-) {}
+public class Address {
+    private String street;
+    private String number;
+    private String city;
+    private String neighborhood;
+    private String country;
+    private String state;
+    private String zipCode;
+}

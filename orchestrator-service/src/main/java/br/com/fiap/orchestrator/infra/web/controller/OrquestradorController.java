@@ -1,7 +1,7 @@
 
 package br.com.fiap.orchestrator.infra.web.controller;
 
-import br.com.fiap.orchestrator.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.dto.RequestEvent;
 import br.com.fiap.orchestrator.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +22,14 @@ public class OrquestradorController {
         this.enviarParaPedidos = enviarParaPedidos;
     }
 
-    @PostMapping("/teste/pedidos")
-    public void testarPedidos(@RequestBody Map<String, Object> payload) {
-        MensagemFila msg = new MensagemFila(
-                UUID.randomUUID().toString(),
-                "TESTE",
-                Instant.now(),
-                payload
-        );
-        enviarParaPedidos.execute(msg);
-    }
+//    @PostMapping("/teste/pedidos")
+//    public void testarPedidos(@RequestBody Map<String, Object> payload) {
+//        RequestEvent msg = new RequestEvent(
+//                UUID.randomUUID().toString(),
+//                "TESTE",
+//                Instant.now(),
+//                payload
+//        );
+//        enviarParaPedidos.execute(msg);
+//    }
 }

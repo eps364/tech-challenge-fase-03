@@ -2,34 +2,27 @@
 package br.com.fiap.orchestrator.infra.web.controller;
 
 import br.com.fiap.orchestrator.core.dto.RequestEvent;
+import br.com.fiap.orchestrator.core.usecase.enviar_para_clientes.EnviarParaClientesUseCase;
 import br.com.fiap.orchestrator.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
-
 @RestController
-@RequestMapping("/orquestrador")
-public class OrquestradorController {
+@RequestMapping("/orchestrator")
+public class RequestsController {
 
-    private final EnviarParaPedidosUseCase enviarParaPedidos;
+    private final EnviarParaClientesUseCase enviarParaClientesUseCase;
 
-    public OrquestradorController(EnviarParaPedidosUseCase enviarParaPedidos) {
-        this.enviarParaPedidos = enviarParaPedidos;
+    public RequestsController(EnviarParaClientesUseCase enviarParaClientesUseCase) {
+        this.enviarParaClientesUseCase = enviarParaClientesUseCase;
     }
 
-//    @PostMapping("/teste/pedidos")
-//    public void testarPedidos(@RequestBody Map<String, Object> payload) {
-//        RequestEvent msg = new RequestEvent(
-//                UUID.randomUUID().toString(),
-//                "TESTE",
-//                Instant.now(),
-//                payload
-//        );
-//        enviarParaPedidos.execute(msg);
-//    }
+    @PostMapping("/requests")
+    public void testarPedidos(@RequestBody @Valid RequestEvent event) {
+
+        enviarParaClientesUseCase.execute(event);
+    }
 }

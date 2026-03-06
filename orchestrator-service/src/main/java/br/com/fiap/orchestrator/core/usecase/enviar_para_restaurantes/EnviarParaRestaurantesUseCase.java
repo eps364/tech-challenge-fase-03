@@ -1,6 +1,6 @@
 package br.com.fiap.orchestrator.core.usecase.enviar_para_restaurantes;
 
-import br.com.fiap.orchestrator.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.dto.RequestEvent;
 import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
 import br.com.fiap.orchestrator.core.valueobject.RoutingKeys;
 
@@ -12,7 +12,7 @@ public class EnviarParaRestaurantesUseCase {
         this.publisher = publisher;
     }
 
-    public void execute(MensagemFila mensagem) {
+    public void execute(RequestEvent mensagem) {
         publisher.publish(RoutingKeys.ORQ_RESTAURANTES, mensagem);
     }
 }

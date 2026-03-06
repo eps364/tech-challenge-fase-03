@@ -1,6 +1,6 @@
 package br.com.fiap.orchestrator.infra.messaging.producer;
 
-import br.com.fiap.orchestrator.core.dto.MensagemFila;
+import br.com.fiap.orchestrator.core.dto.RequestEvent;
 import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class RabbitQueuePublisher implements QueuePublisherPort {
     }
 
     @Override
-    public void publish(String routingKey, MensagemFila mensagem) {
+    public void publish(String routingKey, RequestEvent mensagem) {
         rabbitTemplate.convertAndSend(routingKey, mensagem);
     }
 }
