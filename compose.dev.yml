@@ -1,96 +1,163 @@
+# Usage: docker compose -f compose.yml -f compose.dev.yml up
+#
+# DO NOT use --build with this file. The application services use the official
+# maven:3.9.9-eclipse-temurin-21 image from Docker Hub. Using --build would
+# compile the Dockerfiles from compose.yml (JRE-only images) and tag them as
+# the Maven image, removing 'mvn' from PATH and breaking hot reload.
+#
+# To rebuild only infrastructure (e.g. Keycloak):
+#   docker compose -f compose.yml -f compose.dev.yml build keycloak
+#   docker compose -f compose.yml -f compose.dev.yml up
+#
+# Overrides application services to run via Maven with Spring DevTools hot reload.
+# Infrastructure (DBs, RabbitMQ, Keycloak, procpag) is provided by compose.yml.
+
 services:
   service-registry:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/service-registry
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl service-registry -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./service-registry:/workspace/service-registry
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
 
   api-gateway:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/api-gateway
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl api-gateway -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./api-gateway:/workspace/api-gateway
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
 
   auth-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/auth-service
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl auth-service -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./auth-service:/workspace/auth-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    depends_on:
+      keycloak:
+        condition: service_started
 
   client-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/client-service
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl client-service -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./client-service:/workspace/client-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
 
   catalog-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/catalog-service
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl catalog-service -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./catalog-service:/workspace/catalog-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
 
   order-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/order-service
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl order-service -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./order-service:/workspace/order-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
 
   payment-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/payment-service
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl payment-service -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./payment-service:/workspace/payment-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
 
   restaurant-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/restaurant-service
-    command: mvn spring-boot:run
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl restaurant-service -DskipTests -Dspring-boot.run.fork=false
     volumes:
-      - ./restaurant-service:/workspace/restaurant-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - .:/workspace
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+
+  orchestrator-service:
+    build: null
+    image: maven:3.9.9-eclipse-temurin-21
+    entrypoint: []
+    working_dir: /workspace
+    command: mvn spring-boot:run -pl orchestrator-service -DskipTests -Dspring-boot.run.fork=false
+    volumes:
+      - .:/workspace
+      - m2-cache:/root/.m2
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
+      - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+volumes:
+  m2-cache:

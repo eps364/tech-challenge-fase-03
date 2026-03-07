@@ -3,13 +3,13 @@ name: tech-challenge-fase-03
 services:
 
   keycloak:
-    #image: quay.io/keycloak/keycloak:21.1
+    #image: quay.io/keycloak/keycloak:26.5.4
     build:
       context: ./docker
       dockerfile: ./keycloak/Dockerfile.keycloak
-    command: start-dev --import-realm --http-port=8000
+    command: start-dev --import-realm --http-port=8080
     ports:
-      - 8000:8000
+      - 8080:8080
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -141,6 +141,12 @@ services:
       dockerfile: ./service-registry/Dockerfile
     ports:
       - "8762:8762"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8762/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - fase3net
 
@@ -153,7 +159,8 @@ services:
     networks:
       - fase3net
     depends_on:
-      - service-registry
+      service-registry:
+        condition: service_healthy
 
   auth-service:
     build:
@@ -162,8 +169,10 @@ services:
     networks:
       - fase3net
     depends_on:
-      - auth-service-db
-      - service-registry
+      auth-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
 
   client-service:
     build:
@@ -172,8 +181,10 @@ services:
     networks:
       - fase3net
     depends_on:
-      - client-service-db
-      - service-registry
+      client-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
 
   catalog-service:
     build:
@@ -182,8 +193,10 @@ services:
     networks:
       - fase3net
     depends_on:
-      - catalog-service-db
-      - service-registry
+      catalog-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
 
   order-service:
     build:
@@ -192,9 +205,12 @@ services:
     networks:
       - fase3net
     depends_on:
-      - order-service-db
-      - service-registry
-      - rabbitmq
+      order-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   payment-service:
     build:
@@ -203,9 +219,12 @@ services:
     networks:
       - fase3net
     depends_on:
-      - payment-service-db
-      - service-registry
-      - rabbitmq
+      payment-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   restaurant-service:
     build:
@@ -214,9 +233,24 @@ services:
     networks:
       - fase3net
     depends_on:
-      - restaurant-service-db
-      - service-registry
-      - rabbitmq
+      restaurant-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  orchestrator-service:
+    build:
+      context: .
+      dockerfile: ./orchestrator-service/Dockerfile
+    networks:
+      - fase3net
+    depends_on:
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
 networks:
   fase3net:
