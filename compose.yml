@@ -135,6 +135,18 @@ services:
     networks:
     - fase3net
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fase3net
+
   service-registry:
     build:
       context: .
@@ -152,7 +164,7 @@ services:
 
   api-gateway:
     build:
-      context: .
+      context: .      
       dockerfile: ./api-gateway/Dockerfile
     ports:
       - "8761:8761"
@@ -160,6 +172,8 @@ services:
       - fase3net
     depends_on:
       service-registry:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   auth-service:
@@ -172,6 +186,8 @@ services:
       auth-service-db:
         condition: service_started
       service-registry:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   client-service:
@@ -256,6 +272,7 @@ networks:
   fase3net:
 
 volumes:
+  redis_data:
   auth-service-db_data:
   client-service-db_data:
   catalog-service-db_data:
