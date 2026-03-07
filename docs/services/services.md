@@ -15,6 +15,7 @@
 | RabbitMQ (AMQP) | localhost:5672 | guest | guest | Broker para mensageria assíncrona entre serviços. |
 | RabbitMQ (Management UI) | http://localhost:15672 | guest | guest | Interface administrativa do RabbitMQ com definições em `docker/rabbitmq/definitions.json`. |
 | ProcPag | http://localhost:8089/openapi.yml | N/A | N/A | Endpoint OpenAPI documentado no `README.md`. |
+| Redis | localhost:6379 | N/A | N/A | Blacklist de tokens JWT após logout. Chave: `blacklist:<jti>` com TTL automático. |
 | Keycloak DB | localhost:5433 (PostgreSQL) | root | root | Banco do Keycloak (`keycloak-db`). |
 | Auth Service DB | host interno Docker: `auth-service-db:5432` | postgres | password | Banco lógico: `auth-service-db`. |
 | Client Service DB | host interno Docker: `client-service-db:5432` | postgres | password | Banco lógico: `client-service-db`. |
@@ -29,10 +30,12 @@
 |---|---|---|---|
 | `POST` | `/auth-service/auth/register` | Pública | Cria usuário no Keycloak e no banco local. Retorna `id`, `username`, `email`, `firstName`, `lastName`, `roles`. |
 | `POST` | `/auth-service/auth/login` | Pública | Autentica com Keycloak e retorna o token JWT. |
-| `POST` | `/auth-service/auth/logout` | JWT | Faz logout da sessão do usuário no Keycloak. |
+| `POST` | `/auth-service/auth/logout` | JWT | Revoga a sessão no Keycloak e grava o `jti` do token no Redis com TTL para invalidação imediata. O API Gateway rejeita o token com `401` até sua expiração natural. |
 
 ## Observações
 
 - Os bancos `auth-service-db`, `client-service-db`, `catalog-service-db`, `order-service-db`, `payment-service-db` e `restaurant-service-db` rodam em serviços dedicados (`*-service-db`) na rede Docker (`fase3net`).
 - Para acessar esses bancos via host local, adicione mapeamento de portas no `compose.yml`.
 - O Keycloak roda na porta `8080` (não `8000`).
+- O `orchestrator-service` coordena o fluxo de eventos entre `order-service`, `payment-service` e `restaurant-service` via RabbitMQ.
+- O Redis é utilizado exclusivamente para blacklist de tokens JWT; não há persistência de negócio nele.
