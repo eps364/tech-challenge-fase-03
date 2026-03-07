@@ -28,6 +28,9 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
+| POST | `/auth/register` | Sim (`/auth-service/auth/register`) | Pública | Registra novo usuário no Keycloak e no banco local, atribuindo roles padrão. |
+| POST | `/auth/login` | Sim (`/auth-service/auth/login`) | Pública | Autentica o usuário no Keycloak e retorna um token JWT. |
+| POST | `/auth/logout` | Sim (`/auth-service/auth/logout`) | JWT obrigatório | Encerra a sessão do usuário no Keycloak e invalida o token. |
 | GET | `/test/public` | Sim (`/auth-service/test/public`) | Pública | Health/check simples de endpoint público do serviço. |
 | GET | `/test/private` | Sim (`/auth-service/test/private`) | JWT obrigatório | Retorna dados do usuário autenticado e roles do token. |
 
