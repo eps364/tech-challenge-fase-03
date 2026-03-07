@@ -1,5 +1,7 @@
 package br.com.fiap.authservice.infra.controller;
 
+import java.time.Instant;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,8 +58,13 @@ public class AuthController {
     public ResponseEntity<Void> logout() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
-            String userId = jwt.getSubject(); // sub claim is the Keycloak user UUID
-            logoutUseCase.execute(userId);
+            String userId = jwt.getSubject();
+            String jti = jwt.getId();
+            Instant expiresAt = jwt.getExpiresAt();
+            long ttlSeconds = (expiresAt != null)
+                    ? Math.max(0, expiresAt.getEpochSecond() - Instant.now().getEpochSecond())
+                    : 0L;
+            logoutUseCase.execute(userId, jti, ttlSeconds);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

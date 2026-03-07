@@ -1,12 +1,14 @@
 package br.com.fiap.authservice.infra.config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import br.com.fiap.authservice.core.gateway.IdentityProviderGateway;
+import br.com.fiap.authservice.core.gateway.TokenBlacklistGateway;
 import br.com.fiap.authservice.core.gateway.UserGateway;
 import br.com.fiap.authservice.core.usecase.LoginUseCase;
 import br.com.fiap.authservice.core.usecase.LogoutUseCase;
 import br.com.fiap.authservice.core.usecase.RegisterUserUseCase;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class UseCaseConfig {
@@ -22,7 +24,8 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public LogoutUseCase logoutUseCase(IdentityProviderGateway identityProviderGateway) {
-        return new LogoutUseCase(identityProviderGateway);
+    public LogoutUseCase logoutUseCase(IdentityProviderGateway identityProviderGateway,
+                                       TokenBlacklistGateway tokenBlacklistGateway) {
+        return new LogoutUseCase(identityProviderGateway, tokenBlacklistGateway);
     }
 }
