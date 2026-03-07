@@ -1,0 +1,21 @@
+meta {
+  name: Auth Service - Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/auth-service/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "novo.usuario.24",
+    "password": "password123",
+    "email": "novo240@example.com",
+    "firstName": "Novo",
+    "lastName": "Usuario"
+  }
+}
