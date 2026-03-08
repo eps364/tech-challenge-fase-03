@@ -19,8 +19,11 @@ body:json {
 
 script:post-response {
   const data = res.getBody();
-  
-  if (data && data.accessToken) {
-    bru.setEnvVar("jwt_token", data.accessToken);
+
+  if (data && data.access_token) {
+    bru.setEnvVar("jwt_token", data.access_token);
+  }
+  if (data && data.userId) {
+    bru.setEnvVar("user_id", data.userId);
   }
 }
