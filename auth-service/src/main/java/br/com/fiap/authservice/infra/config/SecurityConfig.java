@@ -24,7 +24,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(new AntPathRequestMatcher("/auth/register")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/auth-service/auth/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/auth/login")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/auth-service/auth/login")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/auth/refresh")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/auth-service/auth/refresh")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/test/public")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/test/private")).hasRole("user")
                 .anyRequest().authenticated()
