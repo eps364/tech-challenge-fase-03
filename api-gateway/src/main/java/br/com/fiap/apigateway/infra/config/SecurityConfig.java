@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -26,6 +22,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import reactor.core.publisher.Mono;
 
@@ -56,7 +56,9 @@ public class SecurityConfig {
                 ).permitAll()
                 .pathMatchers(HttpMethod.GET,
                     "/catalog-service/products",
-                    "/catalog-service/products/**"
+                    "/catalog-service/products/**",
+                    "/restaurant-service/restaurants",
+                    "/restaurant-service/restaurants/**"
                 ).permitAll()
                 .pathMatchers(HttpMethod.POST,
                     "/catalog-service/products",

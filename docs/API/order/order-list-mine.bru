@@ -1,0 +1,22 @@
+meta {
+  name: Order - Listar Meus Pedidos
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/order-service/orders
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Lista todos os pedidos do cliente autenticado.
+  O clientId é extraído automaticamente do token JWT.
+  Requer autenticação.
+}

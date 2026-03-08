@@ -5,7 +5,9 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ## api-gateway
 - **Responsabilidade:** entrada única das APIs, roteamento, validação JWT e verificação de blacklist Redis.
 - **Segurança:** valida assinatura JWT via Keycloak JWKS e, antes de encaminhar qualquer requisição autenticada, consulta o Redis para verificar se o `jti` do token foi blacklistado — retornando `401` imediatamente em caso positivo.
-- **Tratamento de erros:** respostas `401 Unauthorized` retornam corpo RFC 7807 (`ProblemDetail`) com `title`, `status`, `detail`, `instance` e `timestamp`. O tratamento de 401 é centralizado neste serviço — os microserviços internos não duplicam esse comportamento.
+- **Tratamento de erros:** centralizado neste serviço com RFC 7807 (`ProblemDetail`) com `title`, `status`, `detail`, `instance` e `timestamp`. Os microserviços internos não duplicam esse comportamento para os códigos abaixo.
+  - `401 Unauthorized` — JWT ausente, inválido, expirado ou blacklistado. Tratado por `SecurityConfig.unauthorizedEntryPoint()`.
+  - `503 Service Unavailable` — serviço downstream inacessível (`ConnectException`). Tratado por `GlobalWebExceptionHandler`. Sem stack trace exposto ao cliente.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
@@ -80,11 +82,21 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 | GET | `/test/private` | Sim (`/payment-service/test/private`) | JWT obrigatório | Retorna dados do usuário autenticado e roles do token. |
 
 ## restaurant-service
-- **Responsabilidade:** dados/validações de restaurante.
+- **Responsabilidade:** cadastro e gestão de restaurantes com controle de propriedade por owner.
 - **Banco dedicado:** `restaurant-service-db`.
+- **Tratamento de erros:** RFC 7807 via `GlobalExceptionHandler` (`@RestControllerAdvice`). `RestaurantNotFoundException` → `404`. `RestaurantAccessDeniedException` → `403 Forbidden`.
+- **Política de acesso:**
+  - `GET` — público (não requer autenticação).
+  - `POST` — qualquer usuário autenticado. O criador é automaticamente adicionado à lista de `owners` do restaurante e recebe a role `owner` no Keycloak (via Admin API). Após criar, faça login novamente para obter um token JWT com a role `owner` atualizada.
+  - `PUT` / `DELETE` — exige role `admin` **ou** pertencer à lista de `owners` do restaurante. Retorna `403` se o chamador não tiver permissão.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
+| GET | `/restaurants` | Sim (`/restaurant-service/restaurants`) | Pública | Lista todos os restaurantes. Retorna array com campo `owners` (lista de UUIDs). |
+| GET | `/restaurants/{id}` | Sim (`/restaurant-service/restaurants/{id}`) | Pública | Retorna restaurante pelo ID. `404` com ProblemDetail se não encontrado. |
+| POST | `/restaurants` | Sim (`/restaurant-service/restaurants`) | Autenticado (qualquer role) | Cria novo restaurante. Criador vira owner automaticamente + role `owner` atribuída no Keycloak. Faça login novamente após criar para obter token com a nova role. Retorna `201 Created`. |
+| PUT | `/restaurants/{id}` | Sim (`/restaurant-service/restaurants/{id}`) | `admin` ou owner do restaurante | Atualiza dados do restaurante. `403` se não for admin nem owner. `404` se não encontrado. |
+| DELETE | `/restaurants/{id}` | Sim (`/restaurant-service/restaurants/{id}`) | `admin` ou owner do restaurante | Remove restaurante. `403` se não for admin nem owner. `404` se não encontrado. Retorna `204 No Content`. |
 | GET | `/test/public` | Sim (`/restaurant-service/test/public`) | Pública | Health/check simples de endpoint público do serviço. |
 | GET | `/test/private` | Sim (`/restaurant-service/test/private`) | JWT obrigatório | Retorna dados do usuário autenticado e roles do token. |
 

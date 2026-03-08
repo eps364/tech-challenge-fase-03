@@ -52,6 +52,10 @@ APIGW -> APIGW: valida JWT e perfil de acesso
 
 == Pedido e pagamento ==
 APIGW -> EUREKA: resolve order-service
+
+alt serviço downstream indisponível (ConnectException)
+	APIGW --> Cliente: 503 Service Unavailable (RFC 7807 ProblemDetail)
+else serviço disponível
 APIGW -> ORDER: cria pedido
 ORDER -> ORDERDB: persiste pedido inicial
 
@@ -93,6 +97,8 @@ else falha/timeout/circuito aberto
 	WORKER -> BROKER: publica pagamento.aprovado
 	ORDER -> BROKER: consome pagamento.aprovado
 	ORDER -> ORDERDB: pedido = PAGO
+end
+
 end
 
 @enduml

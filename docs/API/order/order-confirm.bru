@@ -1,0 +1,31 @@
+meta {
+  name: Order - Confirmar Pedido
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/order-service/orders/{{order_id}}/confirm
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+script:post-response {
+  const data = res.getBody();
+
+  if (data && data.id) {
+    bru.setEnvVar("order_id", data.id);
+  }
+}
+
+docs {
+  Confirma um pedido, alterando seu status para CONFIRMED e publicando o evento pedido.criado no RabbitMQ.
+  O payment-service consumirá esse evento e tentará o processamento do pagamento.
+  Retorna 404 se o pedido não for encontrado.
+  Requer autenticação.
+}

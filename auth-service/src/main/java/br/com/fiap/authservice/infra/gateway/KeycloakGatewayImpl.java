@@ -1,9 +1,13 @@
 package br.com.fiap.authservice.infra.gateway;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -13,6 +17,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import br.com.fiap.authservice.core.domain.LoginResult;
 import br.com.fiap.authservice.core.domain.User;
 import br.com.fiap.authservice.core.gateway.IdentityProviderGateway;
 import jakarta.ws.rs.core.Response;
@@ -21,6 +26,7 @@ import jakarta.ws.rs.core.Response;
 public class KeycloakGatewayImpl implements IdentityProviderGateway {
 
     private final Keycloak keycloak;
+    private final ObjectMapper objectMapper;
 
     @Value("${keycloak.realm}")
     private String realm;
@@ -31,8 +37,9 @@ public class KeycloakGatewayImpl implements IdentityProviderGateway {
     @Value("${keycloak.public-client-id}")
     private String publicClientId;
 
-    public KeycloakGatewayImpl(Keycloak keycloak) {
+    public KeycloakGatewayImpl(Keycloak keycloak, ObjectMapper objectMapper) {
         this.keycloak = keycloak;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -87,7 +94,7 @@ public class KeycloakGatewayImpl implements IdentityProviderGateway {
     }
 
     @Override
-    public String login(String username, String password) {
+    public LoginResult login(String username, String password) {
         try (Keycloak userKeycloak = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm(realm)
@@ -96,7 +103,34 @@ public class KeycloakGatewayImpl implements IdentityProviderGateway {
                 .password(password)
                 .grantType("password")
                 .build()) {
-            return userKeycloak.tokenManager().getAccessTokenString();
+
+            org.keycloak.representations.AccessTokenResponse tokenResponse =
+                    userKeycloak.tokenManager().getAccessToken();
+            String accessToken = tokenResponse.getToken();
+
+            // Decode JWT payload (second segment) to extract sub and realm_access.roles
+            String[] parts = accessToken.split("\\.");
+            byte[] payloadBytes = Base64.getUrlDecoder().decode(parts[1]);
+            JsonNode payload = objectMapper.readTree(payloadBytes);
+
+            UUID userId = UUID.fromString(payload.get("sub").asText());
+
+            List<String> roles = new ArrayList<>();
+            JsonNode realmAccess = payload.get("realm_access");
+            if (realmAccess != null && realmAccess.has("roles")) {
+                for (JsonNode role : realmAccess.get("roles")) {
+                    roles.add(role.asText());
+                }
+            }
+
+            return new LoginResult(
+                    userId,
+                    accessToken,
+                    tokenResponse.getExpiresIn(),
+                    tokenResponse.getRefreshExpiresIn(),
+                    tokenResponse.getTokenType(),
+                    roles
+            );
         } catch (Exception e) {
             throw new RuntimeException("Invalid credentials or error during login: " + e.getMessage());
         }

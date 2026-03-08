@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.fiap.authservice.core.domain.LoginResult;
 import br.com.fiap.authservice.core.domain.User;
 import br.com.fiap.authservice.core.usecase.LoginUseCase;
 import br.com.fiap.authservice.core.usecase.LogoutUseCase;
@@ -50,8 +51,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        String token = loginUseCase.execute(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(new AuthResponse(token));
+        LoginResult result = loginUseCase.execute(request.getUsername(), request.getPassword());
+        return ResponseEntity.ok(new AuthResponse(
+                result.getUserId(),
+                result.getAccessToken(),
+                result.getExpiresIn(),
+                result.getRefreshExpiresIn(),
+                result.getTokenType(),
+                result.getRoles()
+        ));
     }
 
     @PostMapping("/logout")

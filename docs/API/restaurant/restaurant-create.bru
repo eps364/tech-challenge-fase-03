@@ -1,0 +1,47 @@
+meta {
+  name: Restaurant - Criar Restaurante
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/restaurant-service/restaurants
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "nome": "Novo Restaurante",
+    "ativo": true,
+    "street": "Av. Paulista",
+    "number": "1000",
+    "district": "Bela Vista",
+    "complement": "Sala 101",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+
+  if (data && data.id) {
+    bru.setEnvVar("restaurant_id", data.id);
+  }
+}
+
+docs {
+  Cria um novo restaurante.
+  Requer autenticação (qualquer usuário autenticado — nenhuma role específica necessária).
+  O criador é automaticamente adicionado como owner do restaurante e recebe a role 'owner' no Keycloak.
+  Retorna HTTP 201 com os dados do restaurante criado, incluindo a lista 'owners'.
+  Após criar o restaurante, faça login novamente para obter um token com a role 'owner' atualizada.
+}

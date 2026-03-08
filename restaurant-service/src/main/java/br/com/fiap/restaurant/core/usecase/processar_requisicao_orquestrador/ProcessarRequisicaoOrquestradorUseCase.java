@@ -1,14 +1,12 @@
 package br.com.fiap.restaurant.core.usecase.processar_requisicao_orquestrador;
 
 
-import br.com.fiap.restaurant.core.domain.Restaurante;
-import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
 import java.util.UUID;
 
-@Service
+import br.com.fiap.restaurant.core.domain.Restaurante;
+import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
+
 public class ProcessarRequisicaoOrquestradorUseCase {
 
     private final RestauranteRepositoryPort repo;

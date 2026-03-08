@@ -1,0 +1,33 @@
+meta {
+  name: Restaurant - Adicionar Owner
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{base_url}}/restaurant-service/restaurants/{{restaurant_id}}/owners
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "userId": "7b499cfa-1ee1-4cdf-b672-7977bd5fb487"
+  }
+}
+
+docs {
+  Adiciona um usuário como owner de um restaurante.
+  Requer role 'admin'.
+  Além de adicionar o userId à lista de owners do restaurante, atribui automaticamente
+  a role 'owner' ao usuário no Keycloak.
+  Retorna 200 com o restaurante atualizado (incluindo a nova lista de owners).
+  Retorna 404 se o restaurante não for encontrado.
+  Retorna 403 Forbidden se o token não tiver role 'admin'.
+}

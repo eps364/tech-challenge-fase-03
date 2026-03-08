@@ -23,7 +23,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/test/public").permitAll()
-                .requestMatchers("/test/private").hasRole("user")
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/restaurants", "/restaurants/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/restaurants", "/restaurants/**").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/restaurants/*/owners").hasRole("admin")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/restaurants/**").hasAnyRole("owner", "admin")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/restaurants/**").hasAnyRole("owner", "admin")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->

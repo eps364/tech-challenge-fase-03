@@ -1,0 +1,48 @@
+meta {
+  name: Order - Criar Pedido
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/order-service/orders
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "restaurantId": "11111111-1111-1111-1111-111111111111",
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 2
+      },
+      {
+        "productId": 2,
+        "quantity": 1
+      }
+    ]
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+
+  if (data && data.id) {
+    bru.setEnvVar("order_id", data.id);
+  }
+}
+
+docs {
+  Cria um novo pedido. O ID do cliente é extraído automaticamente do token JWT (campo sub).
+  O total é calculado automaticamente buscando os preços no catalog-service.
+  Retorna HTTP 201 com idPedido e valorTotal.
+  Requer autenticação.
+}
