@@ -13,6 +13,9 @@ public class AuthResponse {
     @JsonProperty("access_token")
     private String accessToken;
 
+    @JsonProperty("refresh_token")
+    private String refreshToken;
+
     @JsonProperty("expires_in")
     private long expiresIn;
 
@@ -27,10 +30,12 @@ public class AuthResponse {
 
     public AuthResponse() {}
 
-    public AuthResponse(UUID userId, String accessToken, long expiresIn, long refreshExpiresIn,
+    public AuthResponse(UUID userId, String accessToken, String refreshToken,
+                        long expiresIn, long refreshExpiresIn,
                         String tokenType, List<String> roles) {
         this.userId = userId;
         this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;
         this.refreshExpiresIn = refreshExpiresIn;
         this.tokenType = tokenType;
@@ -41,6 +46,8 @@ public class AuthResponse {
     public void setUserId(UUID userId)               { this.userId = userId; }
     public String getAccessToken()                  { return accessToken; }
     public void setAccessToken(String accessToken)  { this.accessToken = accessToken; }
+    public String getRefreshToken()                 { return refreshToken; }
+    public void setRefreshToken(String refreshToken){ this.refreshToken = refreshToken; }
     public long getExpiresIn()                      { return expiresIn; }
     public void setExpiresIn(long expiresIn)        { this.expiresIn = expiresIn; }
     public long getRefreshExpiresIn()               { return refreshExpiresIn; }
@@ -50,3 +57,4 @@ public class AuthResponse {
     public List<String> getRoles()                  { return roles; }
     public void setRoles(List<String> roles)        { this.roles = roles; }
 }
+

@@ -15,9 +15,11 @@ import br.com.fiap.authservice.core.domain.LoginResult;
 import br.com.fiap.authservice.core.domain.User;
 import br.com.fiap.authservice.core.usecase.LoginUseCase;
 import br.com.fiap.authservice.core.usecase.LogoutUseCase;
+import br.com.fiap.authservice.core.usecase.RefreshTokenUseCase;
 import br.com.fiap.authservice.core.usecase.RegisterUserUseCase;
 import br.com.fiap.authservice.infra.controller.dto.AuthResponse;
 import br.com.fiap.authservice.infra.controller.dto.LoginRequest;
+import br.com.fiap.authservice.infra.controller.dto.RefreshTokenRequest;
 import br.com.fiap.authservice.infra.controller.dto.RegisterRequest;
 
 @RestController
@@ -27,13 +29,16 @@ public class AuthController {
     private final RegisterUserUseCase registerUserUseCase;
     private final LoginUseCase loginUseCase;
     private final LogoutUseCase logoutUseCase;
+    private final RefreshTokenUseCase refreshTokenUseCase;
 
     public AuthController(RegisterUserUseCase registerUserUseCase,
                           LoginUseCase loginUseCase,
-                          LogoutUseCase logoutUseCase) {
+                          LogoutUseCase logoutUseCase,
+                          RefreshTokenUseCase refreshTokenUseCase) {
         this.registerUserUseCase = registerUserUseCase;
         this.loginUseCase = loginUseCase;
         this.logoutUseCase = logoutUseCase;
+        this.refreshTokenUseCase = refreshTokenUseCase;
     }
 
     @PostMapping("/register")
@@ -52,14 +57,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         LoginResult result = loginUseCase.execute(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(new AuthResponse(
-                result.getUserId(),
-                result.getAccessToken(),
-                result.getExpiresIn(),
-                result.getRefreshExpiresIn(),
-                result.getTokenType(),
-                result.getRoles()
-        ));
+        return ResponseEntity.ok(toAuthResponse(result));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        LoginResult result = refreshTokenUseCase.execute(request.getRefreshToken());
+        return ResponseEntity.ok(toAuthResponse(result));
     }
 
     @PostMapping("/logout")
@@ -76,5 +80,17 @@ public class AuthController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    private AuthResponse toAuthResponse(LoginResult result) {
+        return new AuthResponse(
+                result.getUserId(),
+                result.getAccessToken(),
+                result.getRefreshToken(),
+                result.getExpiresIn(),
+                result.getRefreshExpiresIn(),
+                result.getTokenType(),
+                result.getRoles()
+        );
     }
 }
