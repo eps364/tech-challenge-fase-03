@@ -23,6 +23,6 @@ public class ListRestaurantsUseCase {
     private RestaurantResponse toResponse(Restaurante r) {
         return new RestaurantResponse(r.getId(), r.getNome(), r.isAtivo(),
                 r.getStreet(), r.getNumber(), r.getDistrict(), r.getComplement(),
-                r.getCity(), r.getState(), r.getZipCode(), r.getOwners());
+                r.getCity(), r.getState(), r.getZipCode(), r.getOwners(), false);
     }
 }

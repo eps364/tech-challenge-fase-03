@@ -1,14 +1,14 @@
 package br.com.fiap.restaurant.core.usecase.createrestaurant;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import br.com.fiap.restaurant.core.domain.Restaurante;
 import br.com.fiap.restaurant.core.dto.RestaurantRequest;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
 import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class CreateRestaurantUseCase {
 
@@ -31,15 +31,17 @@ public class CreateRestaurantUseCase {
                 owners
         );
         Restaurante saved = repo.save(r);
+        boolean ownerRoleAssigned = false;
         if (creatorId != null && !isAdmin) {
             keycloakAdmin.assignOwnerRole(creatorId);
+            ownerRoleAssigned = true;
         }
-        return toResponse(saved);
+        return toResponse(saved, ownerRoleAssigned);
     }
 
-    private RestaurantResponse toResponse(Restaurante r) {
+    private RestaurantResponse toResponse(Restaurante r, boolean refreshTokenRequired) {
         return new RestaurantResponse(r.getId(), r.getNome(), r.isAtivo(),
                 r.getStreet(), r.getNumber(), r.getDistrict(), r.getComplement(),
-                r.getCity(), r.getState(), r.getZipCode(), r.getOwners());
+                r.getCity(), r.getState(), r.getZipCode(), r.getOwners(), refreshTokenRequired);
     }
 }

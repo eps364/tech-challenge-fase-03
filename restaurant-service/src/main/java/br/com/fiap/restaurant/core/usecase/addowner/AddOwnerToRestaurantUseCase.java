@@ -1,12 +1,12 @@
 package br.com.fiap.restaurant.core.usecase.addowner;
 
+import java.util.UUID;
+
 import br.com.fiap.restaurant.core.domain.Restaurante;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
 import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
 import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantNotFoundException;
-
-import java.util.UUID;
 
 public class AddOwnerToRestaurantUseCase {
 
@@ -39,7 +39,8 @@ public class AddOwnerToRestaurantUseCase {
                 saved.getCity(),
                 saved.getState(),
                 saved.getZipCode(),
-                saved.getOwners()
+                saved.getOwners(),
+                true
         );
     }
 }
