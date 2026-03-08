@@ -9,6 +9,9 @@ spring:
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 # Actuator configuration
 management:

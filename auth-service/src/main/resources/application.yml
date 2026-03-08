@@ -36,6 +36,9 @@ keycloak:
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 management:
   endpoints:
