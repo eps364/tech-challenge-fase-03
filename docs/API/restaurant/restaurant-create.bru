@@ -36,12 +36,71 @@ script:post-response {
   if (data && data.id) {
     bru.setEnvVar("restaurant_id", data.id);
   }
+
+  if (data && data.refreshTokenRequired) {
+    const currentRefreshToken = bru.getEnvVar("refresh_token");
+
+    if (!currentRefreshToken) {
+      console.warn("[restaurant-create] refreshTokenRequired=true mas 'refresh_token' não encontrado no ambiente. Faça login novamente.");
+    } else {
+      const baseUrl = bru.getEnvVar("base_url");
+      const refreshUrl = `${baseUrl}/auth-service/auth/refresh`;
+
+      console.log("[restaurant-create] Role 'owner' atribuída — realizando refresh token automático...");
+
+      fetch(refreshUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: currentRefreshToken })
+      })
+        .then(function(res) { return res.json(); })
+        .then(function(refreshData) {
+          if (refreshData && refreshData.access_token) {
+            bru.setEnvVar("jwt_token", refreshData.access_token);
+            console.log("[restaurant-create] jwt_token atualizado com a role 'owner'.");
+          }
+          if (refreshData && refreshData.refresh_token) {
+            bru.setEnvVar("refresh_token", refreshData.refresh_token);
+            console.log("[restaurant-create] refresh_token atualizado.");
+          }
+        })
+        .catch(function(err) {
+          console.error("[restaurant-create] Falha ao realizar refresh token automático:", err.message);
+        });
+    }
+  }
+}
+
+tests {
+  test("deve retornar HTTP 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("deve retornar id do restaurante criado", function() {
+    const data = res.getBody();
+    expect(data).to.have.property("id");
+    expect(data.id).to.be.a("string").and.not.empty;
+  });
+
+  test("deve sinalizar refreshTokenRequired = true para usuário não-admin", function() {
+    const data = res.getBody();
+    expect(data).to.have.property("refreshTokenRequired");
+    expect(data.refreshTokenRequired).to.equal(true);
+  });
 }
 
 docs {
   Cria um novo restaurante.
   Requer autenticação (qualquer usuário autenticado — nenhuma role específica necessária).
   O criador é automaticamente adicionado como owner do restaurante e recebe a role 'owner' no Keycloak.
-  Retorna HTTP 201 com os dados do restaurante criado, incluindo a lista 'owners'.
-  Após criar o restaurante, faça login novamente para obter um token com a role 'owner' atualizada.
+  Retorna HTTP 201 com os dados do restaurante criado, incluindo:
+    - lista 'owners'
+    - campo 'refreshTokenRequired: true' sinalizando que o JWT precisa ser renovado
+
+  Quando refreshTokenRequired=true, o script post-response realiza o refresh token automaticamente:
+    1. Lê o {{refresh_token}} do ambiente (populado pelo login)
+    2. Chama POST /auth-service/auth/refresh
+    3. Atualiza {{jwt_token}} e {{refresh_token}} no ambiente com os novos tokens
+  O próximo request já usará o jwt_token atualizado com a role 'owner' nas claims.
 }
+

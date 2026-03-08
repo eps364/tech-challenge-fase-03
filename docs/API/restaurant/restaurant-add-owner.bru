@@ -27,7 +27,9 @@ docs {
   Requer role 'admin'.
   Além de adicionar o userId à lista de owners do restaurante, atribui automaticamente
   a role 'owner' ao usuário no Keycloak.
-  Retorna 200 com o restaurante atualizado (incluindo a nova lista de owners).
+  Retorna 200 com o restaurante atualizado (incluindo a nova lista de owners) e
+  campo 'refreshTokenRequired: true' — o usuário adicionado deve executar
+  'Auth Service - Refresh Token' para que seu JWT reflita a nova role 'owner'.
   Retorna 404 se o restaurante não for encontrado.
   Retorna 403 Forbidden se o token não tiver role 'admin'.
 }
