@@ -2,36 +2,49 @@ package br.com.fiap.order.core.usecase.createorder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderItem;
 import br.com.fiap.order.core.domain.OrderStatus;
+import br.com.fiap.order.core.dto.OrderItemRequest;
 import br.com.fiap.order.core.dto.OrderItemResponse;
 import br.com.fiap.order.core.dto.OrderRequest;
 import br.com.fiap.order.core.dto.OrderResponse;
 import br.com.fiap.order.core.dto.ProductDTO;
 import br.com.fiap.order.core.gateway.CatalogClientPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
+import br.com.fiap.order.core.gateway.RestaurantClientPort;
 
 public class CreateOrderUseCase {
 
     private final OrderRepositoryPort repo;
     private final CatalogClientPort catalogClient;
+    private final RestaurantClientPort restaurantClient;
 
-    public CreateOrderUseCase(OrderRepositoryPort repo, CatalogClientPort catalogClient) {
+    public CreateOrderUseCase(OrderRepositoryPort repo, CatalogClientPort catalogClient,
+                              RestaurantClientPort restaurantClient) {
         this.repo = repo;
         this.catalogClient = catalogClient;
+        this.restaurantClient = restaurantClient;
     }
 
     public OrderResponse execute(UUID clientId, OrderRequest req) {
-        List<OrderItem> items = req.items().stream()
-                .map(i -> {
-                    ProductDTO product = catalogClient.getProduct(i.productId());
-                    return new OrderItem(i.productId(), product.name(), i.quantity(), product.price());
-                })
-                .toList();
+        List<FieldError> errors = new ArrayList<>();
+
+        try {
+            restaurantClient.validateExists(req.restaurantId());
+        } catch (RestaurantNotFoundException e) {
+            errors.add(new FieldError("restaurantId", e.getMessage()));
+        }
+
+        List<OrderItem> items = resolveItems(req.items(), errors);
+
+        if (!errors.isEmpty()) {
+            throw new OrderValidationException(errors);
+        }
 
         BigDecimal total = items.stream()
                 .map(OrderItem::getSubtotal)
@@ -44,6 +57,20 @@ public class CreateOrderUseCase {
 
         Order saved = repo.save(order);
         return toResponse(saved);
+    }
+
+    private List<OrderItem> resolveItems(List<OrderItemRequest> requests, List<FieldError> errors) {
+        List<OrderItem> result = new ArrayList<>();
+        for (int i = 0; i < requests.size(); i++) {
+            OrderItemRequest req = requests.get(i);
+            try {
+                ProductDTO product = catalogClient.getProduct(req.productId());
+                result.add(new OrderItem(req.productId(), product.name(), req.quantity(), product.price()));
+            } catch (ProductNotFoundException e) {
+                errors.add(new FieldError("items[" + i + "].productId", e.getMessage()));
+            }
+        }
+        return result;
     }
 
     private OrderResponse toResponse(Order o) {

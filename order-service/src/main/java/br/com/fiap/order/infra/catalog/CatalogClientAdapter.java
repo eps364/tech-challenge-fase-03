@@ -1,8 +1,11 @@
 package br.com.fiap.order.infra.catalog;
 
+import org.springframework.stereotype.Component;
+
 import br.com.fiap.order.core.dto.ProductDTO;
 import br.com.fiap.order.core.gateway.CatalogClientPort;
-import org.springframework.stereotype.Component;
+import br.com.fiap.order.core.usecase.createorder.ProductNotFoundException;
+import feign.FeignException;
 
 @Component
 public class CatalogClientAdapter implements CatalogClientPort {
@@ -15,6 +18,10 @@ public class CatalogClientAdapter implements CatalogClientPort {
 
     @Override
     public ProductDTO getProduct(Long id) {
-        return feignClient.getProduct(id);
+        try {
+            return feignClient.getProduct(id);
+        } catch (FeignException.NotFound e) {
+            throw new ProductNotFoundException(id);
+        }
     }
 }
