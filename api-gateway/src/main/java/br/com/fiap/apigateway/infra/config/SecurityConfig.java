@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .pathMatchers(
                     "/auth-service/auth/register",
                     "/auth-service/auth/login",
+                    "/auth-service/auth/refresh",
+                    "/auth-service/auth/logout",
                     "/auth-service/test/public",
                     "/order-service/test/public",
                     "/payment-service/test/public",
