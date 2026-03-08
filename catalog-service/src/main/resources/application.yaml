@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: catalog-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
@@ -15,9 +18,15 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
+    defer-datasource-initialization: true
 # Actuator configuration
 management:
   endpoints:

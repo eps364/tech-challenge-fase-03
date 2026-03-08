@@ -1,0 +1,29 @@
+meta {
+  name: Catalog - Update Product
+  type: http
+  seq: 20
+}
+
+put {
+  url: {{base_url}}/catalog-service/products/1
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "name": "X-Burguer Especial",
+    "price": 29.90
+  }
+}
+
+docs {
+  Requer autenticação com role: owner ou admin.
+  Path param: id (Long)
+}
