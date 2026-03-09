@@ -2,6 +2,7 @@ package br.com.fiap.catalog.infra.product;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -20,21 +21,28 @@ public class ProductRepositoryAdapter implements ProductRepositoryPort {
     @Override
     public List<Product> findAll() {
         return jpa.findAll().stream()
-                .map(e -> new Product(e.getId(), e.getName(), e.getPrice()))
+                .map(e -> new Product(e.getId(), e.getName(), e.getPrice(), e.getRestaurantId(), e.getFoodType()))
+                .toList();
+    }
+
+    @Override
+    public List<Product> findByRestaurantId(UUID restaurantId) {
+        return jpa.findByRestaurantId(restaurantId).stream()
+                .map(e -> new Product(e.getId(), e.getName(), e.getPrice(), e.getRestaurantId(), e.getFoodType()))
                 .toList();
     }
 
     @Override
     public Optional<Product> findById(Long id) {
         return jpa.findById(id)
-                .map(e -> new Product(e.getId(), e.getName(), e.getPrice()));
+                .map(e -> new Product(e.getId(), e.getName(), e.getPrice(), e.getRestaurantId(), e.getFoodType()));
     }
 
     @Override
     public Product save(Product product) {
-        ProductEntity entity = new ProductEntity(product.getId(), product.getName(), product.getPrice());
+        ProductEntity entity = new ProductEntity(product.getId(), product.getName(), product.getPrice(), product.getRestaurantId(), product.getFoodType());
         ProductEntity saved = jpa.save(entity);
-        return new Product(saved.getId(), saved.getName(), saved.getPrice());
+        return new Product(saved.getId(), saved.getName(), saved.getPrice(), saved.getRestaurantId(), saved.getFoodType());
     }
 
     @Override

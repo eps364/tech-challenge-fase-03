@@ -15,9 +15,9 @@ public class UpdateProductUseCase {
     }
 
     public ProductResponse execute(Long id, ProductRequest req) {
-        repo.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
-        Product updated = new Product(id, req.name(), req.price());
+        Product current = repo.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+        Product updated = new Product(id, req.name(), req.price(), current.getRestaurantId(), req.foodType());
         Product saved = repo.save(updated);
-        return new ProductResponse(saved.getId(), saved.getName(), saved.getPrice());
+        return new ProductResponse(saved.getId(), saved.getName(), saved.getPrice(), saved.getRestaurantId(), saved.getFoodType());
     }
 }

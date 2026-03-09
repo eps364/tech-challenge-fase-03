@@ -15,6 +15,6 @@ public class GetProductUseCase {
     public ProductResponse execute(Long id) {
         Product p = repo.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
-        return new ProductResponse(p.getId(), p.getName(), p.getPrice());
+        return new ProductResponse(p.getId(), p.getName(), p.getPrice(), p.getRestaurantId(), p.getFoodType());
     }
 }

@@ -1,6 +1,7 @@
 package br.com.fiap.catalog.infra.product;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,15 +24,32 @@ public class ProductEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "restaurant_id", nullable = false)
+    private UUID restaurantId;
+    
+    @Column(name = "food_type", nullable = false)
+    private String foodType;
+
     protected ProductEntity() {}
 
-    public ProductEntity(Long id, String name, BigDecimal price) {
+    public ProductEntity(Long id, String name, BigDecimal price, UUID restaurantId, String foodType) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.restaurantId = restaurantId;
+        this.foodType = foodType;
     }
 
     public Long getId() { return id; }
     public String getName() { return name; }
     public BigDecimal getPrice() { return price; }
+    public UUID getRestaurantId() { return restaurantId; }
+    
+    public String getFoodType() {
+        return foodType;
+    }
+    
+    public void setFoodType(String foodType) {
+        this.foodType = foodType;
+    }
 }

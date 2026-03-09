@@ -8,6 +8,7 @@ import br.com.fiap.catalog.core.usecase.createproduct.CreateProductUseCase;
 import br.com.fiap.catalog.core.usecase.deleteproduct.DeleteProductUseCase;
 import br.com.fiap.catalog.core.usecase.getproduct.GetProductUseCase;
 import br.com.fiap.catalog.core.usecase.listproducts.ListProductsUseCase;
+import br.com.fiap.catalog.core.usecase.listproductsbyrestaurant.ListProductsByRestaurantUseCase;
 import br.com.fiap.catalog.core.usecase.updateproduct.UpdateProductUseCase;
 
 @Configuration
@@ -16,6 +17,11 @@ public class UseCaseConfig {
     @Bean
     public ListProductsUseCase listProductsUseCase(ProductRepositoryPort repo) {
         return new ListProductsUseCase(repo);
+    }
+
+    @Bean
+    public ListProductsByRestaurantUseCase listProductsByRestaurantUseCase(ProductRepositoryPort repo) {
+        return new ListProductsByRestaurantUseCase(repo);
     }
 
     @Bean
