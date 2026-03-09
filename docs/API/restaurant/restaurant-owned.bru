@@ -1,0 +1,22 @@
+meta {
+  name: Restaurant - Meus Restaurantes (Owner)
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{base_url}}/restaurant-service/restaurants/owned
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Lista apenas os restaurantes em que o usuário autenticado é owner.
+  Requer autenticação via Bearer token.
+  O usuário é identificado pelo claim `sub` do JWT.
+}

@@ -1,14 +1,9 @@
 package br.com.fiap.restaurant.infra.controller;
 
-import br.com.fiap.restaurant.core.dto.AddOwnerRequest;
-import br.com.fiap.restaurant.core.dto.RestaurantRequest;
-import br.com.fiap.restaurant.core.dto.RestaurantResponse;
-import br.com.fiap.restaurant.core.usecase.addowner.AddOwnerToRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.createrestaurant.CreateRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.deleterestaurant.DeleteRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.GetRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.listrestaurants.ListRestaurantsUseCase;
-import br.com.fiap.restaurant.core.usecase.updaterestaurant.UpdateRestaurantUseCase;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,15 +17,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import br.com.fiap.restaurant.core.dto.AddOwnerRequest;
+import br.com.fiap.restaurant.core.dto.RestaurantRequest;
+import br.com.fiap.restaurant.core.dto.RestaurantResponse;
+import br.com.fiap.restaurant.core.usecase.addowner.AddOwnerToRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.createrestaurant.CreateRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.deleterestaurant.DeleteRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.getrestaurant.GetRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.listownedrestaurants.ListOwnedRestaurantsUseCase;
+import br.com.fiap.restaurant.core.usecase.listrestaurants.ListRestaurantsUseCase;
+import br.com.fiap.restaurant.core.usecase.updaterestaurant.UpdateRestaurantUseCase;
 
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
 
     private final ListRestaurantsUseCase listRestaurants;
+    private final ListOwnedRestaurantsUseCase listOwnedRestaurants;
     private final GetRestaurantUseCase getRestaurant;
     private final CreateRestaurantUseCase createRestaurant;
     private final UpdateRestaurantUseCase updateRestaurant;
@@ -39,12 +42,14 @@ public class RestaurantController {
 
     public RestaurantController(
             ListRestaurantsUseCase listRestaurants,
+            ListOwnedRestaurantsUseCase listOwnedRestaurants,
             GetRestaurantUseCase getRestaurant,
             CreateRestaurantUseCase createRestaurant,
             UpdateRestaurantUseCase updateRestaurant,
             DeleteRestaurantUseCase deleteRestaurant,
             AddOwnerToRestaurantUseCase addOwner) {
         this.listRestaurants = listRestaurants;
+        this.listOwnedRestaurants = listOwnedRestaurants;
         this.getRestaurant = getRestaurant;
         this.createRestaurant = createRestaurant;
         this.updateRestaurant = updateRestaurant;
@@ -55,6 +60,11 @@ public class RestaurantController {
     @GetMapping
     public ResponseEntity<List<RestaurantResponse>> list() {
         return ResponseEntity.ok(listRestaurants.execute());
+    }
+
+    @GetMapping("/owned")
+    public ResponseEntity<List<RestaurantResponse>> listOwned(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(listOwnedRestaurants.execute(extractCallerId(jwt)));
     }
 
     @GetMapping("/{id}")
@@ -94,7 +104,6 @@ public class RestaurantController {
         return UUID.fromString(jwt.getSubject());
     }
 
-    @SuppressWarnings("unchecked")
     private boolean isAdmin(Jwt jwt) {
         if (jwt == null) return false;
         Object realmAccess = jwt.getClaim("realm_access");

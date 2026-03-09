@@ -1,17 +1,18 @@
 package br.com.fiap.restaurant.infra.config;
 
-import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
 import br.com.fiap.restaurant.core.usecase.addowner.AddOwnerToRestaurantUseCase;
 import br.com.fiap.restaurant.core.usecase.createrestaurant.CreateRestaurantUseCase;
 import br.com.fiap.restaurant.core.usecase.deleterestaurant.DeleteRestaurantUseCase;
 import br.com.fiap.restaurant.core.usecase.getrestaurant.GetRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.listownedrestaurants.ListOwnedRestaurantsUseCase;
 import br.com.fiap.restaurant.core.usecase.listrestaurants.ListRestaurantsUseCase;
 import br.com.fiap.restaurant.core.usecase.processar_requisicao_orquestrador.ProcessarRequisicaoOrquestradorUseCase;
 import br.com.fiap.restaurant.core.usecase.updaterestaurant.UpdateRestaurantUseCase;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class UseCaseConfig {
@@ -25,6 +26,11 @@ public class UseCaseConfig {
     @Bean
     public ListRestaurantsUseCase listRestaurantsUseCase(RestauranteRepositoryPort repo) {
         return new ListRestaurantsUseCase(repo);
+    }
+
+    @Bean
+    public ListOwnedRestaurantsUseCase listOwnedRestaurantsUseCase(RestauranteRepositoryPort repo) {
+        return new ListOwnedRestaurantsUseCase(repo);
     }
 
     @Bean
