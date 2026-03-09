@@ -5,6 +5,7 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ## api-gateway
 - **Responsabilidade:** entrada única das APIs, roteamento, validação JWT e verificação de blacklist Redis.
 - **Segurança:** valida assinatura JWT via Keycloak JWKS e, antes de encaminhar qualquer requisição autenticada, consulta o Redis para verificar se o `jti` do token foi blacklistado — retornando `401` imediatamente em caso positivo.
+- **Autorização dinâmica de rotas:** as regras de acesso são carregadas do Redis (`gateway:security:rules`). Se não houver configuração persistida, o gateway usa regras padrão de fallback equivalentes ao comportamento original.
 - **Tratamento de erros:** centralizado neste serviço com RFC 7807 (`ProblemDetail`) com `title`, `status`, `detail`, `instance` e `timestamp`. Os microserviços internos não duplicam esse comportamento para os códigos abaixo.
   - `401 Unauthorized` — JWT ausente, inválido, expirado ou blacklistado. Tratado por `SecurityConfig.unauthorizedEntryPoint()`.
   - `503 Service Unavailable` — serviço downstream inacessível (`ConnectException`). Tratado por `GlobalWebExceptionHandler`. Sem stack trace exposto ao cliente.
@@ -17,6 +18,11 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 | GET | `/restaurant-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `restaurant-service`. |
 | GET | `/client-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `client-service`. |
 | GET | `/catalog-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `catalog-service`. |
+| GET | `/gateway/security/routes` | Sim (este serviço) | `admin` | Lista regras dinâmicas de autorização do gateway salvas no Redis. |
+| POST | `/gateway/security/routes` | Sim (este serviço) | `admin` | Cria uma regra de autorização e retorna a regra com `id` inteiro. |
+| PUT | `/gateway/security/routes/{id}` | Sim (este serviço) | `admin` | Atualiza uma regra específica pelo `id`. |
+| DELETE | `/gateway/security/routes/{id}` | Sim (este serviço) | `admin` | Remove uma regra específica pelo `id`. |
+| PUT | `/gateway/security/routes` | Sim (este serviço) | `admin` | Substitui toda a lista de regras dinâmicas de autorização do gateway. |
 | Todos | `/**` (demais rotas) | Sim (este serviço) | JWT obrigatório | Requisições não listadas como públicas exigem autenticação. |
 
 ## service-registry

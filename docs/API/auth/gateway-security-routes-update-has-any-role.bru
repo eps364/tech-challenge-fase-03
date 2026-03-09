@@ -1,0 +1,49 @@
+meta {
+  name: 🔐 🛠️ Gateway Security - Update Rules (HAS_ANY_ROLE)
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{base_url}}/gateway/security/routes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  [
+    {
+      "id": 16,
+      "method": "POST",
+      "pathPattern": "/catalog-service/products/**",
+      "access": "HAS_ANY_ROLE",
+      "roles": ["owner", "admin"]
+    },
+    {
+      "id": 20,
+      "method": "DELETE",
+      "pathPattern": "/catalog-service/products/**",
+      "access": "HAS_ANY_ROLE",
+      "roles": ["admin"]
+    },
+    {
+      "id": 28,
+      "method": null,
+      "pathPattern": "/gateway/security/routes/**",
+      "access": "HAS_ANY_ROLE",
+      "roles": ["admin"]
+    }
+  ]
+}
+
+docs {
+  Exemplo de atualizacao de regras exigindo papeis com access HAS_ANY_ROLE e id numerico.
+  Importante: o PUT substitui a lista inteira de regras no banco (Redis).
+  Ajuste os papeis no campo roles conforme as roles emitidas no JWT (ex.: user, owner, admin).
+}
