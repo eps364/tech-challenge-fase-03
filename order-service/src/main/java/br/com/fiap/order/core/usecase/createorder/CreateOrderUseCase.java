@@ -40,7 +40,7 @@ public class CreateOrderUseCase {
             errors.add(new FieldError("restaurantId", e.getMessage()));
         }
 
-        List<OrderItem> items = resolveItems(req.items(), errors);
+        List<OrderItem> items = resolveItems(req.restaurantId(), req.items(), errors);
 
         if (!errors.isEmpty()) {
             throw new OrderValidationException(errors);
@@ -59,12 +59,21 @@ public class CreateOrderUseCase {
         return toResponse(saved);
     }
 
-    private List<OrderItem> resolveItems(List<OrderItemRequest> requests, List<FieldError> errors) {
+    private List<OrderItem> resolveItems(UUID restaurantId,
+                                         List<OrderItemRequest> requests,
+                                         List<FieldError> errors) {
         List<OrderItem> result = new ArrayList<>();
         for (int i = 0; i < requests.size(); i++) {
             OrderItemRequest req = requests.get(i);
             try {
                 ProductDTO product = catalogClient.getProduct(req.productId());
+                if (!restaurantId.equals(product.restaurantId())) {
+                    errors.add(new FieldError(
+                            "items[" + i + "].productId",
+                            "Product does not belong to the selected restaurant"
+                    ));
+                    continue;
+                }
                 result.add(new OrderItem(req.productId(), product.name(), req.quantity(), product.price()));
             } catch (ProductNotFoundException e) {
                 errors.add(new FieldError("items[" + i + "].productId", e.getMessage()));
