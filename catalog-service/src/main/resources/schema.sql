@@ -17,7 +17,7 @@ SET restaurant_id = 'a1b2c3d4-0001-0001-0001-000000000002'
 WHERE restaurant_id IS NULL;
 
 UPDATE products
-SET food_type = 'MAIN'
+SET food_type = 'Fast Food'
 WHERE food_type IS NULL;
 
 ALTER TABLE products
