@@ -143,6 +143,9 @@ Trabalhar respeitando os módulos existentes:
 - Evitar acoplamento direto quando o fluxo exigir evento assíncrono.
 - Manter contratos de API estáveis (DTOs, payloads, status).
 - Atualizar documentação ao alterar fluxos, endpoints ou variáveis de ambiente.
+- Ao alterar coleções de API em `docs/API` (Bruno), manter o padrão visual no campo `meta.name` das requests:
+	- primeiro ícone do domínio: `🔐` auth, `🛡️` keycloak, `👤` client, `📦` catalog, `🧾` order, `💳` payment, `🍽️` restaurant;
+	- segundo ícone de permissão: `🌐` público, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin.
 - **Nomes de classes, interfaces, métodos, variáveis e campos devem ser escritos em inglês** (ex.: `Product`, `findAll()`, `price`). Comentários e documentação podem ser em português.
 - **Nomes de pacotes devem ser todos em letras minúsculas, sem underscores e sem separadores** (ex.: `listproducts`, `getproduct`, `createproduct`, `updateproduct`, `deleteproduct`). Nunca usar camelCase (`listProducts`) nem underscores (`list_products`).
 - **Todos os DTOs devem ser definidos como `record` Java no pacote `core.dto`** do respectivo serviço (ex.: `br.com.fiap.catalog.core.dto`). Nunca criar classes DTO em pacotes de use case ou infra. Usar `ProductRequest` para entrada e `ProductResponse` para saída como padrão de nomenclatura.

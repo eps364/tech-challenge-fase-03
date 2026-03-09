@@ -28,6 +28,7 @@ Eventos obrigatórios e fluxo:
 ## 5. Padrões de Desenvolvimento e Qualidade
 - **Conventional Commits**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`. Mensagens em inglês.
 - **Documentação**: Manter diagramas de sequência em `docs/diagrams` atualizados.
+- **Coleções Bruno (`docs/API`)**: manter o padrão no `meta.name` das requests com dois ícones: domínio (`🔐`, `🛡️`, `👤`, `📦`, `🧾`, `💳`, `🍽️`) + permissão (`🌐` público, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin).
 - **Testes**: Sempre adicionar ou ajustar testes unitários ao alterar regras de negócio. Priorizar testes de integração para fluxos entre serviços.
 - **Ambiente**: Garantir que o `compose.yml` e o build (`./mvnw clean install`) continuem funcionando após alterações.
 

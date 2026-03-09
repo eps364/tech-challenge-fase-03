@@ -46,6 +46,32 @@ Para desenvolvimento com hot reload em containers, use o guia:
 
 - [docs/development.md](docs/development.md)
 
+## Testes de API (Bruno)
+
+As chamadas de API para validação manual estão em `docs/API`.
+
+Convenção visual dos nomes das requests no Bruno:
+
+| Tipo | Icone | Significado |
+|---|---|---|
+| Dominio | `🔐` | Auth |
+| Dominio | `🛡️` | Keycloak |
+| Dominio | `👤` | Client |
+| Dominio | `📦` | Catalog |
+| Dominio | `🧾` | Order |
+| Dominio | `💳` | Payment |
+| Dominio | `🍽️` | Restaurant |
+| Permissao | `🌐` | Publico (sem login) |
+| Permissao | `🙋` | Usuario autenticado (`user`) |
+| Permissao | `👑` | Owner ou Admin |
+| Permissao | `🛠️` | Somente Admin |
+
+Exemplos de nomenclatura:
+
+- `🧾 🙋 Order - Criar Pedido`
+- `📦 👑 Catalog - Create Product`
+- `🍽️ 🛠️ Restaurant - Adicionar Owner`
+
 ## Endereços dos serviços
 
 | Serviço | URL |

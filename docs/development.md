@@ -114,6 +114,17 @@ docker compose -f compose.yml -f compose.dev.yml down -v
 - Todos os MSs que dependem do `service-registry` usam `condition: service_healthy`, garantindo ordem de inicialização correta.
 - O `orchestrator-service` foi adicionado ao compose (incluindo `Dockerfile` próprio em `orchestrator-service/Dockerfile`).
 
+## Coleções Bruno
+
+As coleções de teste manual estão em `docs/API` e seguem padronização visual no nome das requests.
+
+Padrao aplicado:
+
+- Primeiro icone: dominio da chamada (`🔐`, `🛡️`, `👤`, `📦`, `🧾`, `💳`, `🍽️`).
+- Segundo icone: nivel de acesso (`🌐` publico, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin).
+
+Essa convenção facilita identificar rapidamente o contexto e a permissão antes de executar uma chamada.
+
 ## Flags Maven em uso no modo dev
 
 | Flag | Descrição |
