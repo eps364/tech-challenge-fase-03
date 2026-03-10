@@ -5,8 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import br.com.fiap.order.core.gateway.RestaurantClientPort;
-import br.com.fiap.order.core.usecase.createorder.RestaurantNotFoundException;
-import feign.FeignException;
+import br.com.fiap.order.core.usecase.RestaurantNotFoundException;import feign.FeignException;
 
 @Component
 public class RestaurantClientAdapter implements RestaurantClientPort {

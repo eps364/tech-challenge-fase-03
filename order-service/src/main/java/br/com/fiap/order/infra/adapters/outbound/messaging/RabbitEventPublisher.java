@@ -46,13 +46,13 @@ public class RabbitEventPublisher implements EventPublisherPort {
 
         Map<String, Object> message = new HashMap<>();
         message.put("correlationId", order.getId().toString());
-        message.put("tipo", "PEDIDO_CRIADO");
+        message.put("type", "ORDER_CREATED");
         message.put("timestamp", Instant.now().toString());
         message.put("payload", payload);
 
         rabbitTemplate.convertAndSend(
                 properties.getExchange(),
-                properties.getQueues().getOut().getPedidosOrquestrador(),
+            properties.getQueues().getOut().getOrdersOrchestrator(),
                 message
         );
     }

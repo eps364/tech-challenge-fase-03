@@ -15,28 +15,28 @@
   ],
   "queues": [
     {
-      "name": "Orquestrador-Clientes.queue",
+      "name": "Orchestrator-Clients.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-dead-letter-exchange": "ex.retry",
-        "x-dead-letter-routing-key": "Orquestrador-Clientes.queue.retry.30s"
+        "x-dead-letter-routing-key": "Orchestrator-Clients.queue.retry.30s"
       }
     },
     {
-      "name": "Orquestrador-Clientes.queue.retry.30s",
+      "name": "Orchestrator-Clients.queue.retry.30s",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-message-ttl": 30000,
         "x-dead-letter-exchange": "ex.main",
-        "x-dead-letter-routing-key": "Orquestrador-Clientes.queue"
+        "x-dead-letter-routing-key": "Orchestrator-Clients.queue"
       }
     },
     {
-      "name": "Orquestrador-Clientes.queue.error",
+      "name": "Orchestrator-Clients.queue.error",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -44,28 +44,28 @@
     },
 
     {
-      "name": "Clientes-Orquestrador.queue",
+      "name": "Clients-Orchestrator.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-dead-letter-exchange": "ex.retry",
-        "x-dead-letter-routing-key": "Clientes-Orquestrador.queue.retry.30s"
+        "x-dead-letter-routing-key": "Clients-Orchestrator.queue.retry.30s"
       }
     },
     {
-      "name": "Clientes-Orquestrador.queue.retry.30s",
+      "name": "Clients-Orchestrator.queue.retry.30s",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-message-ttl": 30000,
         "x-dead-letter-exchange": "ex.main",
-        "x-dead-letter-routing-key": "Clientes-Orquestrador.queue"
+        "x-dead-letter-routing-key": "Clients-Orchestrator.queue"
       }
     },
     {
-      "name": "Clientes-Orquestrador.queue.error",
+      "name": "Clients-Orchestrator.queue.error",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -73,28 +73,28 @@
     },
 
     {
-      "name": "Orquestrador-Restaurantes.queue",
+      "name": "Orchestrator-Restaurants.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-dead-letter-exchange": "ex.retry",
-        "x-dead-letter-routing-key": "Orquestrador-Restaurantes.queue.retry.30s"
+        "x-dead-letter-routing-key": "Orchestrator-Restaurants.queue.retry.30s"
       }
     },
     {
-      "name": "Orquestrador-Restaurantes.queue.retry.30s",
+      "name": "Orchestrator-Restaurants.queue.retry.30s",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-message-ttl": 30000,
         "x-dead-letter-exchange": "ex.main",
-        "x-dead-letter-routing-key": "Orquestrador-Restaurantes.queue"
+        "x-dead-letter-routing-key": "Orchestrator-Restaurants.queue"
       }
     },
     {
-      "name": "Orquestrador-Restaurantes.queue.error",
+      "name": "Orchestrator-Restaurants.queue.error",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -102,28 +102,28 @@
     },
 
     {
-      "name": "Restaurantes-Orquestrador.queue",
+      "name": "Restaurants-Orchestrator.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-dead-letter-exchange": "ex.retry",
-        "x-dead-letter-routing-key": "Restaurantes-Orquestrador.queue.retry.30s"
+        "x-dead-letter-routing-key": "Restaurants-Orchestrator.queue.retry.30s"
       }
     },
     {
-      "name": "Restaurantes-Orquestrador.queue.retry.30s",
+      "name": "Restaurants-Orchestrator.queue.retry.30s",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-message-ttl": 30000,
         "x-dead-letter-exchange": "ex.main",
-        "x-dead-letter-routing-key": "Restaurantes-Orquestrador.queue"
+        "x-dead-letter-routing-key": "Restaurants-Orchestrator.queue"
       }
     },
     {
-      "name": "Restaurantes-Orquestrador.queue.error",
+      "name": "Restaurants-Orchestrator.queue.error",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -131,28 +131,28 @@
     },
 
     {
-      "name": "Orquestrador-Pedidos.queue",
+      "name": "Orchestrator-Orders.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-dead-letter-exchange": "ex.retry",
-        "x-dead-letter-routing-key": "Orquestrador-Pedidos.queue.retry.30s"
+        "x-dead-letter-routing-key": "Orchestrator-Orders.queue.retry.30s"
       }
     },
     {
-      "name": "Orquestrador-Pedidos.queue.retry.30s",
+      "name": "Orchestrator-Orders.queue.retry.30s",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-message-ttl": 30000,
         "x-dead-letter-exchange": "ex.main",
-        "x-dead-letter-routing-key": "Orquestrador-Pedidos.queue"
+        "x-dead-letter-routing-key": "Orchestrator-Orders.queue"
       }
     },
     {
-      "name": "Orquestrador-Pedidos.queue.error",
+      "name": "Orchestrator-Orders.queue.error",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -160,28 +160,115 @@
     },
 
     {
-      "name": "Pedidos-Orquestrador.queue",
+      "name": "Orders-Orchestrator.queue",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-dead-letter-exchange": "ex.retry",
-        "x-dead-letter-routing-key": "Pedidos-Orquestrador.queue.retry.30s"
+        "x-dead-letter-routing-key": "Orders-Orchestrator.queue.retry.30s"
       }
     },
     {
-      "name": "Pedidos-Orquestrador.queue.retry.30s",
+      "name": "Orders-Orchestrator.queue.retry.30s",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
         "x-message-ttl": 30000,
         "x-dead-letter-exchange": "ex.main",
-        "x-dead-letter-routing-key": "Pedidos-Orquestrador.queue"
+        "x-dead-letter-routing-key": "Orders-Orchestrator.queue"
       }
     },
     {
-      "name": "Pedidos-Orquestrador.queue.error",
+      "name": "Orders-Orchestrator.queue.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+
+    {
+      "name": "Orchestrator-Payments.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "ex.retry",
+        "x-dead-letter-routing-key": "Orchestrator-Payments.queue.retry.30s"
+      }
+    },
+    {
+      "name": "Orchestrator-Payments.queue.retry.30s",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 30000,
+        "x-dead-letter-exchange": "ex.main",
+        "x-dead-letter-routing-key": "Orchestrator-Payments.queue"
+      }
+    },
+    {
+      "name": "Orchestrator-Payments.queue.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+
+    {
+      "name": "Payments-Orchestrator.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "ex.retry",
+        "x-dead-letter-routing-key": "Payments-Orchestrator.queue.retry.30s"
+      }
+    },
+    {
+      "name": "Payments-Orchestrator.queue.retry.30s",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 30000,
+        "x-dead-letter-exchange": "ex.main",
+        "x-dead-letter-routing-key": "Payments-Orchestrator.queue"
+      }
+    },
+    {
+      "name": "Payments-Orchestrator.queue.error",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+
+    {
+      "name": "Orchestrator-Payments-Worker.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "ex.retry",
+        "x-dead-letter-routing-key": "Orchestrator-Payments-Worker.queue.retry.30s"
+      }
+    },
+    {
+      "name": "Orchestrator-Payments-Worker.queue.retry.30s",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 30000,
+        "x-dead-letter-exchange": "ex.main",
+        "x-dead-letter-routing-key": "Orchestrator-Payments-Worker.queue"
+      }
+    },
+    {
+      "name": "Orchestrator-Payments-Worker.queue.error",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
@@ -189,28 +276,40 @@
     }
   ],
   "bindings": [
-    { "source": "ex.main",  "vhost": "/", "destination": "Orquestrador-Clientes.queue",          "destination_type": "queue", "routing_key": "Orquestrador-Clientes.queue",          "arguments": {} },
-    { "source": "ex.retry", "vhost": "/", "destination": "Orquestrador-Clientes.queue.retry.30s","destination_type": "queue", "routing_key": "Orquestrador-Clientes.queue.retry.30s","arguments": {} },
-    { "source": "ex.error", "vhost": "/", "destination": "Orquestrador-Clientes.queue.error",    "destination_type": "queue", "routing_key": "Orquestrador-Clientes.queue.error",    "arguments": {} },
+    { "source": "ex.main",  "vhost": "/", "destination": "Orchestrator-Clients.queue",          "destination_type": "queue", "routing_key": "Orchestrator-Clients.queue",          "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Orchestrator-Clients.queue.retry.30s","destination_type": "queue", "routing_key": "Orchestrator-Clients.queue.retry.30s","arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Orchestrator-Clients.queue.error",    "destination_type": "queue", "routing_key": "Orchestrator-Clients.queue.error",    "arguments": {} },
 
-    { "source": "ex.main",  "vhost": "/", "destination": "Clientes-Orquestrador.queue",          "destination_type": "queue", "routing_key": "Clientes-Orquestrador.queue",          "arguments": {} },
-    { "source": "ex.retry", "vhost": "/", "destination": "Clientes-Orquestrador.queue.retry.30s","destination_type": "queue", "routing_key": "Clientes-Orquestrador.queue.retry.30s","arguments": {} },
-    { "source": "ex.error", "vhost": "/", "destination": "Clientes-Orquestrador.queue.error",    "destination_type": "queue", "routing_key": "Clientes-Orquestrador.queue.error",    "arguments": {} },
+    { "source": "ex.main",  "vhost": "/", "destination": "Clients-Orchestrator.queue",          "destination_type": "queue", "routing_key": "Clients-Orchestrator.queue",          "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Clients-Orchestrator.queue.retry.30s","destination_type": "queue", "routing_key": "Clients-Orchestrator.queue.retry.30s","arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Clients-Orchestrator.queue.error",    "destination_type": "queue", "routing_key": "Clients-Orchestrator.queue.error",    "arguments": {} },
 
-    { "source": "ex.main",  "vhost": "/", "destination": "Orquestrador-Restaurantes.queue",           "destination_type": "queue", "routing_key": "Orquestrador-Restaurantes.queue",           "arguments": {} },
-    { "source": "ex.retry", "vhost": "/", "destination": "Orquestrador-Restaurantes.queue.retry.30s", "destination_type": "queue", "routing_key": "Orquestrador-Restaurantes.queue.retry.30s", "arguments": {} },
-    { "source": "ex.error", "vhost": "/", "destination": "Orquestrador-Restaurantes.queue.error",     "destination_type": "queue", "routing_key": "Orquestrador-Restaurantes.queue.error",     "arguments": {} },
+    { "source": "ex.main",  "vhost": "/", "destination": "Orchestrator-Restaurants.queue",           "destination_type": "queue", "routing_key": "Orchestrator-Restaurants.queue",           "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Orchestrator-Restaurants.queue.retry.30s", "destination_type": "queue", "routing_key": "Orchestrator-Restaurants.queue.retry.30s", "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Orchestrator-Restaurants.queue.error",     "destination_type": "queue", "routing_key": "Orchestrator-Restaurants.queue.error",     "arguments": {} },
 
-    { "source": "ex.main",  "vhost": "/", "destination": "Restaurantes-Orquestrador.queue",           "destination_type": "queue", "routing_key": "Restaurantes-Orquestrador.queue",           "arguments": {} },
-    { "source": "ex.retry", "vhost": "/", "destination": "Restaurantes-Orquestrador.queue.retry.30s", "destination_type": "queue", "routing_key": "Restaurantes-Orquestrador.queue.retry.30s", "arguments": {} },
-    { "source": "ex.error", "vhost": "/", "destination": "Restaurantes-Orquestrador.queue.error",     "destination_type": "queue", "routing_key": "Restaurantes-Orquestrador.queue.error",     "arguments": {} },
+    { "source": "ex.main",  "vhost": "/", "destination": "Restaurants-Orchestrator.queue",           "destination_type": "queue", "routing_key": "Restaurants-Orchestrator.queue",           "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Restaurants-Orchestrator.queue.retry.30s", "destination_type": "queue", "routing_key": "Restaurants-Orchestrator.queue.retry.30s", "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Restaurants-Orchestrator.queue.error",     "destination_type": "queue", "routing_key": "Restaurants-Orchestrator.queue.error",     "arguments": {} },
 
-    { "source": "ex.main",  "vhost": "/", "destination": "Orquestrador-Pedidos.queue",           "destination_type": "queue", "routing_key": "Orquestrador-Pedidos.queue",           "arguments": {} },
-    { "source": "ex.retry", "vhost": "/", "destination": "Orquestrador-Pedidos.queue.retry.30s", "destination_type": "queue", "routing_key": "Orquestrador-Pedidos.queue.retry.30s", "arguments": {} },
-    { "source": "ex.error", "vhost": "/", "destination": "Orquestrador-Pedidos.queue.error",     "destination_type": "queue", "routing_key": "Orquestrador-Pedidos.queue.error",     "arguments": {} },
+    { "source": "ex.main",  "vhost": "/", "destination": "Orchestrator-Orders.queue",           "destination_type": "queue", "routing_key": "Orchestrator-Orders.queue",           "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Orchestrator-Orders.queue.retry.30s", "destination_type": "queue", "routing_key": "Orchestrator-Orders.queue.retry.30s", "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Orchestrator-Orders.queue.error",     "destination_type": "queue", "routing_key": "Orchestrator-Orders.queue.error",     "arguments": {} },
 
-    { "source": "ex.main",  "vhost": "/", "destination": "Pedidos-Orquestrador.queue",           "destination_type": "queue", "routing_key": "Pedidos-Orquestrador.queue",           "arguments": {} },
-    { "source": "ex.retry", "vhost": "/", "destination": "Pedidos-Orquestrador.queue.retry.30s", "destination_type": "queue", "routing_key": "Pedidos-Orquestrador.queue.retry.30s", "arguments": {} },
-    { "source": "ex.error", "vhost": "/", "destination": "Pedidos-Orquestrador.queue.error",     "destination_type": "queue", "routing_key": "Pedidos-Orquestrador.queue.error",     "arguments": {} }
+    { "source": "ex.main",  "vhost": "/", "destination": "Orders-Orchestrator.queue",                    "destination_type": "queue", "routing_key": "Orders-Orchestrator.queue",                    "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Orders-Orchestrator.queue.retry.30s",          "destination_type": "queue", "routing_key": "Orders-Orchestrator.queue.retry.30s",          "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Orders-Orchestrator.queue.error",              "destination_type": "queue", "routing_key": "Orders-Orchestrator.queue.error",              "arguments": {} },
+
+    { "source": "ex.main",  "vhost": "/", "destination": "Orchestrator-Payments.queue",                 "destination_type": "queue", "routing_key": "Orchestrator-Payments.queue",                 "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Orchestrator-Payments.queue.retry.30s",       "destination_type": "queue", "routing_key": "Orchestrator-Payments.queue.retry.30s",       "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Orchestrator-Payments.queue.error",           "destination_type": "queue", "routing_key": "Orchestrator-Payments.queue.error",           "arguments": {} },
+
+    { "source": "ex.main",  "vhost": "/", "destination": "Payments-Orchestrator.queue",                 "destination_type": "queue", "routing_key": "Payments-Orchestrator.queue",                 "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Payments-Orchestrator.queue.retry.30s",       "destination_type": "queue", "routing_key": "Payments-Orchestrator.queue.retry.30s",       "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Payments-Orchestrator.queue.error",           "destination_type": "queue", "routing_key": "Payments-Orchestrator.queue.error",           "arguments": {} },
+
+    { "source": "ex.main",  "vhost": "/", "destination": "Orchestrator-Payments-Worker.queue",          "destination_type": "queue", "routing_key": "Orchestrator-Payments-Worker.queue",          "arguments": {} },
+    { "source": "ex.retry", "vhost": "/", "destination": "Orchestrator-Payments-Worker.queue.retry.30s", "destination_type": "queue", "routing_key": "Orchestrator-Payments-Worker.queue.retry.30s", "arguments": {} },
+    { "source": "ex.error", "vhost": "/", "destination": "Orchestrator-Payments-Worker.queue.error",     "destination_type": "queue", "routing_key": "Orchestrator-Payments-Worker.queue.error",     "arguments": {} }
   ]
 }

@@ -4,8 +4,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.fiap.order.core.dto.ProductDTO;
 import br.com.fiap.order.core.gateway.CatalogClientPort;
-import br.com.fiap.order.core.usecase.createorder.ProductNotFoundException;
-import feign.FeignException;
+import br.com.fiap.order.core.usecase.ProductNotFoundException;import feign.FeignException;
 
 @Component
 public class CatalogClientAdapter implements CatalogClientPort {

@@ -17,17 +17,30 @@ public class RabbitQueuesProperties {
     public void setQueues(Queues queues) { this.queues = queues; }
 
     public static class Queues {
+        private In in = new In();
         private Out out = new Out();
+
+        public In getIn() { return in; }
+        public void setIn(In in) { this.in = in; }
 
         public Out getOut() { return out; }
         public void setOut(Out out) { this.out = out; }
 
-        public static class Out {
-            private String pedidosOrquestrador;
+        public static class In {
+            private String orchestratorOrders;
 
-            public String getPedidosOrquestrador() { return pedidosOrquestrador; }
-            public void setPedidosOrquestrador(String pedidosOrquestrador) {
-                this.pedidosOrquestrador = pedidosOrquestrador;
+            public String getOrchestratorOrders() { return orchestratorOrders; }
+            public void setOrchestratorOrders(String orchestratorOrders) {
+                this.orchestratorOrders = orchestratorOrders;
+            }
+        }
+
+        public static class Out {
+            private String ordersOrchestrator;
+
+            public String getOrdersOrchestrator() { return ordersOrchestrator; }
+            public void setOrdersOrchestrator(String ordersOrchestrator) {
+                this.ordersOrchestrator = ordersOrchestrator;
             }
         }
     }

@@ -41,8 +41,10 @@ app:
   rabbit:
     exchange: ex.main
     queues:
+      in:
+        orchestratorOrders: Orchestrator-Orders.queue
       out:
-        pedidosOrquestrador: Pedidos-Orquestrador.queue
+        ordersOrchestrator: Orders-Orchestrator.queue
 
 server:
   port: 0

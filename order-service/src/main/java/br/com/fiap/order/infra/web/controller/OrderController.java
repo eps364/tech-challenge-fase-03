@@ -2,11 +2,7 @@ package br.com.fiap.order.infra.web.controller;
 
 import br.com.fiap.order.core.dto.OrderRequest;
 import br.com.fiap.order.core.dto.OrderResponse;
-import br.com.fiap.order.core.usecase.confirmorder.ConfirmOrderUseCase;
-import br.com.fiap.order.core.usecase.createorder.CreateOrderUseCase;
-import br.com.fiap.order.core.usecase.getorder.GetOrderUseCase;
-import br.com.fiap.order.core.usecase.listorders.ListOrdersUseCase;
-import jakarta.validation.Valid;
+import br.com.fiap.order.core.usecase.ConfirmOrderUseCase;import br.com.fiap.order.core.usecase.CreateOrderUseCase;import br.com.fiap.order.core.usecase.GetOrderUseCase;import br.com.fiap.order.core.usecase.ListOrdersUseCase;import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

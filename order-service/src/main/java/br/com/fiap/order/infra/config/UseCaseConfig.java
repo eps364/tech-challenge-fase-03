@@ -7,11 +7,7 @@ import br.com.fiap.order.core.gateway.CatalogClientPort;
 import br.com.fiap.order.core.gateway.EventPublisherPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
 import br.com.fiap.order.core.gateway.RestaurantClientPort;
-import br.com.fiap.order.core.usecase.confirmorder.ConfirmOrderUseCase;
-import br.com.fiap.order.core.usecase.createorder.CreateOrderUseCase;
-import br.com.fiap.order.core.usecase.getorder.GetOrderUseCase;
-import br.com.fiap.order.core.usecase.listorders.ListOrdersUseCase;
-
+import br.com.fiap.order.core.usecase.ConfirmOrderUseCase;import br.com.fiap.order.core.usecase.CreateOrderUseCase;import br.com.fiap.order.core.usecase.GetOrderUseCase;import br.com.fiap.order.core.usecase.ListOrdersUseCase;import br.com.fiap.order.core.usecase.UpdateOrderPaymentStatusUseCase;
 @Configuration
 public class UseCaseConfig {
 
@@ -36,5 +32,10 @@ public class UseCaseConfig {
     public ConfirmOrderUseCase confirmOrderUseCase(OrderRepositoryPort repo,
                                                     EventPublisherPort events) {
         return new ConfirmOrderUseCase(repo, events);
+    }
+
+    @Bean
+    public UpdateOrderPaymentStatusUseCase updateOrderPaymentStatusUseCase(OrderRepositoryPort repo) {
+        return new UpdateOrderPaymentStatusUseCase(repo);
     }
 }

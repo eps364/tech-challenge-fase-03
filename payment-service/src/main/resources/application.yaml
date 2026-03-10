@@ -4,11 +4,67 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  datasource:
+    url: jdbc:postgresql://payment-service-db:5432/payment-service-db
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/tech-challenge
+
+feign:
+  client:
+    config:
+      procpagClient:
+        connectTimeout: 2000
+        readTimeout: 3000
+
+app:
+  procpag:
+    base-url: http://procpag:8089
+  payment:
+    max-attempts: 3
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orchestratorPayments: Orchestrator-Payments.queue
+        orchestratorPaymentsWorker: Orchestrator-Payments-Worker.queue
+      out:
+        paymentsOrchestrator: Payments-Orchestrator.queue
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      procpag:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 10s
+        failure-rate-threshold: 50
+  retry:
+    instances:
+      procpag:
+        max-attempts: 3
+        wait-duration: 500ms
 
 server:
   port: 0

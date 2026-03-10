@@ -7,9 +7,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.fiap.order.core.usecase.createorder.OrderValidationException;
-import br.com.fiap.order.core.usecase.getorder.OrderNotFoundException;
-
+import br.com.fiap.order.core.usecase.OrderValidationException;import br.com.fiap.order.core.usecase.OrderNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
