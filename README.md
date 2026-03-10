@@ -171,3 +171,10 @@ cd auth-service
 
 - O projeto Compose está nomeado como `tech-challenge-fase-03`.
 - Os nomes de containers seguem o padrão `tech-challenge-fase-03-{service}-{instancia}`.
+
+
+# Mensageria
+
+- AkHQ: http://localhost:8085
+
+- RABBIT MQ: http://localhost:15672
