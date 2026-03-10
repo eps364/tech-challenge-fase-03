@@ -5,22 +5,14 @@ import org.springframework.context.annotation.Configuration;
 
 import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
-import br.com.fiap.restaurant.core.usecase.addowner.AddOwnerToRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.createrestaurant.CreateRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.deleterestaurant.DeleteRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.GetRestaurantUseCase;
-import br.com.fiap.restaurant.core.usecase.listownedrestaurants.ListOwnedRestaurantsUseCase;
-import br.com.fiap.restaurant.core.usecase.listrestaurants.ListRestaurantsUseCase;
-import br.com.fiap.restaurant.core.usecase.processar_requisicao_orquestrador.ProcessarRequisicaoOrquestradorUseCase;
-import br.com.fiap.restaurant.core.usecase.updaterestaurant.UpdateRestaurantUseCase;
-
+import br.com.fiap.restaurant.core.usecase.AddOwnerToRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.CreateRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.DeleteRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.GetRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.ListOwnedRestaurantsUseCase;import br.com.fiap.restaurant.core.usecase.ListRestaurantsUseCase;import br.com.fiap.restaurant.core.usecase.ProcessOrchestratorRequestUseCase;import br.com.fiap.restaurant.core.usecase.UpdateRestaurantUseCase;
 @Configuration
 public class UseCaseConfig {
 
     @Bean
-    public ProcessarRequisicaoOrquestradorUseCase processarRequisicaoOrquestradorUseCase(
+    public ProcessOrchestratorRequestUseCase processOrchestratorRequestUseCase(
             RestauranteRepositoryPort repo) {
-        return new ProcessarRequisicaoOrquestradorUseCase(repo);
+        return new ProcessOrchestratorRequestUseCase(repo);
     }
 
     @Bean

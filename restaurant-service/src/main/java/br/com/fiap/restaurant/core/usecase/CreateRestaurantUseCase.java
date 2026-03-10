@@ -1,5 +1,4 @@
-package br.com.fiap.restaurant.core.usecase.createrestaurant;
-
+package br.com.fiap.restaurant.core.usecase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

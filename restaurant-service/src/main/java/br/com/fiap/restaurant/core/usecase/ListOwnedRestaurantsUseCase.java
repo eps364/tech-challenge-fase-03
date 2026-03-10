@@ -1,21 +1,22 @@
-package br.com.fiap.restaurant.core.usecase.listrestaurants;
-
+package br.com.fiap.restaurant.core.usecase;
 import java.util.List;
+import java.util.UUID;
 
 import br.com.fiap.restaurant.core.domain.Restaurante;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
 
-public class ListRestaurantsUseCase {
+public class ListOwnedRestaurantsUseCase {
 
     private final RestauranteRepositoryPort repo;
 
-    public ListRestaurantsUseCase(RestauranteRepositoryPort repo) {
+    public ListOwnedRestaurantsUseCase(RestauranteRepositoryPort repo) {
         this.repo = repo;
     }
 
-    public List<RestaurantResponse> execute() {
+    public List<RestaurantResponse> execute(UUID ownerId) {
         return repo.findAll().stream()
+                .filter(r -> r.getOwners().contains(ownerId))
                 .map(this::toResponse)
                 .toList();
     }

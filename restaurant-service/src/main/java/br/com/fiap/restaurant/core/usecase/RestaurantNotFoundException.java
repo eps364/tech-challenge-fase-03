@@ -1,5 +1,4 @@
-package br.com.fiap.restaurant.core.usecase.getrestaurant;
-
+package br.com.fiap.restaurant.core.usecase;
 import java.util.UUID;
 
 public class RestaurantNotFoundException extends RuntimeException {

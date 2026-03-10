@@ -7,9 +7,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantAccessDeniedException;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantNotFoundException;
-
+import br.com.fiap.restaurant.core.usecase.RestaurantAccessDeniedException;import br.com.fiap.restaurant.core.usecase.RestaurantNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

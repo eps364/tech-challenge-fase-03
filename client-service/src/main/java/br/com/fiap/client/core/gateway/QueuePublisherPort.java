@@ -1,8 +1,8 @@
 package br.com.fiap.client.core.gateway;
 
 
-import br.com.fiap.client.core.dto.MensagemFila;
+import br.com.fiap.client.core.dto.QueueMessage;
 
 public interface QueuePublisherPort {
-    void publish(String routingKey, MensagemFila mensagem);
+    void publish(String routingKey, QueueMessage message);
 }

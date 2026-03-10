@@ -3,7 +3,7 @@ package br.com.fiap.restaurant.infra.adapters.outbound.messaging;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import br.com.fiap.restaurant.core.dto.MensagemFila;
+import br.com.fiap.restaurant.core.dto.QueueMessage;
 import br.com.fiap.restaurant.core.gateway.QueuePublisherPort;
 
 @Component
@@ -16,7 +16,7 @@ public class RabbitQueuePublisher implements QueuePublisherPort {
     }
 
     @Override
-    public void publish(String routingKey, MensagemFila mensagem) {
-        rabbitTemplate.convertAndSend(routingKey, mensagem);
+    public void publish(String routingKey, QueueMessage message) {
+        rabbitTemplate.convertAndSend(routingKey, message);
     }
 }

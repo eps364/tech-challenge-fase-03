@@ -38,9 +38,9 @@ app:
     exchange: ex.main
     queues:
       in:
-        orquestradorRestaurantes: Orquestrador-Restaurantes.queue
+        orchestratorRestaurants: Orchestrator-Restaurants.queue
       out:
-        restaurantesOrquestrador: Restaurantes-Orquestrador.queue
+        restaurantsOrchestrator: Restaurants-Orchestrator.queue
 
 keycloak:
   admin:

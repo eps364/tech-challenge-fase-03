@@ -8,7 +8,7 @@ public record RabbitQueuesProperties(
         Queues queues
 ) {
     public record Queues(In in, Out out) {
-        public record In(String orquestradorClientes) {}
-        public record Out(String clientesOrquestrador) {}
+        public record In(String orchestratorClients) {}
+        public record Out(String clientsOrchestrator) {}
     }
 }

@@ -39,26 +39,26 @@ public class RabbitQueuesProperties {
     }
 
     public static class In {
-        private String orquestradorRestaurantes;
+        private String orchestratorRestaurants;
 
-        public String orquestradorRestaurantes() {
-            return orquestradorRestaurantes;
+        public String orchestratorRestaurants() {
+            return orchestratorRestaurants;
         }
 
-        public void setOrquestradorRestaurantes(String orquestradorRestaurantes) {
-            this.orquestradorRestaurantes = orquestradorRestaurantes;
+        public void setOrchestratorRestaurants(String orchestratorRestaurants) {
+            this.orchestratorRestaurants = orchestratorRestaurants;
         }
     }
 
     public static class Out {
-        private String restaurantesOrquestrador;
+        private String restaurantsOrchestrator;
 
-        public String restaurantesOrquestrador() {
-            return restaurantesOrquestrador;
+        public String restaurantsOrchestrator() {
+            return restaurantsOrchestrator;
         }
 
-        public void setRestaurantesOrquestrador(String restaurantesOrquestrador) {
-            this.restaurantesOrquestrador = restaurantesOrquestrador;
+        public void setRestaurantsOrchestrator(String restaurantsOrchestrator) {
+            this.restaurantsOrchestrator = restaurantsOrchestrator;
         }
     }
 }

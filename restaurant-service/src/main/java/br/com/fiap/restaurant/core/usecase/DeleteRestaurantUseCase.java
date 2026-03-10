@@ -1,10 +1,7 @@
-package br.com.fiap.restaurant.core.usecase.deleterestaurant;
-
+package br.com.fiap.restaurant.core.usecase;
 import br.com.fiap.restaurant.core.domain.Restaurante;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantAccessDeniedException;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantNotFoundException;
-
+import br.com.fiap.restaurant.core.usecase.RestaurantAccessDeniedException;import br.com.fiap.restaurant.core.usecase.RestaurantNotFoundException;
 import java.util.UUID;
 
 public class DeleteRestaurantUseCase {

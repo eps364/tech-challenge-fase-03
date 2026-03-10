@@ -30,9 +30,9 @@ app:
     exchange: ex.main
     queues:
       in:
-        orquestradorClientes: Orquestrador-Clientes.queue
+        orchestratorClients: Orchestrator-Clients.queue
       out:
-        clientesOrquestrador: Clientes-Orquestrador.queue
+        clientsOrchestrator: Clients-Orchestrator.queue
 
 server:
   port: 0

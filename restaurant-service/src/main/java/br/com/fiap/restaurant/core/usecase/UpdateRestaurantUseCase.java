@@ -1,14 +1,11 @@
-package br.com.fiap.restaurant.core.usecase.updaterestaurant;
-
+package br.com.fiap.restaurant.core.usecase;
 import java.util.UUID;
 
 import br.com.fiap.restaurant.core.domain.Restaurante;
 import br.com.fiap.restaurant.core.dto.RestaurantRequest;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
 import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantAccessDeniedException;
-import br.com.fiap.restaurant.core.usecase.getrestaurant.RestaurantNotFoundException;
-
+import br.com.fiap.restaurant.core.usecase.RestaurantAccessDeniedException;import br.com.fiap.restaurant.core.usecase.RestaurantNotFoundException;
 public class UpdateRestaurantUseCase {
 
     private final RestauranteRepositoryPort repo;
