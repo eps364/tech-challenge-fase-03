@@ -1,0 +1,20 @@
+meta {
+  name: 🍽️ 🌐 Restaurant - Listar Restaurantes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/restaurant-service/restaurants
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Lista todos os restaurantes cadastrados.
+  Endpoint público — não requer autenticação.
+}

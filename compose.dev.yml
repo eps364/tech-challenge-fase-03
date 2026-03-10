@@ -1,4 +1,6 @@
 # Usage: docker compose -f compose.yml -f compose.dev.yml up
+# Para subir apenas um serviço em modo dev:
+#   docker compose -f compose.yml -f compose.dev.yml up order-service
 #
 # DO NOT use --build with this file. The application services use the official
 # maven:3.9.9-eclipse-temurin-21 image from Docker Hub. Using --build would
@@ -18,7 +20,12 @@ services:
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl service-registry -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/service-registry/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl service-registry -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl service-registry -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    ports:
+      - "8762:8762"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -28,13 +35,27 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    # Aumenta tolerância para o startup lento do Maven (cold cache ~3-5min, warm ~30s)
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8762/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+    networks:
+      - fase3net
 
   api-gateway:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl api-gateway -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/api-gateway/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl api-gateway -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl api-gateway -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    ports:
+      - "8761:8761"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -44,13 +65,23 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      service-registry:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   auth-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl auth-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/auth-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl auth-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl auth-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -60,7 +91,15 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
     depends_on:
+      auth-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
       keycloak:
         condition: service_started
 
@@ -69,7 +108,10 @@ services:
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl client-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/client-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl client-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl client-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -79,13 +121,25 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      client-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   catalog-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl catalog-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/catalog-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl catalog-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl catalog-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -95,13 +149,23 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      catalog-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
 
   order-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl order-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/order-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl order-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl order-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -111,13 +175,25 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      order-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   payment-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl payment-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/payment-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl payment-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl payment-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -127,13 +203,23 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   restaurant-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl restaurant-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/restaurant-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl restaurant-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl restaurant-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -143,13 +229,25 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      restaurant-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
   orchestrator-service:
     build: null
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
-    command: mvn spring-boot:run -pl orchestrator-service -DskipTests -Dspring-boot.run.fork=false
+    command:
+      - bash
+      - -c
+      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/orchestrator-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl orchestrator-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl orchestrator-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
     volumes:
       - .:/workspace
       - m2-cache:/root/.m2
@@ -159,5 +257,13 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    depends_on:
+      service-registry:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
 volumes:
   m2-cache:

@@ -114,6 +114,31 @@ docker compose -f compose.yml -f compose.dev.yml down -v
 - Todos os MSs que dependem do `service-registry` usam `condition: service_healthy`, garantindo ordem de inicialização correta.
 - O `orchestrator-service` foi adicionado ao compose (incluindo `Dockerfile` próprio em `orchestrator-service/Dockerfile`).
 
+## Payment Event Flow (RabbitMQ)
+
+Flow implemented via orchestrator:
+
+1. `order-service` confirms the order and publishes `ORDER_CREATED` to `Orders-Orchestrator.queue`.
+2. `orchestrator-service` consumes and forwards it to `Orchestrator-Payments.queue`.
+3. `payment-service` processes it through `procpag` with resilience (retry + circuit breaker).
+4. `payment-service` publishes:
+	- `PAYMENT_APPROVED` on success;
+	- `PAYMENT_PENDING` on fallback.
+5. `orchestrator-service` routes both to `Orchestrator-Orders.queue`.
+6. `order-service` automatically updates status to `PAID` or `PENDING_PAYMENT`.
+7. On `PAYMENT_PENDING`, the orchestrator also sends to `Orchestrator-Payments-Worker.queue` for worker reprocessing.
+
+## Coleções Bruno
+
+As coleções de teste manual estão em `docs/API` e seguem padronização visual no nome das requests.
+
+Padrao aplicado:
+
+- Primeiro icone: dominio da chamada (`🔐`, `🛡️`, `👤`, `📦`, `🧾`, `💳`, `🍽️`).
+- Segundo icone: nivel de acesso (`🌐` publico, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin).
+
+Essa convenção facilita identificar rapidamente o contexto e a permissão antes de executar uma chamada.
+
 ## Flags Maven em uso no modo dev
 
 | Flag | Descrição |

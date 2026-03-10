@@ -1,0 +1,24 @@
+meta {
+  name: 🍽️ 👑 Restaurant - Deletar Restaurante
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/restaurant-service/restaurants/{{restaurant_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Remove um restaurante pelo ID.
+  Requer role 'admin' ou ser owner do restaurante (pertencer à lista owners).
+  Retorna 403 Forbidden se autenticado mas sem permissão sobre este restaurante.
+  Retorna HTTP 204 sem corpo em caso de sucesso.
+  Retorna 404 se o restaurante não for encontrado.
+}

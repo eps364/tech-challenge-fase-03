@@ -4,6 +4,7 @@ Este arquivo define as diretrizes obrigatórias para a atuação do Antigravity 
 
 ## 1. Arquitetura e Estrutura
 - **Clean Architecture**: Cada microsserviço deve seguir a separação clara entre `core` (domínio/casos de uso) e `infra` (persistência, mensageria, gateways externos).
+- **Mensageria por direção**: listeners/consumidores devem ficar em `infra.adapters.inbound.messaging` e publishers/producers em `infra.adapters.outbound.messaging`.
 - **Módulos Existentes**: Respeitar a estrutura de: `api-gateway`, `auth-service`, `catalog-service`, `client-service`, `orchestrator-service`, `order-service`, `payment-service`, `restaurant-service`, `service-registry`.
 - **Banco de Dados**: Um banco por serviço (`<service-name>-db`), usando Postgres com credenciais padrão (`postgres`/`password`) para ambiente Docker.
 
@@ -28,8 +29,13 @@ Eventos obrigatórios e fluxo:
 ## 5. Padrões de Desenvolvimento e Qualidade
 - **Conventional Commits**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`. Mensagens em inglês.
 - **Documentação**: Manter diagramas de sequência em `docs/diagrams` atualizados.
+- **Coleções Bruno (`docs/API`)**: manter o padrão no `meta.name` das requests com dois ícones: domínio (`🔐`, `🛡️`, `👤`, `📦`, `🧾`, `💳`, `🍽️`) + permissão (`🌐` público, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin).
 - **Testes**: Sempre adicionar ou ajustar testes unitários ao alterar regras de negócio. Priorizar testes de integração para fluxos entre serviços.
 - **Ambiente**: Garantir que o `compose.yml` e o build (`./mvnw clean install`) continuem funcionando após alterações.
 
 ## 6. Regra de Ouro
 Toda sugestão de código deve preservar a rastreabilidade do status do pedido e a clareza arquitetural dos microsserviços. Não introduzir dependências que quebrem a execução via Docker Compose.
+
+## 7. Contexto e Precedência
+- Considerar sempre `.github/copilot-instructions.md` e a pasta `.agent` como fontes complementares de contexto e instruções do repositório.
+- Em caso de conflito entre instruções, aplicar a regra mais específica para o módulo/arquivo alvo.

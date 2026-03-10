@@ -1,14 +1,56 @@
 spring:
   application:
     name: order-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/tech-challenge
+  datasource:
+    url: jdbc:postgresql://order-service-db:5432/order-service-db
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+app:
+  rabbit:
+    exchange: ex.main
+    queues:
+      in:
+        orchestratorOrders: Orchestrator-Orders.queue
+      out:
+        ordersOrchestrator: Orders-Orchestrator.queue
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 # Actuator configuration
 management:

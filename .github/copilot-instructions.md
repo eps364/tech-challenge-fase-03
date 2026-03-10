@@ -143,10 +143,42 @@ Trabalhar respeitando os módulos existentes:
 - Evitar acoplamento direto quando o fluxo exigir evento assíncrono.
 - Manter contratos de API estáveis (DTOs, payloads, status).
 - Atualizar documentação ao alterar fluxos, endpoints ou variáveis de ambiente.
+- Ao alterar coleções de API em `docs/API` (Bruno), manter o padrão visual no campo `meta.name` das requests:
+	- primeiro ícone do domínio: `🔐` auth, `🛡️` keycloak, `👤` client, `📦` catalog, `🧾` order, `💳` payment, `🍽️` restaurant;
+	- segundo ícone de permissão: `🌐` público, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin.
 - **Nomes de classes, interfaces, métodos, variáveis e campos devem ser escritos em inglês** (ex.: `Product`, `findAll()`, `price`). Comentários e documentação podem ser em português.
 - **Nomes de pacotes devem ser todos em letras minúsculas, sem underscores e sem separadores** (ex.: `listproducts`, `getproduct`, `createproduct`, `updateproduct`, `deleteproduct`). Nunca usar camelCase (`listProducts`) nem underscores (`list_products`).
-- **Todos os DTOs devem ser definidos como `record` Java no pacote `core.dto`** do respectivo serviço (ex.: `br.com.fiap.catalog.core.dto`). Nunca criar classes DTO em pacotes de use case ou infra. Usar `ProductRequest` para entrada e `ProductResponse` para saída como padrão de nomenclatura.
-- **Tratamento de erros deve seguir RFC 7807 (Problem Details for HTTP APIs)** usando `ProblemDetail` do Spring Boot 3. Criar um `GlobalExceptionHandler` (`@RestControllerAdvice`) em `infra/controller`, nunca adicionar `@ExceptionHandler` diretamente nos controllers. Habilitar `spring.mvc.problemdetails.enabled=true` no `application.yaml` de cada serviço.
+- **Todos os controllers REST devem ficar no pacote `infra.web.controller`** do respectivo serviço/projeto. Não criar controllers em `infra.controller`, `infra.web.controler` ou outros pacotes fora desse padrão.
+- **Todas as classes de persistência anotadas com `@Entity` devem ficar obrigatoriamente no pacote `infra.entity`** de cada serviço. Não manter classes `*Entity` em `infra.order`, `infra.product`, `infra.restaurante`, `infra.persistence` ou outros pacotes de domínio técnico.
+- **Todos os repositórios Spring Data JPA (interfaces que estendem `JpaRepository`) devem ficar obrigatoriamente no pacote `infra.repository`** de cada serviço. Não manter repositórios em `infra.order`, `infra.product`, `infra.restaurante`, `infra.persistence` ou outros pacotes legados.
+- **Todos os clientes de integração externa (ex.: interfaces com `@FeignClient`) devem ficar no pacote `infra.gateway`** do respectivo serviço, junto aos adapters que implementam as portas do core.
+- **Componentes de mensageria devem ser organizados por direção de fluxo**: consumidores/listeners em `infra.adapters.inbound.messaging` (entrada) e publishers/producers em `infra.adapters.outbound.messaging` (saída).
+- **DTOs exclusivos de integrações externas devem ficar no pacote `infra.dto`** do respectivo serviço e devem ser usados apenas para contratos com sistemas externos.
+- **DTOs de aplicação (entrada/saída de API e casos de uso) devem ser definidos como `record` Java no pacote `core.dto`** do respectivo serviço (ex.: `br.com.fiap.catalog.core.dto`). Nunca criar DTOs de aplicação em pacotes de use case ou infra. Usar `ProductRequest` para entrada e `ProductResponse` para saída como padrão de nomenclatura.
+- **Tratamento de erros deve seguir RFC 7807 (Problem Details for HTTP APIs)** usando `ProblemDetail` do Spring Boot 3. Criar um `GlobalExceptionHandler` (`@RestControllerAdvice`) em `infra.exception` em todos os serviços/projetos, nunca adicionar `@ExceptionHandler` diretamente nos controllers. Habilitar `spring.mvc.problemdetails.enabled=true` no `application.yaml` de cada serviço.
+
+### 6.2.1 Arquitetura Limpa Obrigatória
+
+#### Camada Core (independente de framework)
+
+Todo serviço deve manter a camada `core` completamente independente de Spring, JPA ou qualquer tecnologia externa.
+
+- `core/domain/entity/`: entidades de domínio puras (POJOs), sem anotações de framework.
+- `core/domain/valueobject/`: value objects imutáveis com validação de regras de negócio (ex.: `ZipCode`, `State`).
+- `core/usecase/`: implementações de casos de uso, organizadas por domínio (ex.: `user`, `restaurant`, `menu`, `food`).
+- `core/gateway/`: interfaces que definem as portas de saída para a camada externa.
+- `core/dto/`: objetos de transferência de dados usando Java `record` (imutáveis).
+
+#### Camada Infra (adaptadores e frameworks)
+
+Toda integração com tecnologias externas deve ficar na camada `infra`.
+
+- `infra/entity/`: entidades de persistência com anotações JPA, separadas das entidades de domínio.
+- `infra/gateway/`: adapters que implementam os gateways do `core` e adaptam para Spring Data JPA/integradores.
+- `infra/web/controller/`: controllers REST responsáveis apenas por HTTP (entrada/saída, status code, serialização).
+- `infra/web/api/`: contratos de API e documentação OpenAPI/Swagger.
+- `infra/repository/`: repositórios Spring Data JPA.
+- `infra/config/`: classes de configuração Spring.
 
 ### 6.3 Banco de dados e containers
 - Considerar bancos dedicados por serviço no Compose.
@@ -215,3 +247,8 @@ Toda sugestão de código deve preservar os objetivos da Fase 3:
 - resiliência (fallback + reprocessamento);
 - rastreabilidade de status do pedido;
 - clareza arquitetural em microsserviços.
+
+## 11) Contexto adicional obrigatório
+
+- O Copilot deve considerar também a pasta `.agent` como fonte de contexto e instruções do repositório.
+- Em caso de conflito entre instruções, aplicar a regra mais específica para o módulo/arquivo alvo.

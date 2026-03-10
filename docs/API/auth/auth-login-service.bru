@@ -1,5 +1,5 @@
 meta {
-  name: Auth Service - Login
+  name: 🔐 🌐 Auth Service - Login
   type: http
   seq: 2
 }
@@ -20,7 +20,13 @@ body:json {
 script:post-response {
   const data = res.getBody();
   
-  if (data && data.accessToken) {
-    bru.setEnvVar("jwt_token", data.accessToken);
+  if (data && data.access_token) {
+    bru.setEnvVar("jwt_token", data.access_token);
+  }
+  if (data && data.userId) {
+    bru.setEnvVar("user_id", data.userId);
+  }
+  if (data && data.refresh_token) {
+    bru.setEnvVar("refresh_token", data.refresh_token);
   }
 }

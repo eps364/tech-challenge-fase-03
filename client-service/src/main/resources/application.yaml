@@ -1,6 +1,9 @@
 spring:
   application:
     name: client-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
@@ -27,12 +30,15 @@ app:
     exchange: ex.main
     queues:
       in:
-        orquestradorClientes: Orquestrador-Clientes.queue
+        orchestratorClients: Orchestrator-Clients.queue
       out:
-        clientesOrquestrador: Clientes-Orquestrador.queue
+        clientsOrchestrator: Clients-Orchestrator.queue
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 management:
   endpoints:

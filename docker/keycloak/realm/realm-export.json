@@ -148,6 +148,26 @@
       "clientRoles": {
         "account": ["manage-account", "view-profile"]
       }
+    },
+    {
+      "username": "owner",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "owner@techchallenge.local",
+      "firstName": "Owner",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "owner",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["owner"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     }
   ],
   "roles": {

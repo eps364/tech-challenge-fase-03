@@ -13,7 +13,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
@@ -27,6 +26,7 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 
+import br.com.fiap.apigateway.infra.security.DynamicRouteAuthorizationManager;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -37,48 +37,17 @@ public class SecurityConfig {
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @Bean
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain securityFilterChain(
+            ServerHttpSecurity http,
+            DynamicRouteAuthorizationManager dynamicRouteAuthorizationManager
+    ) {
         return http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(unauthorizedEntryPoint())
             )
             .authorizeExchange(exchange -> exchange
-                .pathMatchers(
-                    "/auth-service/auth/register",
-                    "/auth-service/auth/login",
-                    "/auth-service/test/public",
-                    "/order-service/test/public",
-                    "/payment-service/test/public",
-                    "/restaurant-service/test/public",
-                    "/client-service/test/public",
-                    "/catalog-service/test/public"
-                ).permitAll()
-                .pathMatchers(HttpMethod.GET,
-                    "/catalog-service/products",
-                    "/catalog-service/products/**"
-                ).permitAll()
-                .pathMatchers(HttpMethod.POST,
-                    "/catalog-service/products",
-                    "/catalog-service/products/**"
-                ).hasAnyRole("owner", "admin")
-                .pathMatchers(HttpMethod.PUT,
-                    "/catalog-service/products",
-                    "/catalog-service/products/**"
-                ).hasAnyRole("owner", "admin")
-                .pathMatchers(HttpMethod.DELETE,
-                    "/catalog-service/products",
-                    "/catalog-service/products/**"
-                ).hasAnyRole("owner", "admin")
-                .pathMatchers(
-                    "/auth-service/test/private",
-                    "/order-service/test/private",
-                    "/payment-service/test/private",
-                    "/restaurant-service/test/private",
-                    "/client-service/test/private",
-                    "/catalog-service/test/private"
-                ).hasRole("user")
-                .anyExchange().authenticated()
+                .anyExchange().access(dynamicRouteAuthorizationManager)
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtConverter()))
@@ -88,6 +57,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("null")
     public ServerAuthenticationEntryPoint unauthorizedEntryPoint() {
         return (exchange, ex) -> {
             ServerHttpResponse response = exchange.getResponse();
@@ -104,8 +74,8 @@ public class SecurityConfig {
             return Mono.fromCallable(() -> objectMapper.writeValueAsBytes(problem))
                     .flatMap(bytes -> {
                         response.getHeaders().setContentLength(bytes.length);
-                        return response.writeWith(Mono.just(
-                                response.bufferFactory().wrap(bytes)));
+                    return response.writeWith(Mono.defer(
+                        () -> Mono.just(response.bufferFactory().wrap(bytes))));
                     });
         };
     }
