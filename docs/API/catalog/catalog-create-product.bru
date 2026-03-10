@@ -1,0 +1,28 @@
+meta {
+  name: Catalog - Create Product
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{base_url}}/catalog-service/products
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "name": "Novo Produto",
+    "price": 19.90
+  }
+}
+
+docs {
+  Requer autenticação com role: owner ou admin.
+}

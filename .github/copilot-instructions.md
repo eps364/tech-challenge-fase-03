@@ -143,6 +143,10 @@ Trabalhar respeitando os módulos existentes:
 - Evitar acoplamento direto quando o fluxo exigir evento assíncrono.
 - Manter contratos de API estáveis (DTOs, payloads, status).
 - Atualizar documentação ao alterar fluxos, endpoints ou variáveis de ambiente.
+- **Nomes de classes, interfaces, métodos, variáveis e campos devem ser escritos em inglês** (ex.: `Product`, `findAll()`, `price`). Comentários e documentação podem ser em português.
+- **Nomes de pacotes devem ser todos em letras minúsculas, sem underscores e sem separadores** (ex.: `listproducts`, `getproduct`, `createproduct`, `updateproduct`, `deleteproduct`). Nunca usar camelCase (`listProducts`) nem underscores (`list_products`).
+- **Todos os DTOs devem ser definidos como `record` Java no pacote `core.dto`** do respectivo serviço (ex.: `br.com.fiap.catalog.core.dto`). Nunca criar classes DTO em pacotes de use case ou infra. Usar `ProductRequest` para entrada e `ProductResponse` para saída como padrão de nomenclatura.
+- **Tratamento de erros deve seguir RFC 7807 (Problem Details for HTTP APIs)** usando `ProblemDetail` do Spring Boot 3. Criar um `GlobalExceptionHandler` (`@RestControllerAdvice`) em `infra/controller`, nunca adicionar `@ExceptionHandler` diretamente nos controllers. Habilitar `spring.mvc.problemdetails.enabled=true` no `application.yaml` de cada serviço.
 
 ### 6.3 Banco de dados e containers
 - Considerar bancos dedicados por serviço no Compose.

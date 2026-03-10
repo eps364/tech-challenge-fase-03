@@ -5,6 +5,7 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ## api-gateway
 - **Responsabilidade:** entrada única das APIs, roteamento, validação JWT e verificação de blacklist Redis.
 - **Segurança:** valida assinatura JWT via Keycloak JWKS e, antes de encaminhar qualquer requisição autenticada, consulta o Redis para verificar se o `jti` do token foi blacklistado — retornando `401` imediatamente em caso positivo.
+- **Tratamento de erros:** respostas `401 Unauthorized` retornam corpo RFC 7807 (`ProblemDetail`) com `title`, `status`, `detail`, `instance` e `timestamp`. O tratamento de 401 é centralizado neste serviço — os microserviços internos não duplicam esse comportamento.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
@@ -47,9 +48,16 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ## catalog-service
 - **Responsabilidade:** catálogo de produtos e preços.
 - **Banco dedicado:** `catalog-service-db`.
+- **Persistência:** JPA + PostgreSQL (`products`). Dados iniciais carregados via `data.sql`.
+- **Tratamento de erros:** RFC 7807 via `GlobalExceptionHandler` (`@RestControllerAdvice`). `ProductNotFoundException` → `404 Not Found` com `type: /errors/product-not-found.html`.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
+| GET | `/products` | Sim (`/catalog-service/products`) | Pública | Lista todos os produtos. |
+| GET | `/products/{id}` | Sim (`/catalog-service/products/{id}`) | Pública | Retorna produto pelo ID. `404` com ProblemDetail se não encontrado. |
+| POST | `/products` | Sim (`/catalog-service/products`) | `owner` ou `admin` | Cria novo produto. Corpo: `{ "name": string, "price": number }`. Retorna `201 Created`. |
+| PUT | `/products/{id}` | Sim (`/catalog-service/products/{id}`) | `owner` ou `admin` | Atualiza produto existente. `404` se não encontrado. |
+| DELETE | `/products/{id}` | Sim (`/catalog-service/products/{id}`) | `owner` ou `admin` | Remove produto. Retorna `204 No Content`. |
 | GET | `/test/public` | Sim (`/catalog-service/test/public`) | Pública | Health/check simples de endpoint público do serviço. |
 | GET | `/test/private` | Sim (`/catalog-service/test/private`) | JWT obrigatório | Retorna dados do usuário autenticado e roles do token. |
 

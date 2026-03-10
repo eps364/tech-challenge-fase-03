@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,11 +25,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/test/public").permitAll()
                 .requestMatchers("/test/private").hasRole("user")
+                .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/products", "/products/**").hasAnyRole("owner", "admin")
+                .requestMatchers(HttpMethod.PUT, "/products", "/products/**").hasAnyRole("owner", "admin")
+                .requestMatchers(HttpMethod.DELETE, "/products", "/products/**").hasAnyRole("owner", "admin")
                 .anyRequest().authenticated()
             )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
-                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
-            ));
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            );
 
         return http.build();
     }
@@ -49,3 +54,4 @@ public class SecurityConfig {
         return converter;
     }
 }
+
