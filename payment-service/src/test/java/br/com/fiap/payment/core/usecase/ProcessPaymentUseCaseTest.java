@@ -60,6 +60,19 @@ class ProcessPaymentUseCaseTest {
     }
 
     @Test
+    void shouldMarkAsPendingAndPublishPendingEventWhenGatewayDoesNotApprove() {
+        externalGateway.shouldApprove = false;
+
+        useCase.execute(newPayload(), false);
+
+        Payment saved = repository.single();
+        assertEquals(PaymentStatus.PENDING, saved.getStatus());
+        assertEquals(1, saved.getAttempts());
+        assertEquals(0, eventPublisher.approvedCount);
+        assertEquals(1, eventPublisher.pendingCount);
+    }
+
+    @Test
     void shouldStopRequeueOnWorkerAfterMaxAttempts() {
         UUID orderId = UUID.fromString("7f4f5f6e-7f1a-45df-b3e8-e30f7ad4d95f");
         UUID clientId = UUID.fromString("f8d9fa58-a8ce-4e08-94bd-385bf5dc99dd");

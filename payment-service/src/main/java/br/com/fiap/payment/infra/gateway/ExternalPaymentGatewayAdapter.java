@@ -32,12 +32,10 @@ public class ExternalPaymentGatewayAdapter implements ExternalPaymentGatewayPort
         Map<String, Object> statusResponse = procPagFeignClient.getPaymentStatus(payment.getId());
         Object status = statusResponse.get("status");
         if (status == null) {
-            return true;
+            return false;
         }
 
-        String normalizedStatus = String.valueOf(status).toUpperCase();
-        return normalizedStatus.contains("APROV") || normalizedStatus.contains("APPROV")
-                || normalizedStatus.contains("AUTHORIZED");
+        return "accepted".equalsIgnoreCase(String.valueOf(status));
     }
 
     @SuppressWarnings("unused")

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import br.com.fiap.order.core.domain.PaymentEventType;
 import br.com.fiap.order.core.dto.QueueMessage;
 import br.com.fiap.order.core.usecase.UpdateOrderPaymentStatusUseCase;
 @Component
@@ -19,19 +20,17 @@ public class PaymentStatusListener {
 
     @RabbitListener(queues = "${app.rabbit.queues.in.orchestratorOrders}")
     public void onMessage(QueueMessage message) {
-        if (!"PAYMENT_APPROVED".equalsIgnoreCase(message.type())
-                && !"PAYMENT_PENDING".equalsIgnoreCase(message.type())) {
+        PaymentEventType eventType = PaymentEventType.from(message.type()).orElse(null);
+        if (eventType == null) {
             return;
         }
 
         Map<String, Object> payload = message.payload();
         UUID orderId = UUID.fromString(String.valueOf(payload.get("orderId")));
 
-        if ("PAYMENT_APPROVED".equalsIgnoreCase(message.type())) {
-            updateOrderPaymentStatusUseCase.markAsPaid(orderId);
-            return;
+        switch (eventType) {
+            case PAYMENT_APPROVED -> updateOrderPaymentStatusUseCase.markAsPaid(orderId);
+            case PAYMENT_PENDING -> updateOrderPaymentStatusUseCase.markAsPendingPayment(orderId);
         }
-
-        updateOrderPaymentStatusUseCase.markAsPendingPayment(orderId);
     }
 }

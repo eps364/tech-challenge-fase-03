@@ -14,6 +14,7 @@ import br.com.fiap.order.core.dto.OrderRequest;
 import br.com.fiap.order.core.dto.OrderResponse;
 import br.com.fiap.order.core.dto.ProductDTO;
 import br.com.fiap.order.core.gateway.CatalogClientPort;
+import br.com.fiap.order.core.gateway.EventPublisherPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
 import br.com.fiap.order.core.gateway.RestaurantClientPort;
 
@@ -22,12 +23,15 @@ public class CreateOrderUseCase {
     private final OrderRepositoryPort repo;
     private final CatalogClientPort catalogClient;
     private final RestaurantClientPort restaurantClient;
+    private final EventPublisherPort eventPublisher;
 
     public CreateOrderUseCase(OrderRepositoryPort repo, CatalogClientPort catalogClient,
-                              RestaurantClientPort restaurantClient) {
+                              RestaurantClientPort restaurantClient,
+                              EventPublisherPort eventPublisher) {
         this.repo = repo;
         this.catalogClient = catalogClient;
         this.restaurantClient = restaurantClient;
+        this.eventPublisher = eventPublisher;
     }
 
     public OrderResponse execute(UUID clientId, OrderRequest req) {
@@ -51,10 +55,11 @@ public class CreateOrderUseCase {
 
         Order order = new Order(
                 UUID.randomUUID(), clientId, req.restaurantId(),
-                items, OrderStatus.PENDING_CONFIRMATION, total, Instant.now()
+                items, OrderStatus.PENDING_PAYMENT, total, Instant.now()
         );
 
         Order saved = repo.save(order);
+        eventPublisher.publishOrderCreated(saved);
         return toResponse(saved);
     }
 

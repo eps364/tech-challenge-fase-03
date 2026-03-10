@@ -1,12 +1,13 @@
 package br.com.fiap.order.core.usecase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,6 @@ import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderItem;
 import br.com.fiap.order.core.domain.OrderStatus;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
-import br.com.fiap.order.core.usecase.OrderNotFoundException;
 class UpdateOrderPaymentStatusUseCaseTest {
 
     private InMemoryOrderRepository repository;
@@ -27,13 +27,13 @@ class UpdateOrderPaymentStatusUseCaseTest {
     }
 
     @Test
-    void shouldMarkOrderAsPendingPayment() {
-        Order order = newOrder(OrderStatus.CONFIRMED);
+    void shouldNotDowngradePaidOrderToPendingPayment() {
+        Order order = newOrder(OrderStatus.PAID);
         repository.save(order);
 
         useCase.markAsPendingPayment(order.getId());
 
-        assertEquals(OrderStatus.PENDING_PAYMENT, repository.findById(order.getId()).orElseThrow().getStatus());
+        assertEquals(OrderStatus.PAID, repository.findById(order.getId()).orElseThrow().getStatus());
     }
 
     @Test

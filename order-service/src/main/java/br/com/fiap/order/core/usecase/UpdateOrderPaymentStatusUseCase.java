@@ -4,7 +4,6 @@ import java.util.UUID;
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderStatus;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
-import br.com.fiap.order.core.usecase.OrderNotFoundException;
 public class UpdateOrderPaymentStatusUseCase {
 
     private final OrderRepositoryPort repository;
