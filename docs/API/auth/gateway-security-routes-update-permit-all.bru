@@ -1,0 +1,49 @@
+meta {
+  name: 🔐 🛠️ Gateway Security - Update Rules (PERMIT_ALL)
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{base_url}}/gateway/security/routes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  [
+    {
+      "id": 12,
+      "method": "GET",
+      "pathPattern": "/catalog-service/products/**",
+      "access": "PERMIT_ALL",
+      "roles": []
+    },
+    {
+      "id": 14,
+      "method": "GET",
+      "pathPattern": "/restaurant-service/restaurants/**",
+      "access": "PERMIT_ALL",
+      "roles": []
+    },
+    {
+      "id": 28,
+      "method": null,
+      "pathPattern": "/gateway/security/routes/**",
+      "access": "HAS_ANY_ROLE",
+      "roles": ["admin"]
+    }
+  ]
+}
+
+docs {
+  Exemplo de atualizacao de regras incluindo rotas publicas com access PERMIT_ALL e id numerico.
+  Importante: o PUT substitui a lista inteira de regras no banco (Redis).
+  Mantenha a regra de administracao do endpoint de seguranca para evitar bloqueio de acesso.
+}

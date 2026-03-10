@@ -1,6 +1,13 @@
 spring:
   application:
     name: api-gateway
+  mvc:
+    problemdetails:
+      enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: 6379
   cloud:
     gateway:
       routes:
@@ -44,16 +51,25 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
 
 server:
   port: 8761
+  error:
+    include-stacktrace: never
+    include-message: always
+
+logging:
+  level:
+    root: INFO
 
 eureka:
   client:
-    register-with-eureka: false
-    fetch-registry: true
+    enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
 
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 

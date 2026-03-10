@@ -6,6 +6,7 @@ actor Cliente
 participant "API Gateway" as APIGW
 participant "Auth Service" as AUTH
 participant "Keycloak" as KC
+database "Redis" as REDIS
 participant "Order Service" as ORDER
 
 Cliente -> APIGW: Login (endpoint aberto)
@@ -14,6 +15,18 @@ AUTH -> KC: Valida credenciais
 KC --> AUTH: Retorna token JWT
 AUTH --> APIGW: Resposta de login
 APIGW --> Cliente: Token de acesso
+
+Cliente -> APIGW: Logout (Bearer JWT)
+APIGW -> AUTH: Encaminha logout
+AUTH -> KC: Revoga sessão
+AUTH -> REDIS: Blacklist jti com TTL
+AUTH --> APIGW: 204 No Content
+APIGW --> Cliente: 204 No Content
+
+Cliente -> APIGW: Nova requisição com token invalidado
+APIGW -> REDIS: Verifica blacklist
+REDIS --> APIGW: Token blacklistado
+APIGW --> Cliente: 401 Unauthorized
 
 Cliente -> APIGW: Requisição protegida com Bearer JWT
 APIGW -> APIGW: Valida token e perfil

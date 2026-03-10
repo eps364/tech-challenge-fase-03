@@ -1,17 +1,17 @@
 package br.com.fiap.client.infra.config;
 
-import br.com.fiap.client.core.gateway.ClientesRepositoryPort;
-import br.com.fiap.client.core.usecase.processar_requisicao_orquestrador.ProcessarRequisicaoOrquestradorUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import br.com.fiap.client.core.gateway.ClientesRepositoryPort;
+import br.com.fiap.client.core.usecase.ProcessOrchestratorRequestUseCase;
 @Configuration
 public class UseCaseConfig {
 
     @Bean
-    public ProcessarRequisicaoOrquestradorUseCase processarRequisicaoOrquestradorUseCase(
+    public ProcessOrchestratorRequestUseCase processOrchestratorRequestUseCase(
             ClientesRepositoryPort repo
     ) {
-        return new ProcessarRequisicaoOrquestradorUseCase(repo);
+        return new ProcessOrchestratorRequestUseCase(repo);
     }
 }

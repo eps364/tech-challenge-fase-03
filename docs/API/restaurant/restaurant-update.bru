@@ -1,0 +1,38 @@
+meta {
+  name: 🍽️ 👑 Restaurant - Atualizar Restaurante
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}/restaurant-service/restaurants/{{restaurant_id}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "nome": "Restaurante Atualizado",
+    "ativo": true,
+    "street": "Av. Paulista",
+    "number": "2000",
+    "district": "Bela Vista",
+    "complement": "",
+    "city": "São Paulo",
+    "state": "SP",
+    "zipCode": "01310-100"
+  }
+}
+
+docs {
+  Atualiza os dados de um restaurante pelo ID.
+  Requer role 'admin' ou ser owner do restaurante (pertencer à lista owners).
+  Retorna 403 Forbidden se autenticado mas sem permissão sobre este restaurante.
+  Retorna 404 se o restaurante não for encontrado.
+}

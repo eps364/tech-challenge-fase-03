@@ -1,27 +1,35 @@
 package br.com.fiap.orchestrator.infra.config;
 
-import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
-import br.com.fiap.orchestrator.core.usecase.enviar_para_clientes.EnviarParaClientesUseCase;
-import br.com.fiap.orchestrator.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
-import br.com.fiap.orchestrator.core.usecase.enviar_para_restaurantes.EnviarParaRestaurantesUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
+import br.com.fiap.orchestrator.core.usecase.SendToClientsUseCase;import br.com.fiap.orchestrator.core.usecase.SendToOrdersUseCase;import br.com.fiap.orchestrator.core.usecase.SendToPaymentsUseCase;import br.com.fiap.orchestrator.core.usecase.SendToPaymentsWorkerUseCase;import br.com.fiap.orchestrator.core.usecase.SendToRestaurantsUseCase;
 @Configuration
 public class UseCaseConfig {
 
     @Bean
-    EnviarParaClientesUseCase enviarParaClientesUseCase(QueuePublisherPort publisher) {
-        return new EnviarParaClientesUseCase(publisher);
+    SendToClientsUseCase sendToClientsUseCase(QueuePublisherPort publisher) {
+        return new SendToClientsUseCase(publisher);
     }
 
     @Bean
-    EnviarParaRestaurantesUseCase enviarParaRestaurantesUseCase(QueuePublisherPort publisher) {
-        return new EnviarParaRestaurantesUseCase(publisher);
+    SendToRestaurantsUseCase sendToRestaurantsUseCase(QueuePublisherPort publisher) {
+        return new SendToRestaurantsUseCase(publisher);
     }
 
     @Bean
-    EnviarParaPedidosUseCase enviarParaPedidosUseCase(QueuePublisherPort publisher) {
-        return new EnviarParaPedidosUseCase(publisher);
+    SendToOrdersUseCase sendToOrdersUseCase(QueuePublisherPort publisher) {
+        return new SendToOrdersUseCase(publisher);
+    }
+
+    @Bean
+    SendToPaymentsUseCase sendToPaymentsUseCase(QueuePublisherPort publisher) {
+        return new SendToPaymentsUseCase(publisher);
+    }
+
+    @Bean
+    SendToPaymentsWorkerUseCase sendToPaymentsWorkerUseCase(QueuePublisherPort publisher) {
+        return new SendToPaymentsWorkerUseCase(publisher);
     }
 }

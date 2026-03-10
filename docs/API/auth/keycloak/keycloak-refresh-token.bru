@@ -1,0 +1,43 @@
+meta {
+  name: 🛡️ 🌐 Keycloak - Refresh Token
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{keycloak_url}}/realms/{{realm}}/protocol/openid-connect/token
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Host: {{keycloak_host}}
+  Content-Type: application/x-www-form-urlencoded
+  Accept: application/json
+}
+
+body:form-urlencoded {
+  grant_type: refresh_token
+  client_id: {{login_client_id}}
+  refresh_token: {{refresh_token}}
+}
+
+script:post-response {
+  const data = res.getBody();
+
+  if (data && data.access_token) {
+    bru.setEnvVar("jwt_token", data.access_token);
+  }
+  if (data && data.refresh_token) {
+    bru.setEnvVar("refresh_token", data.refresh_token);
+  }
+}
+
+docs {
+  Renova tokens diretamente no Keycloak usando o refresh token salvo em {{refresh_token}}.
+  Fluxo recomendado:
+  1) Execute "Keycloak - Direct Token (Password)" para obter um refresh token.
+  2) Rode esta chamada para gerar novo access token e novo refresh token.
+  Retorna 200 quando o refresh token e a sessao estiverem ativos.
+  Retorna 400 (invalid_grant) quando o refresh token estiver invalido/expirado/sessao inativa.
+}
