@@ -1,21 +1,19 @@
-package br.com.fiap.catalog.core.usecase.listproductsbyrestaurant;
-
+package br.com.fiap.catalog.core.usecase;
 import java.util.List;
-import java.util.UUID;
 
 import br.com.fiap.catalog.core.dto.ProductResponse;
 import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;
 
-public class ListProductsByRestaurantUseCase {
+public class ListProductsUseCase {
 
     private final ProductRepositoryPort repo;
 
-    public ListProductsByRestaurantUseCase(ProductRepositoryPort repo) {
+    public ListProductsUseCase(ProductRepositoryPort repo) {
         this.repo = repo;
     }
 
-    public List<ProductResponse> execute(UUID restaurantId) {
-        return repo.findByRestaurantId(restaurantId).stream()
+    public List<ProductResponse> execute() {
+        return repo.findAll().stream()
                 .map(p -> new ProductResponse(p.getId(), p.getName(), p.getPrice(), p.getRestaurantId(), p.getFoodType()))
                 .toList();
     }

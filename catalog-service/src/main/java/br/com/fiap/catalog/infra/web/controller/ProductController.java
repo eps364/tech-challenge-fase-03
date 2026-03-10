@@ -19,14 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.fiap.catalog.core.dto.ProductRequest;
 import br.com.fiap.catalog.core.dto.ProductResponse;
-import br.com.fiap.catalog.core.usecase.createproduct.CreateProductUseCase;
-import br.com.fiap.catalog.core.usecase.deleteproduct.DeleteProductUseCase;
-import br.com.fiap.catalog.core.usecase.getproduct.GetProductUseCase;
-import br.com.fiap.catalog.core.usecase.listproducts.ListProductsUseCase;
-import br.com.fiap.catalog.core.usecase.listproductsbyrestaurant.ListProductsByRestaurantUseCase;
-import br.com.fiap.catalog.core.usecase.updateproduct.ProductAccessDeniedException;
-import br.com.fiap.catalog.core.usecase.updateproduct.UpdateProductUseCase;
-import br.com.fiap.catalog.infra.dto.RestaurantOwnershipDTO;
+import br.com.fiap.catalog.core.usecase.CreateProductUseCase;import br.com.fiap.catalog.core.usecase.DeleteProductUseCase;import br.com.fiap.catalog.core.usecase.GetProductUseCase;import br.com.fiap.catalog.core.usecase.ListProductsUseCase;import br.com.fiap.catalog.core.usecase.ListProductsByRestaurantUseCase;import br.com.fiap.catalog.core.usecase.ProductAccessDeniedException;import br.com.fiap.catalog.core.usecase.UpdateProductUseCase;import br.com.fiap.catalog.infra.dto.RestaurantOwnershipDTO;
 import br.com.fiap.catalog.infra.gateway.RestaurantFeignClient;
 import feign.FeignException;
 

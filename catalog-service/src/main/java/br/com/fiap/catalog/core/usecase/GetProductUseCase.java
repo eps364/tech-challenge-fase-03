@@ -1,5 +1,4 @@
-package br.com.fiap.catalog.core.usecase.getproduct;
-
+package br.com.fiap.catalog.core.usecase;
 import br.com.fiap.catalog.core.domain.Product;
 import br.com.fiap.catalog.core.dto.ProductResponse;
 import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;

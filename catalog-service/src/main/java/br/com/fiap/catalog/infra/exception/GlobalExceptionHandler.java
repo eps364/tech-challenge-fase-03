@@ -7,9 +7,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.fiap.catalog.core.usecase.getproduct.ProductNotFoundException;
-import br.com.fiap.catalog.core.usecase.updateproduct.ProductAccessDeniedException;
-
+import br.com.fiap.catalog.core.usecase.ProductNotFoundException;import br.com.fiap.catalog.core.usecase.ProductAccessDeniedException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

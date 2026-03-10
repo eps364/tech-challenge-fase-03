@@ -1,11 +1,9 @@
-package br.com.fiap.catalog.core.usecase.updateproduct;
-
+package br.com.fiap.catalog.core.usecase;
 import br.com.fiap.catalog.core.domain.Product;
 import br.com.fiap.catalog.core.dto.ProductRequest;
 import br.com.fiap.catalog.core.dto.ProductResponse;
 import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;
-import br.com.fiap.catalog.core.usecase.getproduct.ProductNotFoundException;
-
+import br.com.fiap.catalog.core.usecase.ProductNotFoundException;
 public class UpdateProductUseCase {
 
     private final ProductRepositoryPort repo;

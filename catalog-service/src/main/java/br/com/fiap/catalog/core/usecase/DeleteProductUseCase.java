@@ -1,8 +1,6 @@
-package br.com.fiap.catalog.core.usecase.deleteproduct;
-
+package br.com.fiap.catalog.core.usecase;
 import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;
-import br.com.fiap.catalog.core.usecase.getproduct.ProductNotFoundException;
-
+import br.com.fiap.catalog.core.usecase.ProductNotFoundException;
 public class DeleteProductUseCase {
 
     private final ProductRepositoryPort repo;
