@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+import br.com.fiap.orchestrator.core.usecase.SendToClientsUseCase;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,10 +16,10 @@ import br.com.fiap.orchestrator.core.usecase.SendToOrdersUseCase;
 @RequestMapping("/orchestrator")
 public class OrchestratorController {
 
-    private final SendToOrdersUseCase sendToOrders;
+    private final SendToClientsUseCase sendToClientsUseCase;
 
-    public OrchestratorController(SendToOrdersUseCase sendToOrders) {
-        this.sendToOrders = sendToOrders;
+    public OrchestratorController(SendToClientsUseCase sendToClientsUseCase) {
+        this.sendToClientsUseCase = sendToClientsUseCase;
     }
 
     @PostMapping("/test/orders")
@@ -29,6 +30,6 @@ public class OrchestratorController {
                 Instant.now().toString(),
                 payload
         );
-        sendToOrders.execute(message);
+        sendToClientsUseCase.execute(message);
     }
 }
