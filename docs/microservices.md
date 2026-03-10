@@ -72,6 +72,8 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ## order-service
 - **Responsabilidade:** pedidos e status.
 - **Banco dedicado:** `order-service-db`.
+- **Eventos outbound:** publica `ORDER_CREATED` em `Orders-Orchestrator.queue` após confirmação.
+- **Eventos inbound:** consome `PAYMENT_APPROVED` e `PAYMENT_PENDING` de `Orchestrator-Orders.queue` para atualização automática de status.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
@@ -81,6 +83,11 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ## payment-service
 - **Responsabilidade:** processamento de pagamentos e pendências.
 - **Banco dedicado:** `payment-service-db`.
+- **Eventos inbound:**
+  - `ORDER_CREATED` via `Orchestrator-Payments.queue`.
+  - `PAYMENT_PENDING` via `Orchestrator-Payments-Worker.queue` (reprocessamento).
+- **Eventos outbound:** publica `PAYMENT_APPROVED` e `PAYMENT_PENDING` em `Payments-Orchestrator.queue`.
+- **Resiliência aplicada:** `Retry` + `Circuit Breaker` na integração com `procpag`, com fallback para pendência.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
@@ -107,8 +114,12 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 | GET | `/test/private` | Sim (`/restaurant-service/test/private`) | JWT obrigatório | Retorna dados do usuário autenticado e roles do token. |
 
 ## orchestrator-service
-- **Responsabilidade:** orquestra o fluxo de eventos entre `order-service`, `payment-service` e `restaurant-service` via RabbitMQ.
-- Consome eventos publicados pelos serviços de domínio e coordena a sequência de processamento de pedido, validação e pagamento.
+- **Responsibility:** orchestrates event flow between `order-service`, `payment-service`, and `restaurant-service` via RabbitMQ.
+- Consumes domain service events and coordinates order processing, validation, and payment sequencing.
+- **Implemented payment routes:**
+  - `Orders-Orchestrator.queue` -> `Orchestrator-Payments.queue` to start charging.
+  - `Payments-Orchestrator.queue` -> `Orchestrator-Orders.queue` to send the payment outcome back to orders.
+  - `Payments-Orchestrator.queue` -> `Orchestrator-Payments-Worker.queue` when type is `PAYMENT_PENDING`.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
@@ -126,6 +137,12 @@ Este documento resume os microservices do projeto e lista os endpoints disponív
 ### rabbitmq
 - Broker de mensageria assíncrona entre os serviços de domínio.
 - Eventos: `pedido.criado`, `pagamento.aprovado`, `pagamento.pendente`.
+- Filas principais do fluxo de pagamento:
+  - `Orders-Orchestrator.queue`
+  - `Orchestrator-Payments.queue`
+  - `Payments-Orchestrator.queue`
+  - `Orchestrator-Orders.queue`
+  - `Orchestrator-Payments-Worker.queue`
 - Acessível em `localhost:5672` (AMQP) e `localhost:15672` (Management UI).
 
 ### keycloak

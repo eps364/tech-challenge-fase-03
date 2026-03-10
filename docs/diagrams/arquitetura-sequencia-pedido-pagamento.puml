@@ -12,6 +12,7 @@ participant "Payment Service" as PAY
 database "Payment DB\nPostgres" as PAYDB
 participant "ProcPag\n:8089" as PROCPAG
 queue "RabbitMQ\n:5672" as BROKER
+participant "Orchestrator Service" as ORQ
 participant "Payment Worker\n(reprocessamento)" as WORKER
 
 == Criação do pedido ==
@@ -28,10 +29,12 @@ RESTDB --> REST: dados do restaurante
 REST --> ORDER: validação OK
 
 == Evento de criação ==
-ORDER -> BROKER: publica evento pedido.criado
+ORDER -> BROKER: publica ORDER_CREATED\n(Orders-Orchestrator.queue)
+ORQ -> BROKER: consome Orders-Orchestrator.queue
+ORQ -> BROKER: publica para Orchestrator-Payments.queue
 
 == Processamento assíncrono de pagamento ==
-PAY -> BROKER: consome pedido.criado
+PAY -> BROKER: consome Orchestrator-Payments.queue
 PAY -> PAYDB: cria transação local
 
 group Resiliência (Retry + Timeout + Circuit Breaker)
@@ -41,26 +44,32 @@ end
 alt pagamento autorizado
 	PROCPAG --> PAY: autorizado
 	PAY -> PAYDB: atualiza transação = PAGO
-	PAY -> BROKER: publica pagamento.aprovado
-	ORDER -> BROKER: consome pagamento.aprovado
+	PAY -> BROKER: publica PAYMENT_APPROVED\n(Payments-Orchestrator.queue)
+	ORQ -> BROKER: consome Payments-Orchestrator.queue
+	ORQ -> BROKER: publica para Orchestrator-Orders.queue
+	ORDER -> BROKER: consome Orchestrator-Orders.queue
 	ORDER -> ORDERDB: atualiza pedido = PAGO
 	ORDER --> APIGW: pedido atualizado
 	APIGW --> Cliente: status final = PAGO
 else falha/timeout/circuito aberto
 	PROCPAG --> PAY: erro / indisponível
 	PAY -> PAYDB: atualiza transação = PENDENTE
-	PAY -> BROKER: publica pagamento.pendente
-	ORDER -> BROKER: consome pagamento.pendente
+	PAY -> BROKER: publica PAYMENT_PENDING\n(Payments-Orchestrator.queue)
+	ORQ -> BROKER: consome Payments-Orchestrator.queue
+	ORQ -> BROKER: publica para Orchestrator-Orders.queue
+	ORQ -> BROKER: publica para Orchestrator-Payments-Worker.queue
+	ORDER -> BROKER: consome Orchestrator-Orders.queue
 	ORDER -> ORDERDB: atualiza pedido = PENDENTE_PAGAMENTO
 	ORDER --> APIGW: pedido aceito com pendência
 	APIGW --> Cliente: status = PENDENTE_PAGAMENTO
 
 	== Reprocessamento automático ==
-	WORKER -> BROKER: consome pagamento.pendente
+	WORKER -> BROKER: consome Orchestrator-Payments-Worker.queue
 	WORKER -> PROCPAG: tenta novamente cobrança
 	PROCPAG --> WORKER: autorizado
-	WORKER -> BROKER: publica pagamento.aprovado
-	ORDER -> BROKER: consome pagamento.aprovado
+	WORKER -> BROKER: publica PAYMENT_APPROVED\n(Payments-Orchestrator.queue)
+	ORQ -> BROKER: encaminha para Orchestrator-Orders.queue
+	ORDER -> BROKER: consome Orchestrator-Orders.queue
 	ORDER -> ORDERDB: atualiza pedido = PAGO
 end
 

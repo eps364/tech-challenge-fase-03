@@ -24,8 +24,9 @@ script:post-response {
 }
 
 docs {
-  Confirma um pedido, alterando seu status para CONFIRMED e publicando o evento pedido.criado no RabbitMQ.
-  O payment-service consumirá esse evento e tentará o processamento do pagamento.
+  Confirma um pedido, alterando seu status para CONFIRMED e publicando o evento ORDER_CREATED no RabbitMQ.
+  O orchestrator-service encaminha para o payment-service, que processa com retry/circuit breaker e fallback.
+  O order-service recebe PAYMENT_APPROVED ou PAYMENT_PENDING e atualiza o status automaticamente.
   Retorna 404 se o pedido não for encontrado.
   Requer autenticação.
 }
