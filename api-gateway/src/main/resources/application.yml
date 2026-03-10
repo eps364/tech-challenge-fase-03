@@ -1,6 +1,9 @@
 spring:
   application:
     name: api-gateway
+  mvc:
+    problemdetails:
+      enabled: true
   data:
     redis:
       host: ${REDIS_HOST:redis}
