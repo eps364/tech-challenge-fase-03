@@ -14,7 +14,11 @@ Este repositório contém os serviços:
 - `order-service`
 - `payment-service`
 - `restaurant-service`
+- `orchestrator-service`
 - `keycloak` + `keycloak-db`
+- `redis` (blacklist de tokens JWT)
+- `rabbitmq` (mensageria assíncrona)
+- `procpag` (serviço externo de pagamento)
 - bancos dedicados por serviço (`*-service-db`)
 
 ## Pré-requisitos
@@ -44,10 +48,21 @@ Para desenvolvimento com hot reload em containers, use o guia:
 
 ## Endereços dos serviços
 
-- Keycloak: http://localhost:8000
-- Service Registry (Eureka): http://localhost:8762
-- API Gateway: http://localhost:8761
-- ProcPag OpenAPI: http://localhost:8089/openapi.yml
+| Serviço | URL |
+|---|---|
+| Keycloak Admin | http://localhost:8080/admin |
+| Service Registry (Eureka) | http://localhost:8762 |
+| API Gateway | http://localhost:8761 |
+| RabbitMQ Management | http://localhost:15672 |
+| ProcPag OpenAPI | http://localhost:8089/openapi.yml |
+| Redis | localhost:6379 |
+
+## Segurança — Invalidação de Token (Logout)
+
+Após `POST /auth-service/auth/logout`, o token JWT emitido é imediatamente invalidado:
+
+1. O `auth-service` revoga a sessão no Keycloak e grava o `jti` do token no **Redis** com TTL igual ao tempo restante de vida do token.
+2. O `api-gateway` verifica toda requisição entrante contra a blacklist Redis antes de encaminhar — tokens blacklistados recebem `401 Unauthorized` imediatamente, independente de ainda estarem dentro da validade Keycloak.
 
 ## Usuários e senhas
 
