@@ -1,10 +1,11 @@
 package br.com.fiap.authservice.infra.gateway;
 
+import org.springframework.stereotype.Component;
+
 import br.com.fiap.authservice.core.domain.User;
 import br.com.fiap.authservice.core.gateway.UserGateway;
-import br.com.fiap.authservice.infra.persistence.UserEntity;
-import br.com.fiap.authservice.infra.persistence.UserRepository;
-import org.springframework.stereotype.Component;
+import br.com.fiap.authservice.infra.entity.UserEntity;
+import br.com.fiap.authservice.infra.repository.UserRepository;
 
 @Component
 public class UserGatewayImpl implements UserGateway {

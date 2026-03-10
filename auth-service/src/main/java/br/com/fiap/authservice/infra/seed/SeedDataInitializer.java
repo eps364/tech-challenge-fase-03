@@ -15,9 +15,10 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import br.com.fiap.authservice.infra.persistence.UserEntity;
-import br.com.fiap.authservice.infra.persistence.UserRepository;
+import br.com.fiap.authservice.infra.entity.UserEntity;
+import br.com.fiap.authservice.infra.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
+
 
 /**
  * Inicializa os usuários de seed no Keycloak e no banco local do auth-service.
