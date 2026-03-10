@@ -4,6 +4,7 @@ Este arquivo define as diretrizes obrigatórias para a atuação do Antigravity 
 
 ## 1. Arquitetura e Estrutura
 - **Clean Architecture**: Cada microsserviço deve seguir a separação clara entre `core` (domínio/casos de uso) e `infra` (persistência, mensageria, gateways externos).
+- **Mensageria por direção**: listeners/consumidores devem ficar em `infra.adapters.inbound.messaging` e publishers/producers em `infra.adapters.outbound.messaging`.
 - **Módulos Existentes**: Respeitar a estrutura de: `api-gateway`, `auth-service`, `catalog-service`, `client-service`, `orchestrator-service`, `order-service`, `payment-service`, `restaurant-service`, `service-registry`.
 - **Banco de Dados**: Um banco por serviço (`<service-name>-db`), usando Postgres com credenciais padrão (`postgres`/`password`) para ambiente Docker.
 
@@ -34,3 +35,7 @@ Eventos obrigatórios e fluxo:
 
 ## 6. Regra de Ouro
 Toda sugestão de código deve preservar a rastreabilidade do status do pedido e a clareza arquitetural dos microsserviços. Não introduzir dependências que quebrem a execução via Docker Compose.
+
+## 7. Contexto e Precedência
+- Considerar sempre `.github/copilot-instructions.md` e a pasta `.agent` como fontes complementares de contexto e instruções do repositório.
+- Em caso de conflito entre instruções, aplicar a regra mais específica para o módulo/arquivo alvo.
