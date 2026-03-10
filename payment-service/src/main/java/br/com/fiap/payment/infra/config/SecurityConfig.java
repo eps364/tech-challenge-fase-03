@@ -1,4 +1,4 @@
-package br.com.fiap.payment.config;
+package br.com.fiap.payment.infra.config;
 
 import java.util.Collections;
 import java.util.List;
