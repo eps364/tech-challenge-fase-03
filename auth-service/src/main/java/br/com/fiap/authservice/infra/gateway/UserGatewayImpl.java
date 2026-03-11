@@ -31,7 +31,8 @@ public class UserGatewayImpl implements UserGateway {
                 saved.getUsername(),
                 saved.getEmail(),
                 saved.getFirstName(),
-                saved.getLastName()
+                saved.getLastName(),
+                null
         );
     }
 }

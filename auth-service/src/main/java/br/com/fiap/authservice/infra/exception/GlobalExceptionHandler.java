@@ -6,9 +6,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import br.com.fiap.authservice.core.domain.ValidationException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ValidationException.class)
+    public ProblemDetail handleValidation(ValidationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Domain validation failed");
+        problem.setTitle("Validation Error");
+        problem.setType(URI.create("urn:problem:auth:validation-error"));
+
+        Map<String, String> errors = new LinkedHashMap<>();
+        errors.put(ex.getField(), ex.getMessage());
+
+        problem.setProperty("errors", errors);
+        return problem;
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {

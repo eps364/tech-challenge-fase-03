@@ -19,14 +19,11 @@ public class RegisterUserUseCase {
         // 1. Create user in Keycloak
         String keycloakId = identityProviderGateway.createUser(user, password);
         
-        // 2. Set ID from Keycloak (standard practice to sync IDs if possible, or store Keycloak ID)
-        user.setId(UUID.fromString(keycloakId));
+        // 2. Set ID from Keycloak
+        User userWithId = user.withId(UUID.fromString(keycloakId));
 
         // 3. Save user in local database
-        User savedUser = userGateway.save(user);
-
-        // 4. Preserve roles from Keycloak
-        savedUser.setRoles(user.getRoles());
+        User savedUser = userGateway.save(userWithId);
 
         return savedUser;
     }

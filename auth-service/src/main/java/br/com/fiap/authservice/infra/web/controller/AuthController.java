@@ -43,8 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
-        User user = new User(
-                null,
+        User user = User.create(
                 request.username(),
                 request.email(),
                 request.firstName(),
