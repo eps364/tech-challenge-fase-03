@@ -13,7 +13,7 @@ public class CreateProductUseCase {
     }
 
     public ProductResponse execute(ProductRequest req) {
-        Product product = new Product(null, req.name(), req.price(), req.restaurantId(), req.foodType());
+        Product product = Product.create(req.name(), req.price(), req.restaurantId(), req.foodType());
         Product saved = repo.save(product);
         return new ProductResponse(saved.getId(), saved.getName(), saved.getPrice(), saved.getRestaurantId(), saved.getFoodType());
     }
