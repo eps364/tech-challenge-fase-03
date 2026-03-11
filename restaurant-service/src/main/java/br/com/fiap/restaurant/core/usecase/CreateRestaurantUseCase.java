@@ -21,10 +21,8 @@ public class CreateRestaurantUseCase {
 
     public RestaurantResponse execute(RestaurantRequest req, UUID creatorId, boolean isAdmin) {
         List<UUID> owners = creatorId != null ? new ArrayList<>(List.of(creatorId)) : new ArrayList<>();
-        Restaurant r = new Restaurant(
-                UUID.randomUUID(),
+        Restaurant r = Restaurant.create(
                 req.name(),
-                req.active(),
                 req.street(), req.number(), req.district(), req.complement(),
                 req.city(), req.state(), req.zipCode(),
                 owners
