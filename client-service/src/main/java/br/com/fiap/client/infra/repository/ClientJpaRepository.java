@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import br.com.fiap.client.infra.entity.ClientEntity;
 
 public interface ClientJpaRepository extends JpaRepository<ClientEntity, UUID> {
+    boolean existsByCpf(String cpf);
+    boolean existsByCpfAndIdNot(String cpf, UUID id);
 }

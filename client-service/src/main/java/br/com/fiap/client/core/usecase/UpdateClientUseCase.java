@@ -23,6 +23,10 @@ public class UpdateClientUseCase {
         Client current = repo.findById(targetId)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found: " + targetId));
 
+        if (repo.existsByCpfAndIdNot(request.cpf(), targetId)) {
+            throw new ClientConflictException("CPF already exists for another user");
+        }
+
         Address currentAddress = current.getAddress();
         UUID addressId = currentAddress == null ? UUID.randomUUID() : currentAddress.getId();
 
@@ -38,7 +42,7 @@ public class UpdateClientUseCase {
                         request.address().state(),
                         request.address().zipCode());
 
-        Client updated = new Client(current.getId(), request.cpf(), newAddress, current.isActive());
+        Client updated = current.withProfile(request.cpf(), newAddress);
         Client saved = repo.save(updated);
         return toResponse(saved);
     }

@@ -8,6 +8,8 @@ import br.com.fiap.client.core.domain.Client;
 public interface ClientRepositoryPort {
     Optional<Client> findById(UUID id);
     boolean existsById(UUID id);
+    boolean existsByCpf(String cpf);
+    boolean existsByCpfAndIdNot(String cpf, UUID id);
     Client save(Client client);
     void deleteById(UUID id);
 }

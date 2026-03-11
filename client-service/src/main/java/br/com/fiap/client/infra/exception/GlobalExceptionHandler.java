@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import br.com.fiap.client.core.usecase.ClientAccessDeniedException;
 import br.com.fiap.client.core.usecase.ClientConflictException;
 import br.com.fiap.client.core.usecase.ClientNotFoundException;
+import br.com.fiap.client.core.usecase.ValidationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,7 +28,10 @@ public class GlobalExceptionHandler {
         problem.setType(URI.create("urn:problem:client:invalid-request"));
 
         Map<String, String> errors = new LinkedHashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
         problem.setProperty("errors", errors);
         return problem;
     }
@@ -52,6 +57,21 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
         problem.setTitle("Access Denied");
         problem.setType(URI.create("urn:problem:client:access-denied"));
+        return problem;
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ProblemDetail handleValidation(ValidationException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Domain validation failed");
+        problem.setTitle("Validation Error");
+        problem.setType(URI.create("urn:problem:client:validation-error"));
+
+        Map<String, String> errors = new LinkedHashMap<>();
+        errors.put(ex.getField(), ex.getMessage());
+
+        problem.setProperty("errors", errors);
         return problem;
     }
 

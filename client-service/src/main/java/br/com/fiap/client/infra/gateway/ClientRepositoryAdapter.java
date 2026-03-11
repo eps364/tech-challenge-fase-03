@@ -33,6 +33,16 @@ public class ClientRepositoryAdapter implements ClientRepositoryPort {
     }
 
     @Override
+    public boolean existsByCpf(String cpf) {
+        return repo.existsByCpf(cpf);
+    }
+
+    @Override
+    public boolean existsByCpfAndIdNot(String cpf, UUID id) {
+        return repo.existsByCpfAndIdNot(cpf, id);
+    }
+
+    @Override
     public Client save(Client client) {
         try {
             ClientEntity saved = repo.save(toEntity(client));

@@ -21,14 +21,18 @@ public class CreateClientUseCase {
     public ClientResponse execute(UUID targetId, UUID callerId, boolean isAdmin, ClientRequest request) {
         validateOwnership(targetId, callerId, isAdmin);
 
+        if (repo.existsByCpf(request.cpf())) {
+            throw new ClientConflictException("CPF already exists for another user");
+        }
+
         if (repo.existsById(targetId)) {
             throw new ClientConflictException("Client already exists for id: " + targetId);
         }
 
         Address address = toAddress(request.address());
-        Client created = new Client(targetId, request.cpf(), address, true);
-        Client saved = repo.save(created);
-        return toResponse(saved);
+        Client client = new Client(targetId, request.cpf(), address, true);
+        Client savedClient = repo.save(client);
+        return toResponse(savedClient);
     }
 
     private void validateOwnership(UUID targetId, UUID callerId, boolean isAdmin) {
