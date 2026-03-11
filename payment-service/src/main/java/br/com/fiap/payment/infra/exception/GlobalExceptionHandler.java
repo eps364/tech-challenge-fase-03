@@ -7,14 +7,17 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import br.com.fiap.payment.core.domain.ValidationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
+    @ExceptionHandler(ValidationException.class)
+    public ProblemDetail handleValidation(ValidationException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         problem.setTitle("Invalid Request");
         problem.setType(URI.create("urn:problem:payment:invalid-request"));
+        problem.setProperty("field", ex.getField());
         return problem;
     }
 
