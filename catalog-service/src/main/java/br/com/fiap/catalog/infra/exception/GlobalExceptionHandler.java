@@ -12,8 +12,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import br.com.fiap.catalog.core.usecase.ProductNotFoundException;
 import br.com.fiap.catalog.core.usecase.ProductAccessDeniedException;
 import br.com.fiap.catalog.core.domain.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import feign.FeignException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ProblemDetail handleProductNotFound(ProductNotFoundException ex) {
@@ -54,11 +61,36 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(DataAccessException.class)
+    public ProblemDetail handleDataAccessException(DataAccessException ex) {
+        log.error("Database error: {}", ex.getMessage(), ex);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "A database error occurred. Please try again later.");
+        problem.setTitle("Database Error");
+        problem.setType(URI.create("urn:problem:catalog:database-error"));
+        return problem;
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ProblemDetail handleFeignException(FeignException ex) {
+        log.error("Service communication error: {} - {} - {}", ex.status(), ex.request().url(), ex.contentUTF8(), ex);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_GATEWAY,
+                "The service communicated with an internal component that returned an error.");
+        problem.setTitle("Service Coordination Error");
+        problem.setType(URI.create("urn:problem:catalog:service-error"));
+        return problem;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneric(Exception ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        log.error("Unexpected error: {}", ex.getMessage(), ex);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected error occurred. Please contact support if the problem persists.");
         problem.setTitle("Internal Server Error");
-        problem.setType(URI.create("https://catalog-service/errors/internal-error"));
+        problem.setType(URI.create("urn:problem:catalog:internal-error"));
         return problem;
     }
 }

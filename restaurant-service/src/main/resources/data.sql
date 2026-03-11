@@ -1,4 +1,4 @@
-INSERT INTO restaurants (id, nome, ativo, street, number, district, complement, city, state, zip_code) VALUES
+INSERT INTO restaurants (id, name, active, street, number, district, complement, city, state, zip_code) VALUES
     ('a1b2c3d4-0001-0001-0001-000000000001', 'Pizzaria Bella Napoli',      true, 'Rua Augusta',               '1500', 'Consolação',      'Loja 1',    'São Paulo',       'SP', '01305-100'),
     ('a1b2c3d4-0001-0001-0001-000000000002', 'Sushi Garden',               true, 'Av. Paulista',              '900',  'Bela Vista',      NULL,        'São Paulo',       'SP', '01310-200'),
     ('a1b2c3d4-0001-0001-0001-000000000003', 'Churrascaria Gaúcha',        true, 'Rua das Flores',            '200',  'Centro',          NULL,        'Porto Alegre',    'RS', '90010-050'),

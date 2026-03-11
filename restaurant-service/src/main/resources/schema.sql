@@ -1,7 +1,10 @@
+DROP TABLE IF EXISTS restaurant_owners;
+DROP TABLE IF EXISTS restaurants;
+
 CREATE TABLE IF NOT EXISTS restaurants (
     id          UUID         PRIMARY KEY,
-    nome        VARCHAR(255) NOT NULL,
-    ativo       BOOLEAN      NOT NULL DEFAULT true,
+    name        VARCHAR(255) NOT NULL,
+    active       BOOLEAN      NOT NULL DEFAULT true,
     street      VARCHAR(255),
     number      VARCHAR(50),
     district    VARCHAR(255),
