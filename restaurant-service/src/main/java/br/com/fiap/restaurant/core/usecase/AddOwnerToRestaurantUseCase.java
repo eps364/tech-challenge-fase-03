@@ -1,11 +1,12 @@
 package br.com.fiap.restaurant.core.usecase;
+
 import java.util.UUID;
 
 import br.com.fiap.restaurant.core.domain.Restaurant;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
 import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
 import br.com.fiap.restaurant.core.gateway.RestaurantRepositoryPort;
-import br.com.fiap.restaurant.core.usecase.RestaurantNotFoundException;
+
 public class AddOwnerToRestaurantUseCase {
 
     private final RestaurantRepositoryPort repository;
