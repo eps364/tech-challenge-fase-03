@@ -16,7 +16,9 @@
     - Classes/Methods/Variables: English.
     - Packages: All lowercase, no underscores (e.g., `br.com.fiap.order.core`).
     - DTOs: Use `record` for application DTOs in `core.dto`. `Request`/`Response` naming convention.
-- **Response Format**: Error handling follows **RFC 7807** (Problem Details) using `ProblemDetail` and `@RestControllerAdvice`.
+- **Response Format**: 
+    - Error handling follows **RFC 7807** (Problem Details) using `ProblemDetail` and `@RestControllerAdvice`.
+    - **Validation Messages**: Must be in **English** and specify the field (e.g., "The price must be positive").
 
 ## Version Control
 - **Conventional Commits**: Use `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`.

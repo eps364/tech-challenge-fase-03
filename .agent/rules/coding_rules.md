@@ -45,4 +45,6 @@ src/main/java/br/com/fiap/<service>/
 ## Validation Rules
 1. **No Frameworks in Core**: Nunca importe `org.springframework.*`, `jakarta.persistence.*`, ou `com.fasterxml.jackson.*` no pacote `core`.
 2. **Rich Domain**: Se houver lógica de validação (ex: "pedido não pode ser vazio"), ela deve estar na `Entity` de domínio, não no `UseCase`.
-3. **Manual Mapping**: O mapeamento de `Domain` -> `Infra Entity` e vice-versa deve ser feito manualmente no `Adapter`.
+3. **Field Validation Messages**: Todo erro de validação deve ser em **Inglês** e indicar claramente qual campo está com problema.
+    - **Example**: "The name cannot be empty or null", "The quantity must be greater than zero".
+4. **Manual Mapping**: O mapeamento de `Domain` -> `Infra Entity` e vice-versa deve ser feito manualmente no `Adapter`.
