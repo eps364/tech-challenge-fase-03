@@ -1,41 +1,28 @@
 # Antigravity Instructions - Tech Challenge Fase 03
 
-Este arquivo define as diretrizes obrigatórias para a atuação do Antigravity neste repositório, focando nos objetivos da Fase 3: arquitetura distribuída, segurança, comunicação assíncrona e resiliência.
+Este arquivo define as diretrizes obrigatórias para a atuação do Antigravity neste repositório. Para facilitar o reuso e a organização, o contexto foi separado em arquivos específicos na pasta `.agent/context/`.
 
-## 1. Arquitetura e Estrutura
-- **Clean Architecture**: Cada microsserviço deve seguir a separação clara entre `core` (domínio/casos de uso) e `infra` (persistência, mensageria, gateways externos).
-- **Mensageria por direção**: listeners/consumidores devem ficar em `infra.adapters.inbound.messaging` e publishers/producers em `infra.adapters.outbound.messaging`.
-- **Módulos Existentes**: Respeitar a estrutura de: `api-gateway`, `auth-service`, `catalog-service`, `client-service`, `orchestrator-service`, `order-service`, `payment-service`, `restaurant-service`, `service-registry`.
-- **Banco de Dados**: Um banco por serviço (`<service-name>-db`), usando Postgres com credenciais padrão (`postgres`/`password`) para ambiente Docker.
+## Fontes de Contexto Obrigatórias
 
-## 2. Requisitos de Resiliência (Resilience4j)
-Na integração com o serviço de pagamento externo:
-- **Circuit Breaker**: Impedir chamadas a serviços instáveis.
-- **Retry & Timeout**: Configurar tentativas de reexecução e tempos limite.
-- **Fallback**: Em caso de falha/timeout, o status deve ser `PENDENTE_PAGAMENTO` e uma mensagem deve ser enfileirada para reprocessamento automático quando o serviço normalizar.
+Sempre consulte os arquivos abaixo para garantir que todas as interações e gerações de código estejam alinhadas com as definições do projeto:
 
-## 3. Comunicação Assíncrona (Kafka)
-Eventos obrigatórios e fluxo:
-- `pedido.criado` (publicado pelo `order-service`).
-- `pagamento.aprovado` (publicado pelo `payment-service`).
-- `pagamento.pendente` (publicado em caso de fallback).
-- Evitar acoplamento direto; preferir eventos para manter a consistência eventual.
+1.  **Regras de Negócio**: [.agent/context/business_rules.md](file:///.agent/context/business_rules.md) - Domínio, fluxos de pedido/pagamento e eventos.
+2.  **Arquitetura**: [.agent/context/architecture.md](file:///.agent/context/architecture.md) - Estrutura de microsserviços, Clean Architecture e Banco de Dados.
+3.  **Boas Práticas**: [.agent/context/best_practices.md](file:///.agent/context/best_practices.md) - Padrões de código, naming, commits e testes.
+4.  **Tecnologias**: [.agent/context/technologies.md](file:///.agent/context/technologies.md) - Stack tecnológica detalhada.
+5.  **Histórico e Mantenedores**: [.agent/context/tech_history.md](file:///.agent/context/tech_history.md) - Contexto histórico das tecnologias utilizadas.
+6.  **Sugestões e Evolução**: [.agent/context/suggestions.md](file:///.agent/context/suggestions.md) - Próximos passos e melhorias sugeridas.
 
-## 4. Segurança (Spring Security + JWT)
-- Identidade do cliente extraída obrigatoriamente do token JWT.
-- Diferenciação de perfis (client/owner/admin).
-- Endpoints de login/registro abertos; pedidos/pagamentos protegidos.
+## Princípios Mandatórios
 
-## 5. Padrões de Desenvolvimento e Qualidade
-- **Conventional Commits**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`. Mensagens em inglês.
-- **Documentação**: Manter diagramas de sequência em `docs/diagrams` atualizados.
-- **Coleções Bruno (`docs/API`)**: manter o padrão no `meta.name` das requests com dois ícones: domínio (`🔐`, `🛡️`, `👤`, `📦`, `🧾`, `💳`, `🍽️`) + permissão (`🌐` público, `🙋` user autenticado, `👑` owner/admin, `🛠️` admin).
-- **Testes**: Sempre adicionar ou ajustar testes unitários ao alterar regras de negócio. Priorizar testes de integração para fluxos entre serviços.
-- **Ambiente**: Garantir que o `compose.yml` e o build (`./mvnw clean install`) continuem funcionando após alterações.
+1.  **Rich Domain Model**: A lógica de negócio **deve** residir nas entidades de domínio e objetos de valor dentro do `core`. Evite serviços anêmicos que apenas passam dados.
+2.  **Pure Java Core**: O pacote `core` deve ser **estritamente Java puro**. Nenhuma anotação de framework (JPA, Spring, Jakarta, Jackson) ou dependência de infraestrutura é permitida.
+3.  **SOLID e DRY**: Aplique rigorosamente os princípios SOLID. Use interfaces (portas) para desacoplar o `core` de implementações externas (adaptadores).
+4.  **Saga Pattern**: Fluxos complexos entre serviços devem ser orquestrados pelo `orchestrator-service` via RabbitMQ.
 
-## 6. Regra de Ouro
+## Regra de Ouro
 Toda sugestão de código deve preservar a rastreabilidade do status do pedido e a clareza arquitetural dos microsserviços. Não introduzir dependências que quebrem a execução via Docker Compose.
 
-## 7. Contexto e Precedência
-- Considerar sempre `.github/copilot-instructions.md` e a pasta `.agent` como fontes complementares de contexto e instruções do repositório.
-- Em caso de conflito entre instruções, aplicar a regra mais específica para o módulo/arquivo alvo.
+---
+**Nota**: Em caso de conflito, as instruções específicas nos arquivos de contexto em `.agent/context/` têm prioridade sobre resumos gerais. Consulte também `.github/copilot-instructions.md` para diretrizes adicionais.
+
