@@ -7,7 +7,9 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.fiap.order.core.usecase.OrderValidationException;import br.com.fiap.order.core.usecase.OrderNotFoundException;
+import br.com.fiap.order.core.domain.ValidationException;
+import br.com.fiap.order.core.usecase.OrderNotFoundException;
+import br.com.fiap.order.core.usecase.OrderValidationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -25,6 +27,15 @@ public class GlobalExceptionHandler {
         pd.setType(URI.create("urn:problem:order-validation"));
         pd.setTitle("Order Validation Failed");
         pd.setProperty("fields", ex.getFields());
+        return pd;
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ProblemDetail handleValidation(ValidationException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        pd.setType(URI.create("urn:problem:order:invalid-request"));
+        pd.setTitle("Invalid Request");
+        pd.setProperty("field", ex.getField());
         return pd;
     }
 

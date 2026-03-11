@@ -49,14 +49,7 @@ public class CreateOrderUseCase {
             throw new OrderValidationException(errors);
         }
 
-        BigDecimal total = items.stream()
-                .map(OrderItem::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        Order order = new Order(
-                UUID.randomUUID(), clientId, req.restaurantId(),
-                items, OrderStatus.PENDING_PAYMENT, total, Instant.now()
-        );
+        Order order = Order.create(clientId, req.restaurantId(), items);
 
         Order saved = repo.save(order);
         eventPublisher.publishOrderCreated(saved);
