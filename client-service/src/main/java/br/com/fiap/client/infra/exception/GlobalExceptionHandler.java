@@ -1,14 +1,59 @@
 package br.com.fiap.client.infra.exception;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import br.com.fiap.client.core.usecase.ClientAccessDeniedException;
+import br.com.fiap.client.core.usecase.ClientConflictException;
+import br.com.fiap.client.core.usecase.ClientNotFoundException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "Request validation failed");
+        problem.setTitle("Invalid Request");
+        problem.setType(URI.create("urn:problem:client:invalid-request"));
+
+        Map<String, String> errors = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        problem.setProperty("errors", errors);
+        return problem;
+    }
+
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ProblemDetail handleNotFound(ClientNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Client Not Found");
+        problem.setType(URI.create("urn:problem:client:not-found"));
+        return problem;
+    }
+
+    @ExceptionHandler(ClientConflictException.class)
+    public ProblemDetail handleConflict(ClientConflictException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Client Conflict");
+        problem.setType(URI.create("urn:problem:client:conflict"));
+        return problem;
+    }
+
+    @ExceptionHandler(ClientAccessDeniedException.class)
+    public ProblemDetail handleAccessDenied(ClientAccessDeniedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setTitle("Access Denied");
+        problem.setType(URI.create("urn:problem:client:access-denied"));
+        return problem;
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {

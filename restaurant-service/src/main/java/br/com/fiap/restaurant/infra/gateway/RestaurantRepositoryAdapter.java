@@ -6,34 +6,34 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import br.com.fiap.restaurant.core.domain.Restaurante;
-import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
+import br.com.fiap.restaurant.core.domain.Restaurant;
+import br.com.fiap.restaurant.core.gateway.RestaurantRepositoryPort;
 import br.com.fiap.restaurant.infra.entity.RestaurantEntity;
 import br.com.fiap.restaurant.infra.repository.RestaurantJpaRepository;
 
 @Repository
-public class RestauranteRepositoryAdapter implements RestauranteRepositoryPort {
+public class RestaurantRepositoryAdapter implements RestaurantRepositoryPort {
 
     private final RestaurantJpaRepository jpa;
 
-    public RestauranteRepositoryAdapter(RestaurantJpaRepository jpa) {
+    public RestaurantRepositoryAdapter(RestaurantJpaRepository jpa) {
         this.jpa = jpa;
     }
 
     @Override
-    public List<Restaurante> findAll() {
+    public List<Restaurant> findAll() {
         return jpa.findAll().stream().map(this::toDomain).toList();
     }
 
     @Override
-    public Optional<Restaurante> findById(UUID id) {
+    public Optional<Restaurant> findById(UUID id) {
         return jpa.findById(id).map(this::toDomain);
     }
 
     @Override
-    public Restaurante save(Restaurante r) {
+    public Restaurant save(Restaurant r) {
         RestaurantEntity entity = new RestaurantEntity(
-                r.getId(), r.getNome(), r.isAtivo(),
+                r.getId(), r.getName(), r.isActive(),
                 r.getStreet(), r.getNumber(), r.getDistrict(), r.getComplement(),
                 r.getCity(), r.getState(), r.getZipCode()
         );
@@ -46,8 +46,8 @@ public class RestauranteRepositoryAdapter implements RestauranteRepositoryPort {
         jpa.deleteById(id);
     }
 
-    private Restaurante toDomain(RestaurantEntity e) {
-        return new Restaurante(e.getId(), e.getNome(), e.isAtivo(),
+    private Restaurant toDomain(RestaurantEntity e) {
+        return new Restaurant(e.getId(), e.getName(), e.isActive(),
                 e.getStreet(), e.getNumber(), e.getDistrict(), e.getComplement(),
                 e.getCity(), e.getState(), e.getZipCode(),
                 new java.util.ArrayList<>(e.getOwners()));

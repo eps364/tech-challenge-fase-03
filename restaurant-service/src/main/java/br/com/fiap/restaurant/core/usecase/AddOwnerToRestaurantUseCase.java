@@ -1,35 +1,35 @@
 package br.com.fiap.restaurant.core.usecase;
 import java.util.UUID;
 
-import br.com.fiap.restaurant.core.domain.Restaurante;
+import br.com.fiap.restaurant.core.domain.Restaurant;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
 import br.com.fiap.restaurant.core.gateway.KeycloakAdminPort;
-import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
+import br.com.fiap.restaurant.core.gateway.RestaurantRepositoryPort;
 import br.com.fiap.restaurant.core.usecase.RestaurantNotFoundException;
 public class AddOwnerToRestaurantUseCase {
 
-    private final RestauranteRepositoryPort repository;
+    private final RestaurantRepositoryPort repository;
     private final KeycloakAdminPort keycloakAdminPort;
 
-    public AddOwnerToRestaurantUseCase(RestauranteRepositoryPort repository,
+    public AddOwnerToRestaurantUseCase(RestaurantRepositoryPort repository,
                                        KeycloakAdminPort keycloakAdminPort) {
         this.repository = repository;
         this.keycloakAdminPort = keycloakAdminPort;
     }
 
     public RestaurantResponse execute(UUID restaurantId, UUID userId) {
-        Restaurante restaurant = repository.findById(restaurantId)
+        Restaurant restaurant = repository.findById(restaurantId)
                 .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
 
-        Restaurante updated = restaurant.addOwner(userId);
-        Restaurante saved = repository.save(updated);
+        Restaurant updated = restaurant.addOwner(userId);
+        Restaurant saved = repository.save(updated);
 
         keycloakAdminPort.assignOwnerRole(userId);
 
         return new RestaurantResponse(
                 saved.getId(),
-                saved.getNome(),
-                saved.isAtivo(),
+                saved.getName(),
+                saved.isActive(),
                 saved.getStreet(),
                 saved.getNumber(),
                 saved.getDistrict(),

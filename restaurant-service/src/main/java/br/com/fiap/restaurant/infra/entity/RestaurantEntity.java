@@ -21,10 +21,10 @@ public class RestaurantEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private String nome;
+    private String name;
 
     @Column(nullable = false)
-    private boolean ativo;
+    private boolean active;
 
     private String street;
     private String number;
@@ -44,12 +44,12 @@ public class RestaurantEntity {
 
     protected RestaurantEntity() {}
 
-    public RestaurantEntity(UUID id, String nome, boolean ativo,
+    public RestaurantEntity(UUID id, String name, boolean active,
                             String street, String number, String district, String complement,
                             String city, String state, String zipCode) {
         this.id = id;
-        this.nome = nome;
-        this.ativo = ativo;
+        this.name = name;
+        this.active = active;
         this.street = street;
         this.number = number;
         this.district = district;
@@ -60,8 +60,8 @@ public class RestaurantEntity {
     }
 
     public UUID getId()           { return id; }
-    public String getNome()       { return nome; }
-    public boolean isAtivo()      { return ativo; }
+    public String getName()       { return name; }
+    public boolean isActive()      { return active; }
     public String getStreet()     { return street; }
     public String getNumber()     { return number; }
     public String getDistrict()   { return district; }

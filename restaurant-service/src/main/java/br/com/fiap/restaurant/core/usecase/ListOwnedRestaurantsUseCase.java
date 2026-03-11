@@ -2,15 +2,15 @@ package br.com.fiap.restaurant.core.usecase;
 import java.util.List;
 import java.util.UUID;
 
-import br.com.fiap.restaurant.core.domain.Restaurante;
+import br.com.fiap.restaurant.core.domain.Restaurant;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
-import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
+import br.com.fiap.restaurant.core.gateway.RestaurantRepositoryPort;
 
 public class ListOwnedRestaurantsUseCase {
 
-    private final RestauranteRepositoryPort repo;
+    private final RestaurantRepositoryPort repo;
 
-    public ListOwnedRestaurantsUseCase(RestauranteRepositoryPort repo) {
+    public ListOwnedRestaurantsUseCase(RestaurantRepositoryPort repo) {
         this.repo = repo;
     }
 
@@ -21,8 +21,8 @@ public class ListOwnedRestaurantsUseCase {
                 .toList();
     }
 
-    private RestaurantResponse toResponse(Restaurante r) {
-        return new RestaurantResponse(r.getId(), r.getNome(), r.isAtivo(),
+    private RestaurantResponse toResponse(Restaurant r) {
+        return new RestaurantResponse(r.getId(), r.getName(), r.isActive(),
                 r.getStreet(), r.getNumber(), r.getDistrict(), r.getComplement(),
                 r.getCity(), r.getState(), r.getZipCode(), r.getOwners(), false);
     }

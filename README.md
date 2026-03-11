@@ -82,6 +82,8 @@ Exemplos de nomenclatura:
 | RabbitMQ Management | http://localhost:15672 |
 | ProcPag OpenAPI | http://localhost:8089/openapi.yml |
 | Redis | localhost:6379 |
+| AkHQ | http://localhost:8085 |
+| RabbitMQ | http://localhost:15672 |
 
 ## Segurança — Invalidação de Token (Logout)
 

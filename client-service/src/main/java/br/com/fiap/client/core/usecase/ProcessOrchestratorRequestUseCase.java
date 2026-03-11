@@ -3,14 +3,14 @@ package br.com.fiap.client.core.usecase;
 import java.util.Map;
 import java.util.UUID;
 
-import br.com.fiap.client.core.domain.Cliente;
-import br.com.fiap.client.core.gateway.ClientesRepositoryPort;
+import br.com.fiap.client.core.domain.Client;
+import br.com.fiap.client.core.gateway.ClientRepositoryPort;
 
 public class ProcessOrchestratorRequestUseCase {
 
-    private final ClientesRepositoryPort repo;
+    private final ClientRepositoryPort repo;
 
-    public ProcessOrchestratorRequestUseCase(ClientesRepositoryPort repo) {
+    public ProcessOrchestratorRequestUseCase(ClientRepositoryPort repo) {
         this.repo = repo;
     }
 
@@ -19,10 +19,10 @@ public class ProcessOrchestratorRequestUseCase {
         if (isClientActivate(cmd.type())) {
             UUID clientId = resolveClientId(cmd.payload());
 
-            Cliente client = repo.findById(clientId)
+            Client client = repo.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Client not found: " + clientId));
 
-            Cliente updatedClient = client.ativar();
+            Client updatedClient = client.activate();
             repo.save(updatedClient);
 
             return new ProcessOrchestratorRequestResult(
@@ -30,7 +30,8 @@ public class ProcessOrchestratorRequestUseCase {
                 "CLIENT_ACTIVATED",
                     Map.of(
                     "clientId", updatedClient.getId().toString(),
-                    "active", updatedClient.isAtivo()
+                        "active", updatedClient.isActive(),
+                    "cpf", updatedClient.getCpf()
                     )
             );
         }
@@ -43,7 +44,7 @@ public class ProcessOrchestratorRequestUseCase {
     }
 
     private boolean isClientActivate(String type) {
-        return "CLIENT_ACTIVATE".equals(type) || "CLIENTE_ATIVAR".equals(type);
+        return "CLIENT_ACTIVATE".equals(type);
     }
 
     private UUID resolveClientId(Map<String, Object> payload) {

@@ -28,6 +28,7 @@ public class RouteSecurityRulesStore {
     private static final String USER_ROLE = "user";
     private static final String CATALOG_PRODUCTS = "/catalog-service/products";
     private static final String CATALOG_PRODUCTS_WILDCARD = "/catalog-service/products/**";
+    private static final String CLIENTS_RESOURCE_WILDCARD = "/client-service/clients/**";
     private static final TypeReference<List<RouteSecurityRuleDocument>> RULES_DOCUMENT_TYPE = new TypeReference<>() {
     };
 
@@ -149,8 +150,13 @@ public class RouteSecurityRulesStore {
                 new RouteSecurityRule(25, null, "/client-service/test/private", RouteAccessType.HAS_ANY_ROLE, List.of(USER_ROLE)),
                 new RouteSecurityRule(26, null, "/catalog-service/test/private", RouteAccessType.HAS_ANY_ROLE, List.of(USER_ROLE)),
 
-                new RouteSecurityRule(27, null, "/gateway/security/routes", RouteAccessType.HAS_ANY_ROLE, List.of(ADMIN_ROLE)),
-                new RouteSecurityRule(28, null, "/gateway/security/routes/**", RouteAccessType.HAS_ANY_ROLE, List.of(ADMIN_ROLE))
+                new RouteSecurityRule(27, HttpMethod.POST, CLIENTS_RESOURCE_WILDCARD, RouteAccessType.HAS_ANY_ROLE, List.of(USER_ROLE, ADMIN_ROLE)),
+                new RouteSecurityRule(28, HttpMethod.GET, CLIENTS_RESOURCE_WILDCARD, RouteAccessType.HAS_ANY_ROLE, List.of(USER_ROLE, ADMIN_ROLE)),
+                new RouteSecurityRule(29, HttpMethod.PUT, CLIENTS_RESOURCE_WILDCARD, RouteAccessType.HAS_ANY_ROLE, List.of(USER_ROLE, ADMIN_ROLE)),
+                new RouteSecurityRule(30, HttpMethod.DELETE, CLIENTS_RESOURCE_WILDCARD, RouteAccessType.HAS_ANY_ROLE, List.of(USER_ROLE, ADMIN_ROLE)),
+
+                new RouteSecurityRule(31, null, "/gateway/security/routes", RouteAccessType.HAS_ANY_ROLE, List.of(ADMIN_ROLE)),
+                new RouteSecurityRule(32, null, "/gateway/security/routes/**", RouteAccessType.HAS_ANY_ROLE, List.of(ADMIN_ROLE))
         );
     }
 

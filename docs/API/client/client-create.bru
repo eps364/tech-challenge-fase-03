@@ -1,0 +1,32 @@
+meta {
+  name: 👤 🙋 Client - Create
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{base_url}}/client-service/clients/{{user_id}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "cpf": "12345678901",
+    "address": {
+      "street": "Rua das Flores",
+      "number": "123",
+      "neighborhood": "Centro",
+      "complement": "Apto 101",
+      "city": "Sao Paulo",
+      "state": "SP",
+      "zipCode": "01001-000"
+    }
+  }
+}
