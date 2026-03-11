@@ -18,10 +18,10 @@ public class UpdateClientUseCase {
     }
 
     public ClientResponse execute(UUID targetId, UUID callerId, boolean isAdmin, ClientRequest request) {
-        validateOwnership(targetId, callerId, isAdmin);
-
         Client current = repo.findById(targetId)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found: " + targetId));
+
+        current.ensureCanBeManagedBy(callerId, isAdmin, "User cannot update another user profile");
 
         if (repo.existsByCpfAndIdNot(request.cpf(), targetId)) {
             throw new ClientConflictException("CPF already exists for another user");
@@ -45,12 +45,6 @@ public class UpdateClientUseCase {
         Client updated = current.withProfile(request.cpf(), newAddress);
         Client saved = repo.save(updated);
         return toResponse(saved);
-    }
-
-    private void validateOwnership(UUID targetId, UUID callerId, boolean isAdmin) {
-        if (!isAdmin && !targetId.equals(callerId)) {
-            throw new ClientAccessDeniedException("User cannot update another user profile");
-        }
     }
 
     private ClientResponse toResponse(Client client) {
