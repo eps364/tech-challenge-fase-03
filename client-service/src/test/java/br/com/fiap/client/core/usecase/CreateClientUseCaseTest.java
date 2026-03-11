@@ -24,13 +24,13 @@ class CreateClientUseCaseTest {
         UUID userId = UUID.randomUUID();
         repository.save(new Client(
                 userId,
-                "12345678901",
+            "12345678909",
                 new br.com.fiap.client.core.domain.Address(
                         UUID.randomUUID(), "Street", "10", "District", null, "City", "SP", "01001000"),
                 true));
 
         ClientRequest request = new ClientRequest(
-                "12345678901",
+            "12345678909",
                 new AddressRequest("Street 2", "20", "District 2", null, "City", "RJ", "22041001"));
 
         assertThrows(ClientConflictException.class, () -> useCase.execute(UUID.randomUUID(), UUID.randomUUID(), true, request));

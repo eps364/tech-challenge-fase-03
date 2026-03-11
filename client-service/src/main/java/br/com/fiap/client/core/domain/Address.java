@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import br.com.fiap.client.core.domain.valueobject.StateCode;
 import br.com.fiap.client.core.domain.valueobject.ZipCode;
-import br.com.fiap.client.core.usecase.ValidationException;
 
 public class Address {
 
@@ -20,7 +19,7 @@ public class Address {
     public Address(UUID id, String street, String number, String neighborhood, String complement, String city,
             String state, String zipCode) {
         if (id == null) {
-            throw new ValidationException("id", "address id is required");
+            throw new ValidationException("id", "The address id is required");
         }
 
         this.id = id;
@@ -36,7 +35,7 @@ public class Address {
     public Address(UUID id, String street, String number, String neighborhood, String complement, String city,
             StateCode state, ZipCode zipCode) {
         if (id == null) {
-            throw new ValidationException("id", "address id is required");
+            throw new ValidationException("id", "The address id is required");
         }
         this.id = id;
         this.street = normalizeRequired(street, "street");
@@ -54,7 +53,8 @@ public class Address {
 
     private static String normalizeRequired(String value, String fieldName) {
         if (isBlank(value)) {
-            throw new ValidationException(fieldName, fieldName + " is required");
+            String field = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            throw new ValidationException(fieldName, "The " + fieldName + " is required");
         }
         return value.trim();
     }

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import br.com.fiap.client.core.usecase.ValidationException;
+import br.com.fiap.client.core.domain.ValidationException;
 
 class ZipCodeTest {
 

@@ -3,7 +3,7 @@ package br.com.fiap.client.core.domain.valueobject;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import br.com.fiap.client.core.usecase.ValidationException;
+import br.com.fiap.client.core.domain.ValidationException;
 
 public final class ZipCode {
 
@@ -16,7 +16,7 @@ public final class ZipCode {
 
     public static ZipCode of(String rawValue) {
         if (rawValue == null || rawValue.isBlank()) {
-            throw new ValidationException("zipCode", "zipCode is required");
+            throw new ValidationException("zipCode", "The zip code is required");
         }
         String normalized = rawValue.trim();
         if (!ZIP_CODE_PATTERN.matcher(normalized).matches()) {

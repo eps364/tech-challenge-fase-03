@@ -3,7 +3,6 @@ package br.com.fiap.client.core.domain;
 import java.util.UUID;
 
 import br.com.fiap.client.core.domain.valueobject.Cpf;
-import br.com.fiap.client.core.usecase.ValidationException;
 
 public final class Client {
 
@@ -18,14 +17,14 @@ public final class Client {
 
     public Client(UUID id, Cpf cpf, Address address, boolean active) {
         if (id == null) {
-            throw new ValidationException("id", "client id is required");
+            throw new ValidationException("id", "The client id is required");
         }
         if (cpf == null) {
-            throw new ValidationException("cpf", "cpf is required");
+            throw new ValidationException("cpf", "The cpf is required");
         }
 
         if (address == null) {
-            throw new ValidationException("address", "address is required");
+            throw new ValidationException("address", "The address is required");
         }
 
         this.id = id;
@@ -36,7 +35,7 @@ public final class Client {
 
     public void ensureCanBeManagedBy(UUID callerId, boolean isAdmin, String message) {
         if (!isAdmin && !id.equals(callerId)) {
-            throw new IllegalArgumentException(message);
+            throw new AccessDeniedException(message);
         }
     }
 

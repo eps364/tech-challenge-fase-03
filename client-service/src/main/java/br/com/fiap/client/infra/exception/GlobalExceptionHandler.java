@@ -11,10 +11,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import br.com.fiap.client.core.domain.AccessDeniedException;
 import br.com.fiap.client.core.usecase.ClientAccessDeniedException;
 import br.com.fiap.client.core.usecase.ClientConflictException;
 import br.com.fiap.client.core.usecase.ClientNotFoundException;
-import br.com.fiap.client.core.usecase.ValidationException;
+import br.com.fiap.client.core.domain.ValidationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,6 +55,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientAccessDeniedException.class)
     public ProblemDetail handleAccessDenied(ClientAccessDeniedException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        problem.setTitle("Access Denied");
+        problem.setType(URI.create("urn:problem:client:access-denied"));
+        return problem;
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleDomainAccessDenied(AccessDeniedException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
         problem.setTitle("Access Denied");
         problem.setType(URI.create("urn:problem:client:access-denied"));
