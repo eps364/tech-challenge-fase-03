@@ -1,15 +1,21 @@
 spring:
   application:
     name: orchestrator-service
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
 
-    listener:
-      simple:
-        default-requeue-rejected: false
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+services:
+  client:
+    name: client-service
+  catalog:
+    name: catalog-service
+  order:
+    name: order-service
 
 eureka:
   client:

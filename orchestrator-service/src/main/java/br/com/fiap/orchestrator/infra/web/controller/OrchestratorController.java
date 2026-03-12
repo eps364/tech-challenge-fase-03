@@ -1,34 +1,29 @@
 package br.com.fiap.orchestrator.infra.web.controller;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
+import br.com.fiap.orchestrator.core.dto.CreateOrderInput;
+import br.com.fiap.orchestrator.core.usecase.CreateOrderOrchestrationUseCase;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import br.com.fiap.orchestrator.core.dto.QueueMessage;
-import br.com.fiap.orchestrator.core.usecase.SendToOrdersUseCase;
 @RestController
-@RequestMapping("/orchestrator")
+@RequestMapping("/orchestrations/orders")
 public class OrchestratorController {
 
-    private final SendToOrdersUseCase sendToOrders;
+    private final CreateOrderOrchestrationUseCase createOrderOrchestrationUseCase;
 
-    public OrchestratorController(SendToOrdersUseCase sendToOrders) {
-        this.sendToOrders = sendToOrders;
+    public OrchestratorController(CreateOrderOrchestrationUseCase createOrderOrchestrationUseCase) {
+        this.createOrderOrchestrationUseCase = createOrderOrchestrationUseCase;
     }
 
-    @PostMapping("/test/orders")
-    public void testOrders(@RequestBody Map<String, Object> payload) {
-        QueueMessage message = new QueueMessage(
-                UUID.randomUUID().toString(),
-                "TEST",
-                Instant.now().toString(),
-                payload
-        );
-        sendToOrders.execute(message);
+    @PostMapping
+    public ResponseEntity<Void> createOrder(
+            @RequestBody CreateOrderInput input,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        String clientId = jwt.getClaimAsString("sub");
+        createOrderOrchestrationUseCase.execute(clientId, input);
+        return ResponseEntity.ok().build();
     }
 }
