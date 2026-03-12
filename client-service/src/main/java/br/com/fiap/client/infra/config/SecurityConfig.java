@@ -23,7 +23,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/test/public").permitAll()
-                .requestMatchers("/test/private").hasRole("user")
+                .requestMatchers("/test/private").hasAnyRole("user", "admin")
+                .requestMatchers("/clients/**").hasAnyRole("user", "admin")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->

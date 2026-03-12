@@ -1,8 +1,11 @@
 package br.com.fiap.restaurant.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record RestaurantRequest(
-        String nome,
-        boolean ativo,
+        @JsonProperty("nome") @JsonAlias("name") String name,
+        @JsonProperty("ativo") @JsonAlias("active") boolean active,
         String street,
         String number,
         String district,

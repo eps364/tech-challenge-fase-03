@@ -1,0 +1,32 @@
+meta {
+  name: 👤 🙋 Client - Update
+  type: http
+  seq: 17
+}
+
+put {
+  url: {{base_url}}/client-service/clients/{{user_id}}
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "cpf": "91374243000",
+    "address": {
+      "street": "Rua Nova 02",
+      "number": "456",
+      "neighborhood": "Bela Vista",
+      "complement": "Casa",
+      "city": "Sao Paulo",
+      "state": "SP",
+      "zipCode": "01311-000"
+    }
+  }
+}

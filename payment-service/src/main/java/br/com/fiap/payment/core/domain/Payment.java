@@ -16,14 +16,26 @@ public class Payment {
 
     public Payment(UUID id, UUID orderId, UUID clientId, BigDecimal amount,
                    PaymentStatus status, int attempts, Instant createdAt, Instant updatedAt) {
-        this.id = id;
+        validate(orderId, clientId, amount, attempts);
+        this.id = id != null ? id : UUID.randomUUID();
         this.orderId = orderId;
         this.clientId = clientId;
         this.amount = amount;
-        this.status = status;
+        this.status = status != null ? status : PaymentStatus.PENDING;
         this.attempts = attempts;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = createdAt != null ? createdAt : Instant.now();
+        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
+    }
+
+    private void validate(UUID orderId, UUID clientId, BigDecimal amount, int attempts) {
+        if (orderId == null) throw new ValidationException("orderId", "The order id is required");
+        if (clientId == null) throw new ValidationException("clientId", "The client id is required");
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValidationException("amount", "The amount must be greater than zero");
+        }
+        if (attempts < 0) {
+            throw new ValidationException("attempts", "The attempts cannot be negative");
+        }
     }
 
     public UUID getId() { return id; }
@@ -44,7 +56,6 @@ public class Payment {
     }
 
     public static Payment newPending(UUID orderId, UUID clientId, BigDecimal amount) {
-        Instant now = Instant.now();
-        return new Payment(UUID.randomUUID(), orderId, clientId, amount, PaymentStatus.PENDING, 0, now, now);
+        return new Payment(null, orderId, clientId, amount, null, 0, null, null);
     }
 }

@@ -3,14 +3,14 @@ package br.com.fiap.restaurant.core.usecase;
 import java.util.Map;
 import java.util.UUID;
 
-import br.com.fiap.restaurant.core.domain.Restaurante;
-import br.com.fiap.restaurant.core.gateway.RestauranteRepositoryPort;
+import br.com.fiap.restaurant.core.domain.Restaurant;
+import br.com.fiap.restaurant.core.gateway.RestaurantRepositoryPort;
 
 public class ProcessOrchestratorRequestUseCase {
 
-    private final RestauranteRepositoryPort repo;
+    private final RestaurantRepositoryPort repo;
 
-    public ProcessOrchestratorRequestUseCase(RestauranteRepositoryPort repo) {
+    public ProcessOrchestratorRequestUseCase(RestaurantRepositoryPort repo) {
         this.repo = repo;
     }
 
@@ -19,16 +19,16 @@ public class ProcessOrchestratorRequestUseCase {
         if (isRestaurantActivate(cmd.type())) {
             UUID restaurantId = resolveRestaurantId(cmd.payload());
 
-            Restaurante restaurant = repo.findById(restaurantId)
+            Restaurant restaurant = repo.findById(restaurantId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found: " + restaurantId));
 
-            Restaurante updatedRestaurant = restaurant.ativar();
+            Restaurant updatedRestaurant = restaurant.activate();
             repo.save(updatedRestaurant);
 
             return new ProcessOrchestratorRequestResult(
                     cmd.correlationId(),
                 "RESTAURANT_ACTIVATED",
-                Map.of("restaurantId", updatedRestaurant.getId().toString(), "active", updatedRestaurant.isAtivo())
+                Map.of("restaurantId", updatedRestaurant.getId().toString(), "active", updatedRestaurant.isActive())
             );
         }
 

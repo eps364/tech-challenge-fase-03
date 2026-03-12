@@ -15,13 +15,40 @@ public class LoginResult {
     public LoginResult(UUID userId, String accessToken, String refreshToken,
                        long expiresIn, long refreshExpiresIn,
                        String tokenType, List<String> roles) {
+        validate(userId, accessToken, refreshToken, expiresIn, refreshExpiresIn, tokenType, roles);
         this.userId = userId;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+        this.accessToken = accessToken.trim();
+        this.refreshToken = refreshToken.trim();
         this.expiresIn = expiresIn;
         this.refreshExpiresIn = refreshExpiresIn;
-        this.tokenType = tokenType;
-        this.roles = roles;
+        this.tokenType = tokenType.trim();
+        this.roles = roles != null ? List.copyOf(roles) : List.of();
+    }
+
+    private void validate(UUID userId, String accessToken, String refreshToken,
+                          long expiresIn, long refreshExpiresIn,
+                          String tokenType, List<String> roles) {
+        if (userId == null) {
+            throw new ValidationException("userId", "The user id is required");
+        }
+        if (accessToken == null || accessToken.isBlank()) {
+            throw new ValidationException("accessToken", "The access token is required");
+        }
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new ValidationException("refreshToken", "The refresh token is required");
+        }
+        if (expiresIn <= 0) {
+            throw new ValidationException("expiresIn", "The expiresIn must be greater than zero");
+        }
+        if (refreshExpiresIn <= 0) {
+            throw new ValidationException("refreshExpiresIn", "The refreshExpiresIn must be greater than zero");
+        }
+        if (tokenType == null || tokenType.isBlank()) {
+            throw new ValidationException("tokenType", "The token type is required");
+        }
+        if (roles != null && roles.stream().anyMatch(role -> role == null || role.isBlank())) {
+            throw new ValidationException("roles", "The roles cannot contain blank values");
+        }
     }
 
     public UUID getUserId()             { return userId; }

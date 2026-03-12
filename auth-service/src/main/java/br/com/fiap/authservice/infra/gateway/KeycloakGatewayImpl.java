@@ -86,7 +86,6 @@ public class KeycloakGatewayImpl implements IdentityProviderGateway {
             roles.add("user");
             roles.add("manage-account");
             roles.add("view-profile");
-            user.setRoles(roles);
 
             return userId;
         } else if (response.getStatus() == 409) {
