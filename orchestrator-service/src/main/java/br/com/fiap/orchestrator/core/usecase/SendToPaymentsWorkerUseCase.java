@@ -1,5 +1,5 @@
 package br.com.fiap.orchestrator.core.usecase;
-import br.com.fiap.orchestrator.core.dto.QueueMessage;
+import br.com.fiap.orchestrator.core.dto.messaging.QueueMessage;
 import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
 import br.com.fiap.orchestrator.core.valueobject.RoutingKeys;
 

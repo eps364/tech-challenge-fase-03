@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderStatus;
-import br.com.fiap.order.core.dto.OrderItemRequest;
-import br.com.fiap.order.core.dto.OrderRequest;
-import br.com.fiap.order.core.dto.OrderResponse;
-import br.com.fiap.order.core.dto.ProductDTO;
+import br.com.fiap.order.core.dto.requests.order.OrderItemRequest;
+import br.com.fiap.order.core.dto.requests.order.OrderRequest;
+import br.com.fiap.order.core.dto.responses.OrderResponse;
+import br.com.fiap.order.core.dto.responses.ProductDTO;
 import br.com.fiap.order.core.gateway.CatalogClientPort;
 import br.com.fiap.order.core.gateway.EventPublisherPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;

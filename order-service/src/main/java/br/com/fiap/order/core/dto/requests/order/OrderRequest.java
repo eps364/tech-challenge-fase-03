@@ -1,4 +1,4 @@
-package br.com.fiap.order.core.dto;
+package br.com.fiap.order.core.dto.requests.order;
 
 import java.util.List;
 import java.util.UUID;

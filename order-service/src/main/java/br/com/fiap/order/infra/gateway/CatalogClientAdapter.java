@@ -2,7 +2,7 @@ package br.com.fiap.order.infra.gateway;
 
 import org.springframework.stereotype.Component;
 
-import br.com.fiap.order.core.dto.ProductDTO;
+import br.com.fiap.order.core.dto.responses.ProductDTO;
 import br.com.fiap.order.core.gateway.CatalogClientPort;
 import br.com.fiap.order.core.usecase.ProductNotFoundException;import feign.FeignException;
 

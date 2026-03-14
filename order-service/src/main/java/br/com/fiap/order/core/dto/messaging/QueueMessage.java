@@ -1,9 +1,9 @@
-package br.com.fiap.order.core.dto;
-
-import java.util.Map;
+package br.com.fiap.order.core.dto.messaging;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Map;
 
 public record QueueMessage(
         String correlationId,

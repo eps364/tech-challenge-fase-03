@@ -56,13 +56,33 @@ public class Order {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public UUID getId()           { return id; }
-    public UUID getClientId()     { return clientId; }
-    public UUID getRestaurantId() { return restaurantId; }
-    public List<OrderItem> getItems() { return items; }
-    public OrderStatus getStatus() { return status; }
-    public BigDecimal getTotal()  { return total; }
-    public Instant getCreatedAt() { return createdAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getClientId() {
+        return clientId;
+    }
+
+    public UUID getRestaurantId() {
+        return restaurantId;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 
     public Order withStatus(OrderStatus newStatus) {
         return new Order(id, clientId, restaurantId, items, newStatus, total, createdAt);

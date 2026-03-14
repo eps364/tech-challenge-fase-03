@@ -1,4 +1,4 @@
-package br.com.fiap.orchestrator.core.dto;
+package br.com.fiap.orchestrator.core.dto.messaging;
 
 import java.util.Map;
 

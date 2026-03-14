@@ -1,9 +1,9 @@
 package br.com.fiap.order.core.usecase;
 
 import br.com.fiap.order.core.domain.Order;
-import br.com.fiap.order.core.dto.CreateOrderRequest;
-import br.com.fiap.order.core.dto.OrderItemResponse;
-import br.com.fiap.order.core.dto.OrderResponse;
+import br.com.fiap.order.core.dto.requests.order.CreateOrderRequest;
+import br.com.fiap.order.core.dto.responses.OrderItemResponse;
+import br.com.fiap.order.core.dto.responses.OrderResponse;
 import br.com.fiap.order.core.gateway.EventPublisherPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
 

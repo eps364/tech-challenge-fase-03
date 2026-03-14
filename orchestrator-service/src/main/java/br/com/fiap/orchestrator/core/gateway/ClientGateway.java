@@ -1,7 +1,9 @@
 package br.com.fiap.orchestrator.core.gateway;
 
-import br.com.fiap.orchestrator.core.dto.ClientResponse;
+import br.com.fiap.orchestrator.core.domain.Client;
+
+import java.util.UUID;
 
 public interface ClientGateway {
-    ClientResponse findById(String clientId);
+    Client findById(UUID clientId);
 }

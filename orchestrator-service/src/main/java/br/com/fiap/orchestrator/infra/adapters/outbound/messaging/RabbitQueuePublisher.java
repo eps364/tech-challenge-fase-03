@@ -3,7 +3,7 @@ package br.com.fiap.orchestrator.infra.adapters.outbound.messaging;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
-import br.com.fiap.orchestrator.core.dto.QueueMessage;
+import br.com.fiap.orchestrator.core.dto.messaging.QueueMessage;
 import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
 
 @Component

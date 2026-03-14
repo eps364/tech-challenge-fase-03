@@ -1,6 +1,7 @@
-package br.com.fiap.orchestrator.core.dto;
+package br.com.fiap.order.core.dto.requests.order;
 
-public class Address {
+public class AddressRequest {
+
     private String street;
     private String number;
     private String city;

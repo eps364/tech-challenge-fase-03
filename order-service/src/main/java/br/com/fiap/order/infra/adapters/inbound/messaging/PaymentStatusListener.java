@@ -7,7 +7,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import br.com.fiap.order.core.domain.PaymentEventType;
-import br.com.fiap.order.core.dto.QueueMessage;
+import br.com.fiap.order.core.dto.messaging.QueueMessage;
 import br.com.fiap.order.core.usecase.UpdateOrderPaymentStatusUseCase;
 @Component
 public class PaymentStatusListener {

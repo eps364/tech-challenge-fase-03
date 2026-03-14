@@ -1,4 +1,4 @@
-package br.com.fiap.order.core.dto;
+package br.com.fiap.order.core.dto.responses;
 
 import java.math.BigDecimal;
 import java.util.UUID;

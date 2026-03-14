@@ -1,6 +1,9 @@
 package br.com.fiap.catalog.core.usecase;
+
 import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;
-import br.com.fiap.catalog.core.usecase.ProductNotFoundException;
+
+import java.util.UUID;
+
 public class DeleteProductUseCase {
 
     private final ProductRepositoryPort repo;
@@ -9,7 +12,7 @@ public class DeleteProductUseCase {
         this.repo = repo;
     }
 
-    public void execute(Long id) {
+    public void execute(UUID id) {
         repo.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
         repo.delete(id);
     }

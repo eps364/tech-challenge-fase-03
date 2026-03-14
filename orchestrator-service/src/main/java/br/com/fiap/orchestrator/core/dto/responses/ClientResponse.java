@@ -1,4 +1,4 @@
-package br.com.fiap.orchestrator.core.dto;
+package br.com.fiap.orchestrator.core.dto.responses;
 
 public class ClientResponse {
     private String id;

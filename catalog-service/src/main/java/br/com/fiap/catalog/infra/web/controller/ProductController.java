@@ -1,9 +1,21 @@
 package br.com.fiap.catalog.infra.web.controller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import br.com.fiap.catalog.core.dto.ProductRequest;
+import br.com.fiap.catalog.core.dto.ProductResponse;
+import br.com.fiap.catalog.core.dto.ResolveProductsRequest;
+import br.com.fiap.catalog.core.dto.ResolveProductsResponse;
+import br.com.fiap.catalog.core.usecase.CreateProductUseCase;
+import br.com.fiap.catalog.core.usecase.DeleteProductUseCase;
+import br.com.fiap.catalog.core.usecase.GetProductUseCase;
+import br.com.fiap.catalog.core.usecase.ListProductsByRestaurantUseCase;
+import br.com.fiap.catalog.core.usecase.ListProductsUseCase;
+import br.com.fiap.catalog.core.usecase.ProductAccessDeniedException;
+import br.com.fiap.catalog.core.usecase.ResolveProductsUseCase;
+import br.com.fiap.catalog.core.usecase.UpdateProductUseCase;
+import br.com.fiap.catalog.infra.dto.RestaurantOwnershipDTO;
+import br.com.fiap.catalog.infra.gateway.RestaurantFeignClient;
+import feign.FeignException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +29,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.fiap.catalog.core.dto.ProductRequest;
-import br.com.fiap.catalog.core.dto.ProductResponse;
-import br.com.fiap.catalog.core.usecase.CreateProductUseCase;import br.com.fiap.catalog.core.usecase.DeleteProductUseCase;import br.com.fiap.catalog.core.usecase.GetProductUseCase;import br.com.fiap.catalog.core.usecase.ListProductsUseCase;import br.com.fiap.catalog.core.usecase.ListProductsByRestaurantUseCase;import br.com.fiap.catalog.core.usecase.ProductAccessDeniedException;import br.com.fiap.catalog.core.usecase.UpdateProductUseCase;import br.com.fiap.catalog.infra.dto.RestaurantOwnershipDTO;
-import br.com.fiap.catalog.infra.gateway.RestaurantFeignClient;
-import feign.FeignException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
@@ -33,6 +43,7 @@ public class ProductController {
     private final CreateProductUseCase createProduct;
     private final UpdateProductUseCase updateProduct;
     private final DeleteProductUseCase deleteProduct;
+    private final ResolveProductsUseCase resolveProducts;
     private final RestaurantFeignClient restaurantClient;
 
     public ProductController(
@@ -42,6 +53,7 @@ public class ProductController {
             CreateProductUseCase createProduct,
             UpdateProductUseCase updateProduct,
             DeleteProductUseCase deleteProduct,
+            ResolveProductsUseCase resolveProducts,
             RestaurantFeignClient restaurantClient) {
         this.listProducts = listProducts;
         this.listProductsByRestaurant = listProductsByRestaurant;
@@ -49,6 +61,7 @@ public class ProductController {
         this.createProduct = createProduct;
         this.updateProduct = updateProduct;
         this.deleteProduct = deleteProduct;
+        this.resolveProducts = resolveProducts;
         this.restaurantClient = restaurantClient;
     }
 
@@ -63,7 +76,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> get(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> get(@PathVariable UUID id) {
         return ResponseEntity.ok(getProduct.execute(id));
     }
 
@@ -75,7 +88,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> update(@PathVariable Long id,
+    public ResponseEntity<ProductResponse> update(@PathVariable UUID id,
                                                   @RequestBody ProductRequest request,
                                                   @AuthenticationPrincipal Jwt jwt) {
         ProductResponse current = getProduct.execute(id);
@@ -84,7 +97,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id,
+    public ResponseEntity<Void> delete(@PathVariable UUID id,
                                        @AuthenticationPrincipal Jwt jwt) {
         ProductResponse current = getProduct.execute(id);
         validateRestaurantAccess(current.restaurantId(), jwt);
@@ -120,5 +133,14 @@ public class ProductController {
         } catch (FeignException.NotFound e) {
             throw new ProductAccessDeniedException("Restaurant not found for the product");
         }
+    }
+
+    @PostMapping("/resolve")
+    public ResponseEntity<ResolveProductsResponse> resolveProducts(
+            @RequestBody @Valid ResolveProductsRequest request,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        //validateRestaurantAccess(request.restaurantId(), jwt);
+        return ResponseEntity.ok(resolveProducts.execute(request));
     }
 }

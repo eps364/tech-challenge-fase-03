@@ -1,11 +1,12 @@
 package br.com.fiap.order.core.usecase;
-import java.util.List;
-import java.util.UUID;
 
 import br.com.fiap.order.core.domain.Order;
-import br.com.fiap.order.core.dto.OrderItemResponse;
-import br.com.fiap.order.core.dto.OrderResponse;
+import br.com.fiap.order.core.dto.responses.OrderItemResponse;
+import br.com.fiap.order.core.dto.responses.OrderResponse;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
+
+import java.util.List;
+import java.util.UUID;
 
 public class ListOrdersUseCase {
 

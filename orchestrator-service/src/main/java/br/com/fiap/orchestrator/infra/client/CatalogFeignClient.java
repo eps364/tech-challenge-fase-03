@@ -1,13 +1,14 @@
 package br.com.fiap.orchestrator.infra.client;
 
-import br.com.fiap.orchestrator.core.dto.CatalogFoodResponse;
+import br.com.fiap.orchestrator.core.dto.requests.catalog.ResolveProductsRequest;
+import br.com.fiap.orchestrator.core.dto.responses.ResolveProductsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "${services.catalog.name}")
+@FeignClient(name = "catalog-service")
 public interface CatalogFeignClient {
 
-    @GetMapping("/foods/{id}")
-    CatalogFoodResponse findFoodById(@PathVariable("id") String id);
+    @PostMapping("/products/resolve")
+    ResolveProductsResponse resolveProducts(@RequestBody ResolveProductsRequest request);
 }
