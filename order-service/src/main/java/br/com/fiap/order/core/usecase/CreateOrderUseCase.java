@@ -1,10 +1,13 @@
 package br.com.fiap.order.core.usecase;
 
 import br.com.fiap.order.core.domain.Order;
+import br.com.fiap.order.core.domain.OrderItem;
+import br.com.fiap.order.core.domain.OrderStatus;
+
+import br.com.fiap.order.core.dto.requests.order.CreateOrderItemRequest;
 import br.com.fiap.order.core.dto.requests.order.CreateOrderRequest;
 import br.com.fiap.order.core.dto.responses.OrderItemResponse;
 import br.com.fiap.order.core.dto.responses.OrderResponse;
-import br.com.fiap.order.core.gateway.EventPublisherPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
 
 import java.util.List;
@@ -12,48 +15,58 @@ import java.util.UUID;
 
 public class CreateOrderUseCase {
 
-    private final OrderRepositoryPort repo;
-    private final EventPublisherPort eventPublisher;
+    private final OrderRepositoryPort orderRepositoryPort;
 
-    public CreateOrderUseCase(OrderRepositoryPort repo,
-                              EventPublisherPort eventPublisher) {
-        this.repo = repo;
-        this.eventPublisher = eventPublisher;
+    public CreateOrderUseCase(OrderRepositoryPort orderRepositoryPort) {
+        this.orderRepositoryPort = orderRepositoryPort;
     }
 
-    public OrderResponse execute(CreateOrderRequest req) {
-        Order order = Order.create(
-                UUID.fromString(req.getClientId()),
-                UUID.fromString(req.getRestaurantId()),
-                req.getFoodId(),
-                req.getQuantity(),
-                req.getCpf(),
-                req.getAddress(),
-                req.getPrice(),
-                req.getRequestDate()
+    public OrderResponse execute(CreateOrderRequest request) {
+        List<OrderItem> items = buildItems(request.items());
+
+        Order order = new Order(
+                UUID.randomUUID(),
+                request.clientId(),
+                request.restaurantId(),
+                items,
+                OrderStatus.CREATED,
+                request.price(),
+                request.requestDate()
         );
 
-        Order saved = repo.save(order);
-        eventPublisher.publishOrderCreated(saved);
+        Order saved = orderRepositoryPort.save(order);
         return toResponse(saved);
     }
 
-    private OrderResponse toResponse(Order order) {
-        List<OrderItemResponse> itemResponses = order.getItems().stream()
-                .map(i -> new OrderItemResponse(
-                        i.getProductId(),
-                        i.getName(),
-                        i.getQuantity(),
-                        i.getPrice(),
-                        i.getSubtotal()
-                ))
+    private List<OrderItem> buildItems(List<CreateOrderItemRequest> requests) {
+        return requests.stream()
+                .map(this::toOrderItem)
                 .toList();
+    }
 
+    private OrderItem toOrderItem(CreateOrderItemRequest request) {
+        return new OrderItem(
+                request.productId(),
+                request.name(),
+                request.quantity(),
+                request.price()
+        );
+    }
+
+    private OrderResponse toResponse(Order order) {
         return new OrderResponse(
                 order.getId(),
                 order.getClientId(),
                 order.getRestaurantId(),
-                itemResponses,
+                order.getItems().stream()
+                        .map(item -> new OrderItemResponse(
+                                item.getProductId(),
+                                item.getName(),
+                                item.getQuantity(),
+                                item.getPrice(),
+                                item.getSubtotal()
+                        ))
+                        .toList(),
                 order.getStatus(),
                 order.getTotal(),
                 order.getCreatedAt()

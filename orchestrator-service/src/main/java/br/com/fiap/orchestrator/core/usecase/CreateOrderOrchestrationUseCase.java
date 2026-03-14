@@ -31,43 +31,72 @@ public class CreateOrderOrchestrationUseCase {
     }
 
     public void execute(UUID clientId, CreateOrderRequest input) {
-        Client client = clientGateway.findById(clientId);
+        Client client = findClient(clientId);
+        List<UUID> productIds = extractProductIds(input);
+        Map<UUID, Product> resolvedProducts = resolveProducts(input.restaurantId(), productIds);
+        List<OrderItemDraft> items = buildOrderItems(input.items(), resolvedProducts);
+        BigDecimal total = calculateTotal(items);
+        OrderDraft orderDraft = buildOrderDraft(client, input, items, total);
 
-        List<UUID> productIds = input.items()
+        orderGateway.createOrder(orderDraft);
+    }
+
+    private Client findClient(UUID clientId) {
+        return clientGateway.findById(clientId);
+    }
+
+    private List<UUID> extractProductIds(CreateOrderRequest input) {
+        return input.items()
                 .stream()
                 .map(CreateOrderItemRequest::productId)
                 .toList();
+    }
 
-        Map<UUID, Product> resolvedProducts =
-                catalogGateway.resolveProducts(input.restaurantId(), productIds);
+    private Map<UUID, Product> resolveProducts(UUID restaurantId, List<UUID> productIds) {
+        return catalogGateway.resolveProducts(restaurantId, productIds);
+    }
 
-        List<OrderItemDraft> orderItems = input.items()
-                .stream()
-                .map(item -> {
-                    Product product = resolvedProducts.get(item.productId());
-
-                    return new OrderItemDraft(
-                            product.getId(),
-                            product.getName(),
-                            item.quantity(),
-                            product.getPrice()
-                    );
-                })
+    private List<OrderItemDraft> buildOrderItems(List<CreateOrderItemRequest> requests,
+                                                 Map<UUID, Product> resolvedProducts) {
+        return requests.stream()
+                .map(item -> buildOrderItem(item, resolvedProducts))
                 .toList();
+    }
 
-        BigDecimal total = orderItems.stream()
+    private OrderItemDraft buildOrderItem(CreateOrderItemRequest item,
+                                          Map<UUID, Product> resolvedProducts) {
+        Product product = resolvedProducts.get(item.productId());
+
+        if (product == null) {
+            throw new IllegalArgumentException("Produto não encontrado no catálogo: " + item.productId());
+        }
+
+        return new OrderItemDraft(
+                product.getId(),
+                product.getName(),
+                item.quantity(),
+                product.getPrice()
+        );
+    }
+
+    private BigDecimal calculateTotal(List<OrderItemDraft> items) {
+        return items.stream()
                 .map(OrderItemDraft::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
-        OrderDraft orderDraft = new OrderDraft(
-                UUID.randomUUID(),
+    private OrderDraft buildOrderDraft(Client client,
+                                       CreateOrderRequest input,
+                                       List<OrderItemDraft> items,
+                                       BigDecimal total) {
+        return new OrderDraft(
                 client.getId(),
+                client.getCpf(),
                 input.restaurantId(),
-                orderItems,
+                items,
+                client.getAddress(),
                 total,
                 Instant.now()
         );
-
-        orderGateway.createOrder(orderDraft);
     }
 }

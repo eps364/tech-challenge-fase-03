@@ -1,9 +1,9 @@
-package br.com.fiap.orchestrator.core.dto.requests.order;
+package br.com.fiap.order.core.dto.requests.order;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record OrderItemRequest(
+public record CreateOrderItemRequest(
         UUID productId,
         String name,
         Integer quantity,

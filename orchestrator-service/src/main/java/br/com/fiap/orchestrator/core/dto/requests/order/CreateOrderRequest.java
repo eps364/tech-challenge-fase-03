@@ -1,19 +1,17 @@
 package br.com.fiap.orchestrator.core.dto.requests.order;
 
-import br.com.fiap.orchestrator.core.dto.requests.AddressRequest;
-
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 public record CreateOrderRequest(
-        String clientId,
+        UUID clientId,
         String cpf,
-        String restaurantId,
+        UUID restaurantId,
         List<OrderItemRequest> items,
         AddressRequest address,
-        BigInteger price,
-        LocalDateTime requestDate
+        BigDecimal price,
+        Instant requestDate
 ) {
 }
-    

@@ -1,11 +1,13 @@
 package br.com.fiap.order.core.dto.responses;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record OrderItemResponse(
-        Long productId,
+        UUID productId,
         String name,
-        int quantity,
+        Integer quantity,
         BigDecimal price,
         BigDecimal subtotal
-) {}
+) {
+}

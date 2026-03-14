@@ -1,4 +1,4 @@
-package br.com.fiap.orchestrator.core.dto.requests;
+package br.com.fiap.orchestrator.core.dto.requests.order;
 
 public record AddressRequest(
         String street,

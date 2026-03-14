@@ -5,9 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "${services.order.name}")
+@FeignClient(name = "order-service")
 public interface OrderFeignClient {
 
-    @PostMapping("/orders")
+    @PostMapping("/orders/orchestrated")
     void createOrder(@RequestBody CreateOrderRequest request);
 }

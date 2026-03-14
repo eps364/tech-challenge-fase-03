@@ -1,15 +1,16 @@
 package br.com.fiap.order.core.domain;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class OrderItem {
-    private final Long productId;
+    private final UUID productId;
     private final String name;
     private final int quantity;
     private final BigDecimal price;
     private final BigDecimal subtotal;
 
-    public OrderItem(Long productId, String name, int quantity, BigDecimal price) {
+    public OrderItem(UUID productId, String name, int quantity, BigDecimal price) {
         validate(productId, name, quantity, price);
         this.productId = productId;
         this.name = name.trim();
@@ -18,7 +19,7 @@ public class OrderItem {
         this.subtotal = calculateSubtotal(price, quantity);
     }
 
-    private void validate(Long productId, String name, int quantity, BigDecimal price) {
+    private void validate(UUID productId, String name, int quantity, BigDecimal price) {
         if (productId == null) {
             throw new ValidationException("productId", "The product id is required");
         }
@@ -37,9 +38,9 @@ public class OrderItem {
         return price.multiply(BigDecimal.valueOf(quantity));
     }
 
-    public Long getProductId() { return productId; }
-    public String getName()    { return name; }
-    public int getQuantity()   { return quantity; }
-    public BigDecimal getPrice()    { return price; }
+    public UUID getProductId() { return productId; }
+    public String getName() { return name; }
+    public int getQuantity() { return quantity; }
+    public BigDecimal getPrice() { return price; }
     public BigDecimal getSubtotal() { return subtotal; }
 }

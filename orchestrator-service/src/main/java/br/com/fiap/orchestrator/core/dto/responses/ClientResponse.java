@@ -1,5 +1,7 @@
 package br.com.fiap.orchestrator.core.dto.responses;
 
+import br.com.fiap.orchestrator.core.domain.Address;
+
 public class ClientResponse {
     private String id;
     private String name;

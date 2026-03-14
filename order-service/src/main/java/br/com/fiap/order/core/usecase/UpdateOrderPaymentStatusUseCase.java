@@ -1,9 +1,11 @@
 package br.com.fiap.order.core.usecase;
+
 import java.util.UUID;
 
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderStatus;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
+
 public class UpdateOrderPaymentStatusUseCase {
 
     private final OrderRepositoryPort repository;

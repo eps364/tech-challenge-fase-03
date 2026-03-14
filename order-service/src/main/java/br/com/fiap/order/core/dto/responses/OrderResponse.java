@@ -15,4 +15,5 @@ public record OrderResponse(
         OrderStatus status,
         BigDecimal total,
         Instant createdAt
-) {}
+) {
+}
