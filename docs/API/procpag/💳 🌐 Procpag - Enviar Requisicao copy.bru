@@ -5,21 +5,21 @@ meta {
 }
 
 post {
-  url: {{procpag_url}}/requisicao
+  url: http://localhost:8089/requisicao
   body: json
   auth: none
 }
 
 headers {
-  Content-Type: application/json
-  Accept: application/json
+  accept: application/json
+  content-type: application/json
 }
 
 body:json {
   {
     "valor": 10,
-    "pagamento_id": "{{order_id}}",
-    "cliente_id": "{{user_id}}"
+    "pagamento_id": "0e0d8d4f-69d5-4eba-ba4f-ac53805f95fd",
+    "cliente_id": "0e0d8d4f-69d5-4eba-ba4f-ac53805f95fd"
   }
 }
 
