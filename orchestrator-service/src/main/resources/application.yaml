@@ -2,6 +2,12 @@ spring:
   application:
     name: orchestrator-service
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://keycloak:8080/realms/tech-challenge}
+
 feign:
   client:
     config:
@@ -22,7 +28,12 @@ eureka:
     enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
-
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+keycloak:
+  client:
+    token-uri: ${KEYCLOAK_TOKEN_URI:http://keycloak:8080/realms/tech-challenge/protocol/openid-connect/token}
+    client-id: ${KEYCLOAK_CLIENT_ID:orchestrator-service}
+    client-secret: ${KEYCLOAK_CLIENT_SECRET:orchestrator-service-secret}

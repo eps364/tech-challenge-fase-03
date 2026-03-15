@@ -23,12 +23,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/test/public").permitAll()
-                .requestMatchers("/test/private").hasRole("user")
-                .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/products", "/products/**").hasAnyRole("owner", "admin")
-                .requestMatchers(HttpMethod.PUT, "/products", "/products/**").hasAnyRole("owner", "admin")
-                .requestMatchers(HttpMethod.DELETE, "/products", "/products/**").hasAnyRole("owner", "admin")
+                .requestMatchers(HttpMethod.POST, "/orchestrator", "/orchestrator/**").hasAnyRole("user", "owner", "admin")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

@@ -1,10 +1,16 @@
 package br.com.fiap.catalog.infra.config;
 
+import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;
+import br.com.fiap.catalog.core.usecase.CreateProductUseCase;
+import br.com.fiap.catalog.core.usecase.DeleteProductUseCase;
+import br.com.fiap.catalog.core.usecase.GetProductUseCase;
+import br.com.fiap.catalog.core.usecase.ListProductsByRestaurantUseCase;
+import br.com.fiap.catalog.core.usecase.ListProductsUseCase;
+import br.com.fiap.catalog.core.usecase.ResolveProductsUseCase;
+import br.com.fiap.catalog.core.usecase.UpdateProductUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import br.com.fiap.catalog.core.gateway.ProductRepositoryPort;
-import br.com.fiap.catalog.core.usecase.CreateProductUseCase;import br.com.fiap.catalog.core.usecase.DeleteProductUseCase;import br.com.fiap.catalog.core.usecase.GetProductUseCase;import br.com.fiap.catalog.core.usecase.ListProductsUseCase;import br.com.fiap.catalog.core.usecase.ListProductsByRestaurantUseCase;import br.com.fiap.catalog.core.usecase.UpdateProductUseCase;
 @Configuration
 public class UseCaseConfig {
 
@@ -36,5 +42,10 @@ public class UseCaseConfig {
     @Bean
     public DeleteProductUseCase deleteProductUseCase(ProductRepositoryPort repo) {
         return new DeleteProductUseCase(repo);
+    }
+
+    @Bean
+    public ResolveProductsUseCase resolveProductsUseCase(ProductRepositoryPort repo) {
+        return new ResolveProductsUseCase(repo);
     }
 }

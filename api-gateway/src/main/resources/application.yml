@@ -47,6 +47,12 @@ spring:
             - Path=/catalog-service/**
           filters:
             - StripPrefix=1
+        - id: orchestrator-service
+          uri: lb://ORCHESTRATOR-SERVICE
+          predicates:
+            - Path=/orchestrator-service/**
+          filters:
+            - StripPrefix=1
   security:
     oauth2:
       resourceserver:

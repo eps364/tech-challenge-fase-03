@@ -24,7 +24,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/test/public").permitAll()
                 .requestMatchers("/test/private").hasAnyRole("user", "admin")
-                .requestMatchers("/clients/**").hasAnyRole("user", "admin")
+                .requestMatchers("/clients/**").hasAnyRole("user", "admin", "system")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->

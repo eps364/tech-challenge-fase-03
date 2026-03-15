@@ -50,7 +50,7 @@ public class ClientController {
                                                  @Valid @RequestBody ClientRequest request,
                                                  @AuthenticationPrincipal Jwt jwt) {
         UUID callerId = extractCallerId(jwt);
-        boolean isAdmin = isAdmin(jwt);
+        boolean isAdmin = isAdminOrSystem(jwt);
         ClientResponse created = createClient.execute(id, callerId, isAdmin, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -59,7 +59,7 @@ public class ClientController {
     public ResponseEntity<ClientResponse> get(@PathVariable UUID id,
                                               @AuthenticationPrincipal Jwt jwt) {
         UUID callerId = extractCallerId(jwt);
-        boolean isAdmin = isAdmin(jwt);
+        boolean isAdmin = isAdminOrSystem(jwt);
         return ResponseEntity.ok(getClient.execute(id, callerId, isAdmin));
     }
 
@@ -68,7 +68,7 @@ public class ClientController {
                                                  @Valid @RequestBody ClientRequest request,
                                                  @AuthenticationPrincipal Jwt jwt) {
         UUID callerId = extractCallerId(jwt);
-        boolean isAdmin = isAdmin(jwt);
+        boolean isAdmin = isAdminOrSystem(jwt);
         return ResponseEntity.ok(updateClient.execute(id, callerId, isAdmin, request));
     }
 
@@ -76,7 +76,7 @@ public class ClientController {
     public ResponseEntity<Void> delete(@PathVariable UUID id,
                                        @AuthenticationPrincipal Jwt jwt) {
         UUID callerId = extractCallerId(jwt);
-        boolean isAdmin = isAdmin(jwt);
+        boolean isAdmin = isAdminOrSystem(jwt);
         deleteClient.execute(id, callerId, isAdmin);
         return ResponseEntity.noContent().build();
     }
@@ -85,8 +85,8 @@ public class ClientController {
         return UUID.fromString(jwt.getSubject());
     }
 
-    private boolean isAdmin(Jwt jwt) {
-        return extractRoles(jwt).contains("admin");
+    private boolean isAdminOrSystem(Jwt jwt) {
+        return extractRoles(jwt).contains("admin") || extractRoles(jwt).contains("system");
     }
 
     private List<String> extractRoles(Jwt jwt) {
