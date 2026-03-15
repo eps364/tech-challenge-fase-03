@@ -3,7 +3,6 @@ package br.com.fiap.order.core.usecase;
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderItem;
 import br.com.fiap.order.core.domain.OrderStatus;
-
 import br.com.fiap.order.core.dto.requests.order.CreateOrderItemRequest;
 import br.com.fiap.order.core.dto.requests.order.CreateOrderRequest;
 import br.com.fiap.order.core.dto.responses.OrderItemResponse;
@@ -11,7 +10,6 @@ import br.com.fiap.order.core.dto.responses.OrderResponse;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
 
 import java.util.List;
-import java.util.UUID;
 
 public class CreateOrderUseCase {
 
@@ -25,7 +23,6 @@ public class CreateOrderUseCase {
         List<OrderItem> items = buildItems(request.items());
 
         Order order = new Order(
-                UUID.randomUUID(),
                 request.clientId(),
                 request.restaurantId(),
                 items,

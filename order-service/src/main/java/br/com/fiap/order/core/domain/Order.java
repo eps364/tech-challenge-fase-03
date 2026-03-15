@@ -21,7 +21,7 @@ public class Order {
                  OrderStatus status,
                  BigDecimal total,
                  Instant createdAt) {
-        validate(id, clientId, restaurantId, items, status, total, createdAt);
+        validate(clientId, restaurantId, items, status, total, createdAt);
         this.id = id;
         this.clientId = clientId;
         this.restaurantId = restaurantId;
@@ -29,6 +29,15 @@ public class Order {
         this.status = status;
         this.total = total;
         this.createdAt = createdAt;
+    }
+
+    public Order(UUID clientId,
+                 UUID restaurantId,
+                 List<OrderItem> items,
+                 OrderStatus status,
+                 BigDecimal total,
+                 Instant createdAt) {
+        this(null, clientId, restaurantId, items, status, total, createdAt);
     }
 
     public Order withStatus(OrderStatus newStatus) {
@@ -43,16 +52,12 @@ public class Order {
         );
     }
 
-    private void validate(UUID id,
-                          UUID clientId,
+    private void validate(UUID clientId,
                           UUID restaurantId,
                           List<OrderItem> items,
                           OrderStatus status,
                           BigDecimal total,
                           Instant createdAt) {
-        if (id == null) {
-            throw new ValidationException("id", "The order id is required");
-        }
         if (clientId == null) {
             throw new ValidationException("clientId", "The client id is required");
         }

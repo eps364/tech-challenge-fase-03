@@ -115,7 +115,7 @@ public class ProductController {
             throw new ProductAccessDeniedException("Missing roles in token");
         }
 
-        if (roles.contains("admin")) {
+        if (roles.contains("admin") || roles.contains("system")) {
             return;
         }
 
@@ -140,7 +140,7 @@ public class ProductController {
             @RequestBody @Valid ResolveProductsRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        //validateRestaurantAccess(request.restaurantId(), jwt);
+        validateRestaurantAccess(request.restaurantId(), jwt);
         return ResponseEntity.ok(resolveProducts.execute(request));
     }
 }

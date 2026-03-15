@@ -277,6 +277,10 @@ services:
       dockerfile: ./catalog-service/Dockerfile
     networks:
       - fase3net
+    ports:
+      - "5006:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       catalog-service-db:
         condition: service_started
@@ -289,6 +293,10 @@ services:
     build:
       context: .
       dockerfile: ./order-service/Dockerfile
+    ports:
+      - "5007:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     networks:
       - fase3net
     depends_on:
