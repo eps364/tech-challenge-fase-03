@@ -16,19 +16,21 @@ spring:
     hibernate:
       ddl-auto: none
     defer-datasource-initialization: true
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        default-requeue-rejected: false
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/tech-challenge
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: payment-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 feign:
   client:
@@ -42,14 +44,11 @@ app:
     base-url: http://procpag:8089
   payment:
     max-attempts: 3
-  rabbit:
-    exchange: ex.main
-    queues:
-      in:
-        orchestratorPayments: Orchestrator-Payments.queue
-        orchestratorPaymentsWorker: Orchestrator-Payments-Worker.queue
-      out:
-        paymentsOrchestrator: Payments-Orchestrator.queue
+    polling-delay-ms: 5000
+  kafka:
+    topics:
+      orderCreated: orders.created
+      paymentStatus: payments.status
 
 resilience4j:
   circuitbreaker:
@@ -72,7 +71,6 @@ server:
     include-stacktrace: never
     include-message: always
 
-# Actuator configuration
 management:
   endpoints:
     web:
@@ -80,13 +78,19 @@ management:
         include: "*"
       base-path: /actuator
 
-# Eurika configuration
 eureka:
   client:
     enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
-
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+logging:
+  level:
+    br.com.fiap.payment: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

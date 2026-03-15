@@ -190,6 +190,8 @@ services:
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
+    ports:
+      - "5008:5005"
     command:
       - bash
       - -c
@@ -203,6 +205,7 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - fase3net
     depends_on:
@@ -244,6 +247,8 @@ services:
     image: maven:3.9.9-eclipse-temurin-21
     entrypoint: []
     working_dir: /workspace
+    ports:
+      - "5005:5005"
     command:
       - bash
       - -c
@@ -257,6 +262,7 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+      - JAVA_TOOL_OPTIONS= -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - fase3net
     depends_on:

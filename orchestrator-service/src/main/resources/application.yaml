@@ -1,22 +1,47 @@
 spring:
   application:
     name: orchestrator-service
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
 
-    listener:
-      simple:
-        default-requeue-rejected: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://keycloak:8080/realms/tech-challenge}
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+services:
+  client:
+    name: client-service
+  catalog:
+    name: catalog-service
+  order:
+    name: order-service
 
 eureka:
   client:
     enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
-
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+keycloak:
+  client:
+    token-uri: ${KEYCLOAK_TOKEN_URI:http://keycloak:8080/realms/tech-challenge/protocol/openid-connect/token}
+    client-id: ${KEYCLOAK_CLIENT_ID:orchestrator-service}
+    client-secret: ${KEYCLOAK_CLIENT_SECRET:orchestrator-service-secret}
+
+logging:
+  level:
+    br.com.fiap.orchestrator: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

@@ -47,6 +47,12 @@ spring:
             - Path=/catalog-service/**
           filters:
             - StripPrefix=1
+        - id: orchestrator-service
+          uri: lb://ORCHESTRATOR-SERVICE
+          predicates:
+            - Path=/orchestrator-service/**
+          filters:
+            - StripPrefix=1
   security:
     oauth2:
       resourceserver:
@@ -62,6 +68,11 @@ server:
 logging:
   level:
     root: INFO
+    br.com.fiap.apigateway: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"
 
 eureka:
   client:
@@ -72,4 +83,3 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-

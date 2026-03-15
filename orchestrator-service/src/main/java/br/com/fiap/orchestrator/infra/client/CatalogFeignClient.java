@@ -1,0 +1,14 @@
+package br.com.fiap.orchestrator.infra.client;
+
+import br.com.fiap.orchestrator.core.dto.requests.catalog.ResolveProductsRequest;
+import br.com.fiap.orchestrator.core.dto.responses.ResolveProductsResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@FeignClient(name = "catalog-service")
+public interface CatalogFeignClient {
+
+    @PostMapping("/products/resolve")
+    ResolveProductsResponse resolveProducts(@RequestBody ResolveProductsRequest request);
+}

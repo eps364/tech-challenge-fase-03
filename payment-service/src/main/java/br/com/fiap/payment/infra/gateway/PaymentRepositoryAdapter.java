@@ -1,11 +1,13 @@
 package br.com.fiap.payment.infra.gateway;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import br.com.fiap.payment.core.domain.Payment;
+import br.com.fiap.payment.core.domain.PaymentStatus;
 import br.com.fiap.payment.core.gateway.PaymentRepositoryPort;
 import br.com.fiap.payment.infra.entity.PaymentEntity;
 import br.com.fiap.payment.infra.repository.PaymentJpaRepository;
@@ -27,6 +29,14 @@ public class PaymentRepositoryAdapter implements PaymentRepositoryPort {
     @Override
     public Optional<Payment> findByOrderId(UUID orderId) {
         return repository.findByOrderId(orderId).map(this::toDomain);
+    }
+
+    @Override
+    public List<Payment> findPendingPayments() {
+        return repository.findTop50ByStatusOrderByCreatedAtAsc(PaymentStatus.PENDING)
+                .stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     private PaymentEntity toEntity(Payment payment) {

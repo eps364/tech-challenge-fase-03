@@ -4,8 +4,9 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum PaymentEventType {
+    PAYMENT_PENDING,
     PAYMENT_APPROVED,
-    PAYMENT_PENDING;
+    PAYMENT_FAILED;
 
     public static Optional<PaymentEventType> from(String rawType) {
         if (rawType == null || rawType.isBlank()) {

@@ -1,10 +1,17 @@
 package br.com.fiap.payment.infra.dto;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public record ProcPagRequest(
-        BigDecimal valor,
-        UUID pagamento_id,
-        UUID cliente_id
-) {}
+        @JsonProperty("valor")
+        Integer valor,
+
+        @JsonProperty("pagamento_id")
+        UUID pagamentoId,
+
+        @JsonProperty("cliente_id")
+        UUID clienteId
+) {
+}

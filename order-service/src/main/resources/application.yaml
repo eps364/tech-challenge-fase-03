@@ -21,14 +21,16 @@ spring:
     hibernate:
       ddl-auto: none
     defer-datasource-initialization: true
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        default-requeue-rejected: false
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: order-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 feign:
   client:
@@ -38,13 +40,10 @@ feign:
         readTimeout: 5000
 
 app:
-  rabbit:
-    exchange: ex.main
-    queues:
-      in:
-        orchestratorOrders: Orchestrator-Orders.queue
-      out:
-        ordersOrchestrator: Orders-Orchestrator.queue
+  kafka:
+    topics:
+      orderCreated: orders.created
+      paymentStatus: payments.status
 
 server:
   port: 0
@@ -52,7 +51,6 @@ server:
     include-stacktrace: never
     include-message: always
 
-# Actuator configuration
 management:
   endpoints:
     web:
@@ -60,15 +58,19 @@ management:
         include: "*"
       base-path: /actuator
 
-# Eurika configuration
 eureka:
   client:
     enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
-
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
-
+logging:
+  level:
+    br.com.fiap.order: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

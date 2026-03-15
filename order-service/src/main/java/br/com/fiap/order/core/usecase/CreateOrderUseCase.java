@@ -1,90 +1,79 @@
 package br.com.fiap.order.core.usecase;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.UUID;
 
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderItem;
 import br.com.fiap.order.core.domain.OrderStatus;
-import br.com.fiap.order.core.dto.OrderItemRequest;
-import br.com.fiap.order.core.dto.OrderItemResponse;
-import br.com.fiap.order.core.dto.OrderRequest;
-import br.com.fiap.order.core.dto.OrderResponse;
-import br.com.fiap.order.core.dto.ProductDTO;
-import br.com.fiap.order.core.gateway.CatalogClientPort;
+import br.com.fiap.order.core.dto.requests.order.CreateOrderItemRequest;
+import br.com.fiap.order.core.dto.requests.order.CreateOrderRequest;
+import br.com.fiap.order.core.dto.responses.OrderItemResponse;
+import br.com.fiap.order.core.dto.responses.OrderResponse;
 import br.com.fiap.order.core.gateway.EventPublisherPort;
 import br.com.fiap.order.core.gateway.OrderRepositoryPort;
-import br.com.fiap.order.core.gateway.RestaurantClientPort;
 
 public class CreateOrderUseCase {
 
-    private final OrderRepositoryPort repo;
-    private final CatalogClientPort catalogClient;
-    private final RestaurantClientPort restaurantClient;
-    private final EventPublisherPort eventPublisher;
+    private final OrderRepositoryPort orderRepositoryPort;
+    private final EventPublisherPort eventPublisherPort;
 
-    public CreateOrderUseCase(OrderRepositoryPort repo, CatalogClientPort catalogClient,
-                              RestaurantClientPort restaurantClient,
-                              EventPublisherPort eventPublisher) {
-        this.repo = repo;
-        this.catalogClient = catalogClient;
-        this.restaurantClient = restaurantClient;
-        this.eventPublisher = eventPublisher;
+    public CreateOrderUseCase(OrderRepositoryPort orderRepositoryPort,
+                              EventPublisherPort eventPublisherPort) {
+        this.orderRepositoryPort = orderRepositoryPort;
+        this.eventPublisherPort = eventPublisherPort;
     }
 
-    public OrderResponse execute(UUID clientId, OrderRequest req) {
-        List<FieldError> errors = new ArrayList<>();
+    public OrderResponse execute(CreateOrderRequest request) {
+        List<OrderItem> items = buildItems(request.items());
 
-        try {
-            restaurantClient.validateExists(req.restaurantId());
-        } catch (RestaurantNotFoundException e) {
-            errors.add(new FieldError("restaurantId", e.getMessage()));
-        }
+        Order order = new Order(
+                request.clientId(),
+                request.restaurantId(),
+                items,
+                OrderStatus.CREATED,
+                request.price(),
+                request.requestDate()
+        );
 
-        List<OrderItem> items = resolveItems(req.restaurantId(), req.items(), errors);
+        Order saved = orderRepositoryPort.save(order);
 
-        if (!errors.isEmpty()) {
-            throw new OrderValidationException(errors);
-        }
+        eventPublisherPort.publishOrderCreated(saved);
 
-        Order order = Order.create(clientId, req.restaurantId(), items);
-
-        Order saved = repo.save(order);
-        eventPublisher.publishOrderCreated(saved);
         return toResponse(saved);
     }
 
-    private List<OrderItem> resolveItems(UUID restaurantId,
-                                         List<OrderItemRequest> requests,
-                                         List<FieldError> errors) {
-        List<OrderItem> result = new ArrayList<>();
-        for (int i = 0; i < requests.size(); i++) {
-            OrderItemRequest req = requests.get(i);
-            try {
-                ProductDTO product = catalogClient.getProduct(req.productId());
-                if (!restaurantId.equals(product.restaurantId())) {
-                    errors.add(new FieldError(
-                            "items[" + i + "].productId",
-                            "Product does not belong to the selected restaurant"
-                    ));
-                    continue;
-                }
-                result.add(new OrderItem(req.productId(), product.name(), req.quantity(), product.price()));
-            } catch (ProductNotFoundException e) {
-                errors.add(new FieldError("items[" + i + "].productId", e.getMessage()));
-            }
-        }
-        return result;
+    private List<OrderItem> buildItems(List<CreateOrderItemRequest> requests) {
+        return requests.stream()
+                .map(this::toOrderItem)
+                .toList();
     }
 
-    private OrderResponse toResponse(Order o) {
-        List<OrderItemResponse> itemResponses = o.getItems().stream()
-                .map(i -> new OrderItemResponse(i.getProductId(), i.getName(),
-                        i.getQuantity(), i.getPrice(), i.getSubtotal()))
-                .toList();
-        return new OrderResponse(o.getId(), o.getClientId(), o.getRestaurantId(),
-                itemResponses, o.getStatus(), o.getTotal(), o.getCreatedAt());
+    private OrderItem toOrderItem(CreateOrderItemRequest request) {
+        return new OrderItem(
+                request.productId(),
+                request.name(),
+                request.quantity(),
+                request.price()
+        );
+    }
+
+    private OrderResponse toResponse(Order order) {
+        return new OrderResponse(
+                order.getId(),
+                order.getClientId(),
+                order.getRestaurantId(),
+                order.getItems().stream()
+                        .map(item -> new OrderItemResponse(
+                                item.getProductId(),
+                                item.getName(),
+                                item.getQuantity(),
+                                item.getPrice(),
+                                item.getSubtotal()
+                        ))
+                        .toList(),
+                order.getStatus(),
+                order.getTotal(),
+                order.getCreatedAt()
+        );
     }
 }
