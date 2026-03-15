@@ -26,7 +26,11 @@ spring:
 
 logging:
   level:
-    root: INFO
+    br.com.fiap.authservice: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"
 
 keycloak:
   auth-server-url: ${KEYCLOAK_SERVER_URL:http://keycloak:8080}
