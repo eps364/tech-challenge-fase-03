@@ -1,4 +1,4 @@
-package br.com.fiap.payment.infra.gateway;
+package br.com.fiap.payment.infra.client;
 
 import java.util.Map;
 import java.util.UUID;

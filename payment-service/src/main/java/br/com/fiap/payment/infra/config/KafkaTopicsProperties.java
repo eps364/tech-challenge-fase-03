@@ -1,6 +1,7 @@
-package br.com.fiap.order.infra.config;
+package br.com.fiap.payment.infra.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "app.kafka.topics")
 public class KafkaTopicsProperties {

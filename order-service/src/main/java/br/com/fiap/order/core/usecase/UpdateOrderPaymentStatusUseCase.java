@@ -22,6 +22,10 @@ public class UpdateOrderPaymentStatusUseCase {
         updateStatus(orderId, OrderStatus.PAID);
     }
 
+    public void markAsPaymentFailed(UUID orderId) {
+        updateStatus(orderId, OrderStatus.PAYMENT_FAILED);
+    }
+
     private void updateStatus(UUID orderId, OrderStatus newStatus) {
         Order order = repository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
