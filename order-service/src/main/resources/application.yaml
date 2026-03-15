@@ -29,6 +29,11 @@ spring:
     listener:
       simple:
         default-requeue-rejected: false
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 feign:
   client:
@@ -41,10 +46,11 @@ app:
   rabbit:
     exchange: ex.main
     queues:
-      in:
-        orchestratorOrders: Orchestrator-Orders.queue
       out:
         ordersOrchestrator: Orders-Orchestrator.queue
+  kafka:
+    topics:
+      orderCreated: orders.created
 
 server:
   port: 0

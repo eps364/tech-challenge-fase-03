@@ -107,6 +107,8 @@ services:
 
   order-service-db:
     image: postgres:15
+    ports:
+      - "5437:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -118,6 +120,8 @@ services:
 
   payment-service-db:
     image: postgres:15
+    ports:
+      - "5436:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -324,6 +328,10 @@ services:
         condition: service_started
       keycloak:
         condition: service_healthy
+    ports:
+      - "5008:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
   restaurant-service:
     build:
