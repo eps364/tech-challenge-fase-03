@@ -11,3 +11,11 @@ eureka:
     fetch-registry: false
     service-url:
       defaultZone: http://service-registry:8762/eureka/
+
+logging:
+  level:
+    br.com.fiap.serviceregistry: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"
