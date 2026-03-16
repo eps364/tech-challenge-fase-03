@@ -2,6 +2,9 @@ package br.com.fiap.order.core.usecase;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.domain.OrderItem;
 import br.com.fiap.order.core.domain.OrderStatus;
@@ -14,6 +17,8 @@ import br.com.fiap.order.core.gateway.OrderRepositoryPort;
 
 public class CreateOrderUseCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(CreateOrderUseCase.class);
+
     private final OrderRepositoryPort orderRepositoryPort;
     private final EventPublisherPort eventPublisherPort;
 
@@ -24,6 +29,7 @@ public class CreateOrderUseCase {
     }
 
     public OrderResponse execute(CreateOrderRequest request) {
+        logger.info("Creating order for client {}", request.clientId());
         List<OrderItem> items = buildItems(request.items());
 
         Order order = new Order(
@@ -36,8 +42,10 @@ public class CreateOrderUseCase {
         );
 
         Order saved = orderRepositoryPort.save(order);
+        logger.info("Order saved with id {}", saved.getId());
 
         eventPublisherPort.publishOrderCreated(saved);
+        logger.info("Order created event published for order id {}", saved.getId());
 
         return toResponse(saved);
     }

@@ -1,5 +1,8 @@
 package br.com.fiap.authservice.core.usecase;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.fiap.authservice.core.domain.User;
 import br.com.fiap.authservice.core.gateway.IdentityProviderGateway;
 import br.com.fiap.authservice.core.gateway.UserGateway;
@@ -7,6 +10,8 @@ import br.com.fiap.authservice.core.gateway.UserGateway;
 import java.util.UUID;
 
 public class RegisterUserUseCase {
+    private static final Logger logger = LoggerFactory.getLogger(RegisterUserUseCase.class);
+
     private final UserGateway userGateway;
     private final IdentityProviderGateway identityProviderGateway;
 
@@ -16,14 +21,15 @@ public class RegisterUserUseCase {
     }
 
     public User execute(User user, String password) {
-        // 1. Create user in Keycloak
+        logger.info("Registering user: {}", user.getUsername());
+
         String keycloakId = identityProviderGateway.createUser(user, password);
-        
-        // 2. Set ID from Keycloak
+        logger.info("User created in Keycloak with id: {}", keycloakId);
+
         User userWithId = user.withId(UUID.fromString(keycloakId));
 
-        // 3. Save user in local database
         User savedUser = userGateway.save(userWithId);
+        logger.info("User saved in local database with id: {}", savedUser.getId());
 
         return savedUser;
     }

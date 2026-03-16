@@ -1,5 +1,8 @@
 package br.com.fiap.order.core.usecase;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.dto.responses.OrderItemResponse;
 import br.com.fiap.order.core.dto.responses.OrderResponse;
@@ -10,6 +13,8 @@ import java.util.UUID;
 
 public class FindOrdersByClientIdUseCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(FindOrdersByClientIdUseCase.class);
+
     private final OrderRepositoryPort orderRepositoryPort;
 
     public FindOrdersByClientIdUseCase(OrderRepositoryPort orderRepositoryPort) {
@@ -17,10 +22,13 @@ public class FindOrdersByClientIdUseCase {
     }
 
     public List<OrderResponse> execute(UUID clientId) {
-        return orderRepositoryPort.findByClientId(clientId)
+        logger.info("Finding orders for client {}", clientId);
+        List<OrderResponse> orders = orderRepositoryPort.findByClientId(clientId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
+        logger.info("Found {} orders for client {}", orders.size(), clientId);
+        return orders;
     }
 
     private OrderResponse toResponse(Order order) {

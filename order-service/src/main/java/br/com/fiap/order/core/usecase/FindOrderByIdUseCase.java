@@ -1,5 +1,8 @@
 package br.com.fiap.order.core.usecase;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.fiap.order.core.domain.Order;
 import br.com.fiap.order.core.dto.responses.OrderItemResponse;
 import br.com.fiap.order.core.dto.responses.OrderResponse;
@@ -9,6 +12,8 @@ import java.util.UUID;
 
 public class FindOrderByIdUseCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(FindOrderByIdUseCase.class);
+
     private final OrderRepositoryPort orderRepositoryPort;
 
     public FindOrderByIdUseCase(OrderRepositoryPort orderRepositoryPort) {
@@ -16,9 +21,11 @@ public class FindOrderByIdUseCase {
     }
 
     public OrderResponse execute(UUID id) {
+        logger.info("Finding order by id {}", id);
         Order order = orderRepositoryPort.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pedido não encontrado: " + id));
 
+        logger.info("Order found with id {}", id);
         return toResponse(order);
     }
 
