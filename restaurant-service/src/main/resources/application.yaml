@@ -38,7 +38,7 @@ app:
     exchange: ex.main
     queues:
       in:
-        OrderPaidRestaurant: Order-Paid-Restaurant.queue
+        orderPaidRestaurant: Order-Paid-Restaurant.queue
 
 keycloak:
   admin:

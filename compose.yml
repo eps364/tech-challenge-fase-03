@@ -337,6 +337,10 @@ services:
     build:
       context: .
       dockerfile: ./restaurant-service/Dockerfile
+    ports:
+      - "5009:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     networks:
       - fase3net
     depends_on:
