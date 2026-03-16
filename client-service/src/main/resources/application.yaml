@@ -9,14 +9,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8080/realms/tech-challenge
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        default-requeue-rejected: false
   datasource:
     url: jdbc:postgresql://client-service-db:5432/client-service-db
     driver-class-name: org.postgresql.Driver
@@ -30,14 +22,6 @@ spring:
     hibernate:
       ddl-auto: none
     defer-datasource-initialization: true
-app:
-  rabbit:
-    exchange: ex.main
-    queues:
-      in:
-        orchestratorClients: Orchestrator-Clients.queue
-      out:
-        clientsOrchestrator: Clients-Orchestrator.queue
 
 server:
   port: 0

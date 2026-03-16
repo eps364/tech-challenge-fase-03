@@ -44,6 +44,11 @@ app:
     topics:
       orderCreated: orders.created
       paymentStatus: payments.status
+  rabbit:
+    exchange: ex.main
+    queues:
+      out:
+        OrderPaidRestaurant: Order-Paid-Restaurant.queue
 
 server:
   port: 0
