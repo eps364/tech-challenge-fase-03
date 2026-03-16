@@ -1,24 +1,31 @@
 package br.com.fiap.payment.infra.adapters.inbound.messaging;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import br.com.fiap.payment.core.dto.QueueMessage;
-import br.com.fiap.payment.core.usecase.ProcessPaymentUseCase;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.fiap.payment.core.dto.OrderCreatedEvent;
+import br.com.fiap.payment.core.usecase.StartPaymentProcessUseCase;
+
 @Component
 public class OrderCreatedListener {
 
-    private final ProcessPaymentUseCase processPaymentUseCase;
+    private final StartPaymentProcessUseCase startPaymentProcessUseCase;
+    private final ObjectMapper objectMapper;
 
-    public OrderCreatedListener(ProcessPaymentUseCase processPaymentUseCase) {
-        this.processPaymentUseCase = processPaymentUseCase;
+    public OrderCreatedListener(StartPaymentProcessUseCase startPaymentProcessUseCase,
+                                ObjectMapper objectMapper) {
+        this.startPaymentProcessUseCase = startPaymentProcessUseCase;
+        this.objectMapper = objectMapper;
     }
 
-    @RabbitListener(queues = "${app.rabbit.queues.in.orchestratorPayments}")
-    public void onMessage(QueueMessage message) {
-        if (!"ORDER_CREATED".equalsIgnoreCase(message.type())) {
-            return;
-        }
-        processPaymentUseCase.execute(message.payload(), false);
+    @KafkaListener(
+            topics = "${app.kafka.topics.orderCreated}",
+            groupId = "${spring.application.name}"
+    )
+    public void onMessage(String message) throws Exception {
+        OrderCreatedEvent event = objectMapper.readValue(message, OrderCreatedEvent.class);
+        startPaymentProcessUseCase.execute(event);
     }
 }

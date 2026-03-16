@@ -2,6 +2,7 @@ package br.com.fiap.payment.infra.gateway;
 
 import java.util.Map;
 
+import br.com.fiap.payment.infra.client.ProcPagFeignClient;
 import org.springframework.stereotype.Component;
 
 import br.com.fiap.payment.core.domain.Payment;
@@ -24,7 +25,7 @@ public class ExternalPaymentGatewayAdapter implements ExternalPaymentGatewayPort
     @CircuitBreaker(name = "procpag", fallbackMethod = "fallbackAuthorize")
     public boolean authorize(Payment payment) {
         procPagFeignClient.requestPayment(new ProcPagRequest(
-                payment.getAmount(),
+                payment.getAmount().intValue(),
                 payment.getId(),
                 payment.getClientId()
         ));

@@ -5,13 +5,13 @@ import java.util.UUID;
 
 public class Product {
 
-    private final Long id;
+    private final UUID id;
     private final String name;
     private final BigDecimal price;
     private final UUID restaurantId;
     private final String foodType;
 
-    public Product(Long id, String name, BigDecimal price, UUID restaurantId, String foodType) {
+    public Product(UUID id, String name, BigDecimal price, UUID restaurantId, String foodType) {
         validate(name, price, restaurantId, foodType);
         this.id = id;
         this.name = name.trim();
@@ -30,12 +30,27 @@ public class Product {
             throw new ValidationException("price", "The price must be greater than zero");
         }
         if (restaurantId == null) throw new ValidationException("restaurantId", "The restaurant id is required");
-        if (foodType == null || foodType.isBlank()) throw new ValidationException("foodType", "The food type is required");
+        if (foodType == null || foodType.isBlank())
+            throw new ValidationException("foodType", "The food type is required");
     }
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public BigDecimal getPrice() { return price; }
-    public UUID getRestaurantId() { return restaurantId; }
-    public String getFoodType() { return foodType; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public UUID getRestaurantId() {
+        return restaurantId;
+    }
+
+    public String getFoodType() {
+        return foodType;
+    }
 }

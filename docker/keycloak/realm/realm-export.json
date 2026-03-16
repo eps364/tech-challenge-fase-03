@@ -40,6 +40,20 @@
       "serviceAccountsEnabled": true
     },
     {
+      "clientId": "orchestrator-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "orchestrator-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "catalog-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "catalog-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
       "clientId": "frontend-client",
       "enabled": true,
       "publicClient": true,
@@ -183,6 +197,10 @@
       {
         "name": "owner",
         "description": "Owner role"
+      },
+      {
+        "name": "system",
+        "description": "System role for internal integrations"
       }
     ]
   }

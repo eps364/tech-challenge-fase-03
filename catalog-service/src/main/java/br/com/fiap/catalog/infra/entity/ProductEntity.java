@@ -1,8 +1,5 @@
 package br.com.fiap.catalog.infra.entity;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,13 +7,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 @Entity
 @Table(name = "products")
 public class ProductEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private String name;
@@ -30,9 +30,10 @@ public class ProductEntity {
     @Column(name = "food_type", nullable = false)
     private String foodType;
 
-    protected ProductEntity() {}
+    protected ProductEntity() {
+    }
 
-    public ProductEntity(Long id, String name, BigDecimal price, UUID restaurantId, String foodType) {
+    public ProductEntity(UUID id, String name, BigDecimal price, UUID restaurantId, String foodType) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -40,10 +41,21 @@ public class ProductEntity {
         this.foodType = foodType;
     }
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public BigDecimal getPrice() { return price; }
-    public UUID getRestaurantId() { return restaurantId; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public UUID getRestaurantId() {
+        return restaurantId;
+    }
 
     public String getFoodType() {
         return foodType;

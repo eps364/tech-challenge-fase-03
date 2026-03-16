@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .requestMatchers("/test/public").permitAll()
                 .requestMatchers("/test/private").hasRole("user")
                 .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/products", "/products/**").hasAnyRole("owner", "admin")
+                .requestMatchers(HttpMethod.POST, "/products", "/products/**").hasAnyRole("owner", "admin", "system")
                 .requestMatchers(HttpMethod.PUT, "/products", "/products/**").hasAnyRole("owner", "admin")
                 .requestMatchers(HttpMethod.DELETE, "/products", "/products/**").hasAnyRole("owner", "admin")
                 .anyRequest().authenticated()

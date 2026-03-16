@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +30,8 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/gateway/security/routes")
 public class RouteSecurityRulesController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RouteSecurityRulesController.class);
+
     private final RouteSecurityRulesStore rulesStore;
 
     public RouteSecurityRulesController(RouteSecurityRulesStore rulesStore) {
@@ -36,22 +40,31 @@ public class RouteSecurityRulesController {
 
     @GetMapping
     public Mono<List<RouteSecurityRuleResponse>> findAll() {
+        logger.info("Received find all route security rules request");
         return rulesStore.getRules()
-                .map(rules -> rules.stream().map(this::toResponse).toList());
+                .map(rules -> {
+                    logger.info("Found {} route security rules", rules.size());
+                    return rules.stream().map(this::toResponse).toList();
+                });
     }
 
     @PutMapping
     public Mono<List<RouteSecurityRuleResponse>> update(@RequestBody List<RouteSecurityRuleRequest> requests) {
+        logger.info("Received update route security rules request with {} rules", requests != null ? requests.size() : 0);
         List<RouteSecurityRule> rules = requests == null
                 ? List.of()
                 : requests.stream().map(this::toDomain).toList();
 
         return rulesStore.saveRules(rules)
-                .map(saved -> saved.stream().map(this::toResponse).toList());
+                .map(saved -> {
+                    logger.info("Updated route security rules successfully");
+                    return saved.stream().map(this::toResponse).toList();
+                });
     }
 
     @PostMapping
     public Mono<RouteSecurityRuleResponse> create(@RequestBody RouteSecurityRuleRequest request) {
+        logger.info("Received create route security rule request: path={}, access={}", request.pathPattern(), request.access());
         RouteSecurityRule ruleWithoutId = toDomain(request, null);
         return rulesStore.getRules()
                 .flatMap(existing -> {
@@ -61,7 +74,10 @@ public class RouteSecurityRulesController {
                     updated.add(created);
                     return rulesStore.saveRules(updated).thenReturn(created);
                 })
-                .map(this::toResponse);
+                .map(response -> {
+                    logger.info("Route security rule created: id={}", response.id());
+                    return toResponse(response);
+                });
     }
 
     @PutMapping("/{id}")
@@ -69,6 +85,7 @@ public class RouteSecurityRulesController {
             @PathVariable Integer id,
             @RequestBody RouteSecurityRuleRequest request
     ) {
+        logger.info("Received update route security rule request for ID {}", id);
         RouteSecurityRule incoming = toDomain(request, id);
         return rulesStore.getRules()
                 .flatMap(existing -> {
@@ -78,11 +95,15 @@ public class RouteSecurityRulesController {
                     updated.set(index, incoming);
                     return rulesStore.saveRules(updated).thenReturn(incoming);
                 })
-                .map(this::toResponse);
+                .map(response -> {
+                    logger.info("Route security rule updated: id={}", response.id());
+                    return toResponse(response);
+                });
     }
 
     @DeleteMapping("/{id}")
     public Mono<Void> deleteById(@PathVariable Integer id) {
+        logger.info("Received delete route security rule request for ID {}", id);
         return rulesStore.getRules()
                 .flatMap(existing -> {
                     List<RouteSecurityRule> updated = new java.util.ArrayList<>(existing);
@@ -90,7 +111,8 @@ public class RouteSecurityRulesController {
                             .orElseThrow(() -> notFound(id));
                     updated.remove(index);
                     return rulesStore.saveRules(updated).then();
-                });
+                })
+                .doOnSuccess(v -> logger.info("Route security rule deleted: id={}", id));
     }
 
     private RouteSecurityRule toDomain(RouteSecurityRuleRequest request) {
@@ -99,9 +121,11 @@ public class RouteSecurityRulesController {
 
     private RouteSecurityRule toDomain(RouteSecurityRuleRequest request, Integer id) {
         if (request.pathPattern() == null || request.pathPattern().isBlank()) {
+            logger.warn("Invalid request: pathPattern is required");
             throw badRequest("pathPattern is required");
         }
         if (request.access() == null || request.access().isBlank()) {
+            logger.warn("Invalid request: access is required");
             throw badRequest("access is required");
         }
 
@@ -139,6 +163,7 @@ public class RouteSecurityRulesController {
         try {
             return HttpMethod.valueOf(Objects.requireNonNull(method).toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid HTTP method: {}", method);
             throw badRequest("method is invalid. Use standard HTTP method names (GET, POST, PUT, DELETE, PATCH)");
         }
     }
@@ -147,6 +172,7 @@ public class RouteSecurityRulesController {
         try {
             return RouteAccessType.valueOf(access.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ex) {
+            logger.warn("Invalid access type: {}", access);
             throw badRequest("access is invalid. Use PERMIT_ALL, AUTHENTICATED or HAS_ANY_ROLE");
         }
     }
@@ -156,6 +182,7 @@ public class RouteSecurityRulesController {
     }
 
     private ResponseStatusException notFound(Integer id) {
+        logger.warn("Route security rule not found: id={}", id);
         return new ResponseStatusException(HttpStatus.NOT_FOUND, "route rule not found: id=" + id);
     }
 }

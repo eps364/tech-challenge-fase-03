@@ -2,6 +2,8 @@ package br.com.fiap.authservice.infra.web.controller;
 
 import java.time.Instant;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +28,8 @@ import br.com.fiap.authservice.core.usecase.RegisterUserUseCase;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     private final RegisterUserUseCase registerUserUseCase;
     private final LoginUseCase loginUseCase;
     private final LogoutUseCase logoutUseCase;
@@ -43,26 +47,47 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
-        User user = User.create(
-                request.username(),
-                request.email(),
-                request.firstName(),
-                request.lastName()
-        );
-        User registered = registerUserUseCase.execute(user, request.password());
-        return ResponseEntity.status(HttpStatus.CREATED).body(registered);
+        logger.info("Received register request for username {}", request.username());
+        try {
+            User user = User.create(
+                    request.username(),
+                    request.email(),
+                    request.firstName(),
+                    request.lastName()
+            );
+            User registered = registerUserUseCase.execute(user, request.password());
+            logger.info("User registered successfully: {}", registered.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(registered);
+        } catch (Exception e) {
+            logger.error("Error registering user {}: {}", request.username(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        LoginResult result = loginUseCase.execute(request.username(), request.password());
-        return ResponseEntity.ok(toAuthResponse(result));
+        logger.info("Received login request for username {}", request.username());
+        try {
+            LoginResult result = loginUseCase.execute(request.username(), request.password());
+            logger.info("User logged in successfully: {}", result.getUserId());
+            return ResponseEntity.ok(toAuthResponse(result));
+        } catch (Exception e) {
+            logger.error("Error logging in user {}: {}", request.username(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
-        LoginResult result = refreshTokenUseCase.execute(request.refreshToken());
-        return ResponseEntity.ok(toAuthResponse(result));
+        logger.info("Received refresh token request");
+        try {
+            LoginResult result = refreshTokenUseCase.execute(request.refreshToken());
+            logger.info("Token refreshed successfully for user {}", result.getUserId());
+            return ResponseEntity.ok(toAuthResponse(result));
+        } catch (Exception e) {
+            logger.error("Error refreshing token: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @PostMapping("/logout")
@@ -75,9 +100,17 @@ public class AuthController {
             long ttlSeconds = (expiresAt != null)
                     ? Math.max(0, expiresAt.getEpochSecond() - Instant.now().getEpochSecond())
                     : 0L;
-            logoutUseCase.execute(userId, jti, ttlSeconds);
-            return ResponseEntity.noContent().build();
+            logger.info("Received logout request for user {}", userId);
+            try {
+                logoutUseCase.execute(userId, jti, ttlSeconds);
+                logger.info("User logged out successfully: {}", userId);
+                return ResponseEntity.noContent().build();
+            } catch (Exception e) {
+                logger.error("Error logging out user {}: {}", userId, e.getMessage(), e);
+                throw e;
+            }
         }
+        logger.warn("Unauthorized logout attempt");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

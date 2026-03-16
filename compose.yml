@@ -3,33 +3,61 @@ name: tech-challenge-fase-03
 services:
 
   keycloak:
-    #image: quay.io/keycloak/keycloak:26.5.4
     build:
       context: ./docker
       dockerfile: ./keycloak/Dockerfile.keycloak
-    command: start-dev --import-realm --http-port=8080
+    command:
+      - start-dev
+      - --import-realm
+      - --http-port=8080
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
-      - KC_DB_USERNAME=root
-      - KC_DB_PASSWORD=root
-      - KC_IMPORT_REALM=realm-export.json
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
     volumes:
-      - ./docker/keycloak/realm:/opt/keycloak/data/import
+      - ./docker/keycloak/realm:/opt/keycloak/data/import:ro
     depends_on:
       keycloak-db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 && echo -e 'GET /realms/master/.well-known/openid-configuration HTTP/1.1\r\nHost: localhost:8080\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | grep -q 'issuer'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
     networks:
       - fase3net
-  
+
+  keycloak-init:
+    build:
+      context: ./docker
+      dockerfile: ./keycloak/Dockerfile.keycloak
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      TARGET_REALM: tech-challenge
+      TARGET_CLIENT_ID: orchestrator-service
+      TARGET_ROLE: system
+    volumes:
+      - ./docker/keycloak/scripts:/opt/keycloak/scripts:ro
+    entrypoint: ["/bin/bash", "/opt/keycloak/scripts/configure-service-account-role.sh"]
+    restart: "no"
+    networks:
+      - fase3net
+
   keycloak-db:
     image: postgres:15
     ports:
-      - 5433:5432
+      - "5433:5432"
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: root
@@ -79,6 +107,8 @@ services:
 
   order-service-db:
     image: postgres:15
+    ports:
+      - "5437:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -90,6 +120,8 @@ services:
 
   payment-service-db:
     image: postgres:15
+    ports:
+      - "5436:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -114,8 +146,8 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"    # AMQP
-      - "15672:15672"  # Management UI
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
     environment:
@@ -128,23 +160,22 @@ services:
     image: apache/kafka:latest
     container_name: kafka
     ports:
-      - "9094:9094"   # acesso do seu PC
+      - "9094:9094"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:9094,CONTROLLER://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://127.0.0.1:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
-
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    networks:
+      - fase3net
 
   akhq:
     image: tchiotludo/akhq:latest
@@ -160,17 +191,16 @@ services:
             docker-kafka:
               properties:
                 bootstrap.servers: "kafka:9092"
+    networks:
+      - fase3net
 
   procpag:
-    # image: docker.io/erickemprobr/procpag:latest
-    # https://github.com/proferickmuller/go-procpag
-    # image: go-procpag
     image: docker.io/erickemprobr/procpag:latest
     platform: linux/amd64
     ports:
-    - "8089:8089"
+      - "8089:8089"
     networks:
-    - fase3net
+      - fase3net
 
   redis:
     image: redis:7-alpine
@@ -201,7 +231,7 @@ services:
 
   api-gateway:
     build:
-      context: .      
+      context: .
       dockerfile: ./api-gateway/Dockerfile
     ports:
       - "8761:8761"
@@ -211,6 +241,8 @@ services:
       service-registry:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   auth-service:
@@ -226,6 +258,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      keycloak:
+        condition: service_healthy
 
   client-service:
     build:
@@ -238,6 +272,8 @@ services:
         condition: service_started
       service-registry:
         condition: service_healthy
+      keycloak:
+        condition: service_healthy
 
   catalog-service:
     build:
@@ -245,16 +281,26 @@ services:
       dockerfile: ./catalog-service/Dockerfile
     networks:
       - fase3net
+    ports:
+      - "5006:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       catalog-service-db:
         condition: service_started
       service-registry:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   order-service:
     build:
       context: .
       dockerfile: ./order-service/Dockerfile
+    ports:
+      - "5007:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     networks:
       - fase3net
     depends_on:
@@ -264,6 +310,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+      keycloak:
+        condition: service_healthy
 
   payment-service:
     build:
@@ -278,11 +326,21 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+      keycloak:
+        condition: service_healthy
+    ports:
+      - "5008:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
   restaurant-service:
     build:
       context: .
       dockerfile: ./restaurant-service/Dockerfile
+    ports:
+      - "5009:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     networks:
       - fase3net
     depends_on:
@@ -292,6 +350,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+      keycloak:
+        condition: service_healthy
 
   orchestrator-service:
     build:
@@ -299,17 +359,24 @@ services:
       dockerfile: ./orchestrator-service/Dockerfile
     networks:
       - fase3net
+    ports:
+      - "5005:5005"
+    environment:
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       service-registry:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+      keycloak:
+        condition: service_healthy
+      keycloak-init:
+        condition: service_completed_successfully
 
 networks:
   fase3net:
 
 volumes:
-  redis_data:
   auth-service-db_data:
   client-service-db_data:
   catalog-service-db_data:
