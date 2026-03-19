@@ -1,5 +1,14 @@
 package br.com.fiap.orchestrator.core.usecase;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.fiap.orchestrator.core.domain.Client;
 import br.com.fiap.orchestrator.core.domain.OrderDraft;
 import br.com.fiap.orchestrator.core.domain.OrderItemDraft;
@@ -9,15 +18,6 @@ import br.com.fiap.orchestrator.core.dto.requests.orchestration.CreateOrderReque
 import br.com.fiap.orchestrator.core.gateway.CatalogGateway;
 import br.com.fiap.orchestrator.core.gateway.ClientGateway;
 import br.com.fiap.orchestrator.core.gateway.OrderGateway;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CreateOrderOrchestrationUseCase {
 
@@ -56,6 +56,10 @@ public class CreateOrderOrchestrationUseCase {
     private Client findClient(UUID clientId) {
         logger.debug("Finding client by ID: {}", clientId);
         Client client = clientGateway.findById(clientId);
+        if (client == null) {
+            logger.error("Client not found: {}", clientId);
+            throw new IllegalArgumentException("Cliente não encontrado: " + clientId);
+        }
         logger.debug("Client found: {}", client);
         return client;
     }
