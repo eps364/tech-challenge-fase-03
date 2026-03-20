@@ -2,7 +2,6 @@ package br.com.fiap.authservice.infra.web.controller;
 
 import java.time.Instant;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,7 @@ import br.com.fiap.authservice.core.usecase.RegisterUserUseCase;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements br.com.fiap.authservice.infra.web.controller.api.AuthAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
