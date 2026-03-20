@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/clients")
-public class ClientController {
+public class ClientController implements br.com.fiap.client.infra.web.controller.api.ClientAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
