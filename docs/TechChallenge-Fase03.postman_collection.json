@@ -1,0 +1,579 @@
+{
+  "info": {
+    "_postman_id": "tech-challenge-fase-03-bruno",
+    "name": "Tech Challenge Fase 03",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleção de testes de API no padrão Bruno para todos os microserviços do Tech Challenge Fase 03. Inclui exemplos de autenticação, cadastro, pedidos, pagamentos e consultas públicas."
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8761" },
+    { "key": "keycloak_url", "value": "http://localhost:8080" },
+    { "key": "keycloak_host", "value": "keycloak:8000" },
+    { "key": "realm", "value": "tech-challenge" },
+    { "key": "client_id", "value": "api-gateway" },
+    { "key": "client_secret", "value": "api-gateway-secret" },
+    { "key": "grant_type", "value": "client_credentials" },
+    { "key": "password_grant_type", "value": "password" },
+    { "key": "login_client_id", "value": "frontend-client" },
+    { "key": "username", "value": "user5" },
+    { "key": "password", "value": "user5" },
+    { "key": "jwt_token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "order_id", "value": "" },
+    { "key": "pagamento_id", "value": "" },
+    { "key": "cliente_id", "value": "" },
+    { "key": "procpag_url", "value": "http://localhost:8089" },
+    { "key": "restaurant_id", "value": "" },
+    { "key": "user_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🔐 🌐 Auth Service - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\",\n  \"email\": \"user50@example.com\",\n  \"firstName\": \"Novo\",\n  \"lastName\": \"Usuario\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth-service/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["auth-service", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "🔐 🌐 Auth Service - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth-service/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth-service", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var data = pm.response.json();",
+              "if (data.access_token) pm.collectionVariables.set('jwt_token', data.access_token);",
+              "if (data.userId) pm.collectionVariables.set('user_id', data.userId);",
+              "if (data.refresh_token) pm.collectionVariables.set('refresh_token', data.refresh_token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 🌐 Auth Service - Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth-service/auth/refresh",
+          "host": ["{{base_url}}"],
+          "path": ["auth-service", "auth", "refresh"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var data = pm.response.json();",
+              "if (data.access_token) pm.collectionVariables.set('jwt_token', data.access_token);",
+              "if (data.refresh_token) pm.collectionVariables.set('refresh_token', data.refresh_token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    
+    {
+      "name": "👤 🙋 Client - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cpf\": \"91374243000\",\n  \"address\": {\n    \"street\": \"Rua das Flores\",\n    \"number\": \"123\",\n    \"neighborhood\": \"Centro\",\n    \"complement\": \"Apto 101\",\n    \"city\": \"Sao Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01001-000\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/client-service/clients/{{user_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["client-service", "clients", "{{user_id}}"]
+        }
+      }
+    },
+    {
+      "name": "👤 🙋 Client - Get",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/client-service/clients/{{user_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["client-service", "clients", "{{user_id}}"]
+        }
+      }
+    },
+    {
+      "name": "👤 🙋 Client - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cpf\": \"91374243000\",\n  \"address\": {\n    \"street\": \"Rua Nova 02\",\n    \"number\": \"456\",\n    \"neighborhood\": \"Bela Vista\",\n    \"complement\": \"Casa\",\n    \"city\": \"Sao Paulo\",\n    \"state\": \"SP\",\n    \"zipCode\": \"01311-000\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/client-service/clients/{{user_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["client-service", "clients", "{{user_id}}"]
+        }
+      }
+    },
+    {
+      "name": "👤 🙋 Client - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/client-service/clients/{{user_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["client-service", "clients", "{{user_id}}"]
+        }
+      }
+    },
+    
+    {
+      "name": "🧾 🙋 Order - Criar Pedido",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/order-service/orders",
+          "host": ["{{base_url}}"],
+          "path": ["order-service", "orders"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var data = pm.response.json();",
+              "if (data.id) pm.collectionVariables.set('order_id', data.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧾 🙋 Order - Buscar por ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/order-service/orders/{{order_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["order-service", "orders", "{{order_id}}"]
+        }
+      }
+    },
+    {
+      "name": "🧾 🙋 Order - Listar Meus Pedidos",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/order-service/orders",
+          "host": ["{{base_url}}"],
+          "path": ["order-service", "orders"]
+        }
+      }
+    },
+    
+    {
+      "name": "💳 🙋 Payment Service - Create Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"paymentMethod\": \"credit_card\",\n  \"amount\": 99.90\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/payment-service/payments",
+          "host": ["{{base_url}}"],
+          "path": ["payment-service", "payments"]
+        }
+      }
+    },
+    {
+      "name": "💳 🙋 Payment Service - Get Payment",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/payment-service/payments/{{payment_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["payment-service", "payments", "{{payment_id}}"]
+        }
+      }
+    },
+    
+    {
+      "name": "📦 🌐 Catalog - List Products",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/catalog-service/products",
+          "host": ["{{base_url}}"],
+          "path": ["catalog-service", "products"]
+        }
+      }
+    },
+    {
+      "name": "📦 🌐 Catalog - Get Product by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/catalog-service/products/1",
+          "host": ["{{base_url}}"],
+          "path": ["catalog-service", "products", "1"]
+        }
+      }
+    },
+    {
+      "name": "📦 👑 Catalog - Create Product",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sushi\",\n  \"price\": 19.90,\n  \"restaurantId\": \"41f07c9c-91dc-4f8c-9e60-959b88c7c197\",\n  \"foodType\": \"Japonesa\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/catalog-service/products",
+          "host": ["{{base_url}}"],
+          "path": ["catalog-service", "products"]
+        }
+      }
+    },
+    {
+      "name": "📦 👑 Catalog - Update Product",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"X-Burguer Especial\",\n  \"price\": 29.90,\n  \"restaurantId\": \"a1b2c3d4-0001-0001-0001-000000000002\",\n  \"foodType\": \"MAIN\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/catalog-service/products/11",
+          "host": ["{{base_url}}"],
+          "path": ["catalog-service", "products", "11"]
+        }
+      }
+    },
+    {
+      "name": "📦 👑 Catalog - Delete Product",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/catalog-service/products/3",
+          "host": ["{{base_url}}"],
+          "path": ["catalog-service", "products", "3"]
+        }
+      }
+    },
+    
+    {
+      "name": "🍽️ 🌐 Restaurant - Listar Restaurantes",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants"]
+        }
+      }
+    },
+    {
+      "name": "🍽️ 🌐 Restaurant - Buscar por ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants/{{restaurant_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants", "{{restaurant_id}}"]
+        }
+      }
+    },
+    {
+      "name": "🍽️ 🙋 Restaurant - Criar Restaurante",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Novo Restaurante\",\n  \"ativo\": true,\n  \"street\": \"Av. Paulista\",\n  \"number\": \"1000\",\n  \"district\": \"Bela Vista\",\n  \"complement\": \"Sala 101\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"zipCode\": \"01310-100\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants"]
+        }
+      }
+    },
+    {
+      "name": "🍽️ 👑 Restaurant - Atualizar Restaurante",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Restaurante Atualizado\",\n  \"ativo\": true,\n  \"street\": \"Av. Paulista\",\n  \"number\": \"2000\",\n  \"district\": \"Bela Vista\",\n  \"complement\": \"\",\n  \"city\": \"São Paulo\",\n  \"state\": \"SP\",\n  \"zipCode\": \"01310-100\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants/{{restaurant_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants", "{{restaurant_id}}"]
+        }
+      }
+    },
+    {
+      "name": "🍽️ 👑 Restaurant - Deletar Restaurante",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants/{{restaurant_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants", "{{restaurant_id}}"]
+        }
+      }
+    },
+    {
+      "name": "🍽️ 👑 Restaurant - Meus Restaurantes (Owner)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants/owned",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants", "owned"]
+        }
+      }
+    },
+    {
+      "name": "🍽️ 🛠️ Restaurant - Adicionar Owner",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{user_id}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/restaurant-service/restaurants/{{restaurant_id}}/owners",
+          "host": ["{{base_url}}"],
+          "path": ["restaurant-service", "restaurants", "{{restaurant_id}}", "owners"]
+        }
+      }
+    },
+    
+    {
+      "name": "🎼 🌍 Orchestration Service - Public",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/orchestrator-service/test/public",
+          "host": ["{{base_url}}"],
+          "path": ["orchestrator-service", "test", "public"]
+        }
+      }
+    },
+    {
+      "name": "🎼 🙋 Orchestration Service - Private",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/orchestrator-service/test/private",
+          "host": ["{{base_url}}"],
+          "path": ["orchestrator-service", "test", "private"]
+        }
+      }
+    },
+    {
+      "name": "🎼 🙋 Orchestration - Criar Pedido",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"items\": [\n    {\n      \"productId\": \"5d51f300-d395-4733-83e6-397b57f3d06a\",\n      \"quantity\": 2\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/orchestrator-service/orchestrator/requests",
+          "host": ["{{base_url}}"],
+          "path": ["orchestrator-service", "orchestrator", "requests"]
+        }
+      }
+    },
+    
+    {
+      "name": "💳 🌐 Procpag - Enviar Requisicao",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"valor\": 10.21,\n  \"pagamento_id\": \"{{order_id}}\",\n  \"cliente_id\": \"{{user_id}}\"\n}"
+        },
+        "url": {
+          "raw": "{{procpag_url}}/requisicao",
+          "host": ["{{procpag_url}}"],
+          "path": ["requisicao"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var data = pm.response.json();",
+              "if (data.pagamento_id) pm.collectionVariables.set('pagamento_id', data.pagamento_id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 🌐 Procpag - Consultar Requisicao",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{procpag_url}}/requisicao/{{order_id}}",
+          "host": ["{{procpag_url}}"],
+          "path": ["requisicao", "{{order_id}}"]
+        }
+      }
+    }
+  ]
+}
