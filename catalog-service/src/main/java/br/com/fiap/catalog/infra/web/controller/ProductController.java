@@ -1,5 +1,23 @@
 package br.com.fiap.catalog.infra.web.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.com.fiap.catalog.core.dto.ProductRequest;
 import br.com.fiap.catalog.core.dto.ProductResponse;
 import br.com.fiap.catalog.core.dto.ResolveProductsRequest;
@@ -16,28 +34,10 @@ import br.com.fiap.catalog.infra.dto.RestaurantOwnershipDTO;
 import br.com.fiap.catalog.infra.gateway.RestaurantFeignClient;
 import feign.FeignException;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
-public class ProductController {
+public class ProductController implements br.com.fiap.catalog.infra.web.controller.api.ProductAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
