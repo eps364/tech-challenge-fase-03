@@ -1,13 +1,9 @@
 package br.com.fiap.order.infra.web.controller;
 
 
-import br.com.fiap.order.core.dto.requests.order.CreateOrderRequest;
-import br.com.fiap.order.core.dto.responses.OrderResponse;
-import br.com.fiap.order.core.usecase.CreateOrderUseCase;
-import br.com.fiap.order.core.usecase.FindOrderByIdUseCase;
-import br.com.fiap.order.core.usecase.FindOrdersByClientIdUseCase;
-import jakarta.validation.Valid;
-import org.slf4j.Logger;
+import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.UUID;
+import br.com.fiap.order.core.dto.requests.order.CreateOrderRequest;
+import br.com.fiap.order.core.dto.responses.OrderResponse;
+import br.com.fiap.order.core.usecase.CreateOrderUseCase;
+import br.com.fiap.order.core.usecase.FindOrderByIdUseCase;
+import br.com.fiap.order.core.usecase.FindOrdersByClientIdUseCase;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/orders")
-public class OrderController {
+public class OrderController implements br.com.fiap.order.infra.web.controller.api.OrderAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
