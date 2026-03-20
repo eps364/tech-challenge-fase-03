@@ -5,8 +5,14 @@ actor Cliente
 participant "API Gateway\n:8761" as APIGW
 participant "Service Registry\nEureka :8762" as EUREKA
 participant "Auth Service" as AUTH
-database "Auth DB\nPostgres" as AUTHDBdatabase "Redis\n:6379" as REDISparticipant "Keycloak\n:8080" as KC
 database "Keycloak DB" as KCDB
+database "Order DB\nPostgres" as ORDERDB
+database "Restaurant DB\nPostgres" as RESTDB
+database "Payment DB\nPostgres" as PAYDB
+
+database "Auth DB\nPostgres" as AUTHDB
+database "Redis\n:6379" as REDIS
+participant "Keycloak\n:8080" as KC
 participant "Order Service" as ORDER
 database "Order DB\nPostgres" as ORDERDB
 participant "Restaurant Service" as REST
