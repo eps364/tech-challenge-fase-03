@@ -46,27 +46,24 @@ AUTH --> APIGW: 204 No Content
 APIGW --> Cliente: 204 No Content
 
 == Acesso protegido ==
-Cliente -> APIGW: POST /orders (Bearer JWT)
+Cliente -> APIGW: POST /orchestrator/requests (Bearer JWT)
 APIGW -> REDIS: hasKey(blacklist:<jti>)
 APIGW -> APIGW: valida JWT e perfil de acesso
 
 == Pedido e pagamento ==
-APIGW -> EUREKA: resolve order-service
+APIGW -> EUREKA: resolve orchestrator-service
 
 alt serviço downstream indisponível (ConnectException)
 	APIGW --> Cliente: 503 Service Unavailable (RFC 7807 ProblemDetail)
 else serviço disponível
-APIGW -> ORDER: cria pedido
+APIGW -> ORQ: inicia orquestração
+ORQ -> REST: valida restaurante/itens via Feign
+REST --> ORQ: validação OK
+ORQ -> ORDER: cria pedido via Feign (/orders/orchestrated)
 ORDER -> ORDERDB: persiste pedido inicial
 
-ORDER -> EUREKA: resolve restaurant-service
-ORDER -> REST: valida restaurante/itens
-REST -> RESTDB: consulta dados de restaurante
-RESTDB --> REST: dados do restaurante
-REST --> ORDER: validação OK
-
-ORDER -> BROKER: publica pedido.criado
-PAY -> BROKER: consome pedido.criado
+ORDER -> BROKER: publica pedido.criado (Kafka)
+PAY -> BROKER: consome pedido.criado (Kafka)
 PAY -> PAYDB: cria transação local
 
 group Resiliência no pagamento

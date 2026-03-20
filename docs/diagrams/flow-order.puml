@@ -18,8 +18,9 @@ AUTH --> APIGW: JWT (access token)
 APIGW --> Cliente: 200 + JWT
 
 == Criacao do pedido ==
-Cliente -> APIGW: POST /orders (Bearer JWT + itens)
-APIGW -> ORDER: Criar pedido
+Cliente -> APIGW: POST /orchestrator/requests (Bearer JWT + itens)
+APIGW -> ORQ: Criar pedido (Orquestrado)
+ORQ -> ORDER: Solicitar criacao
 ORDER -> ORDER: Validar JWT e extrair clientId
 ORDER -> ORDER: Calcular valor total
 ORDER -> ODB: Salvar pedido (status=CRIADO)
