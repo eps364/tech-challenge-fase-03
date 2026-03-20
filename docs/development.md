@@ -1,6 +1,48 @@
-# Desenvolvimento com Docker Compose
+# Desenvolvimento e Execução
 
-## 1) Subir ambiente em modo desenvolvimento
+## 0) Documentação Swagger/OpenAPI
+
+Todos os microserviços possuem documentação automática via Swagger UI:
+
+| Serviço              | Swagger UI                      |
+|----------------------|---------------------------------|
+| auth-service         | http://localhost:8081/swagger-ui.html |
+| client-service       | http://localhost:8082/swagger-ui.html |
+| catalog-service      | http://localhost:8083/swagger-ui.html |
+| order-service        | http://localhost:8084/swagger-ui.html |
+| payment-service      | http://localhost:8085/swagger-ui.html |
+| restaurant-service   | http://localhost:8086/swagger-ui.html |
+| orchestrator-service | http://localhost:8087/swagger-ui.html |
+
+Consulte cada serviço para visualizar endpoints, payloads, status, exemplos e contratos OpenAPI.
+
+### Exemplos de ProblemDetail (RFC 7807)
+
+Os endpoints seguem o padrão de erro RFC 7807. Exemplo de resposta:
+
+```json
+{
+	"type": "https://example.com/errors/product-not-found.html",
+	"title": "Product not found",
+	"status": 404,
+	"detail": "No product found with id=123",
+	"instance": "/catalog-service/products/123"
+}
+```
+
+Em caso de erro de permissão:
+
+```json
+{
+	"type": "https://example.com/errors/access-denied.html",
+	"title": "Access denied",
+	"status": 403,
+	"detail": "User does not have permission to update this restaurant",
+	"instance": "/restaurant-service/restaurants/456"
+}
+```
+
+## 1) Subir ambiente completo
 
 Use o arquivo base + override de desenvolvimento:
 
@@ -8,13 +50,13 @@ Use o arquivo base + override de desenvolvimento:
 docker compose -f compose.yml -f compose.dev.yml up -d
 ```
 
-Se acabou de alterar o `compose.dev.yml`, recrie os containers:
+Se alterou o `compose.dev.yml`, recrie os containers:
 
 ```bash
 docker compose -f compose.yml -f compose.dev.yml up -d --force-recreate
 ```
 
-## 2) Ver logs dos serviços Java
+## 2) Logs dos serviços Java
 
 ```bash
 docker compose -f compose.yml -f compose.dev.yml logs -f service-registry api-gateway auth-service order-service payment-service restaurant-service
@@ -26,11 +68,11 @@ Monitorar registros no Eureka em tempo real:
 docker logs -f tech-challenge-fase-03-service-registry-1 2>&1 | grep "Registered instance"
 ```
 
-## 3) Verificar interface gráfica do Eureka
+## 3) Interface gráfica do Eureka
 
-Acesse no browser: [http://localhost:8762](http://localhost:8762)
+Acesse: [http://localhost:8762](http://localhost:8762)
 
-Todos os microserviços devem aparecer na tabela **"Instances currently registered with Eureka"** com status `UP`:
+Todos os microserviços devem aparecer com status `UP`.
 
 | Serviço | Porta interna |
 |---|---|
@@ -38,6 +80,32 @@ Todos os microserviços devem aparecer na tabela **"Instances currently register
 | `API-GATEWAY` | 8761 |
 | `AUTH-SERVICE` | dinâmica (via Eureka) |
 | `CLIENT-SERVICE` | dinâmica |
+## 4) Fluxo de Pedido e Pagamento
+
+O fluxo completo está ilustrado nos diagramas:
+- [arquitetura-sequencia-pedido-pagamento.puml](diagrams/arquitetura-sequencia-pedido-pagamento.puml)
+- [flow-order.puml](diagrams/flow-order.puml)
+
+Principais etapas:
+1. Cliente cria pedido (JWT via API Gateway).
+2. Order Service valida restaurante e itens.
+3. Evento `pedido.criado` publicado (RabbitMQ/Kafka).
+4. Payment Service consome evento, tenta pagamento externo (ProcPag).
+5. Em caso de falha/timeout/circuit breaker, pedido fica `PENDENTE_PAGAMENTO` e evento de pendência é publicado.
+6. Worker reprocessa pendências automaticamente.
+7. Status do pedido atualizado por eventos.
+
+Pontos de resiliência:
+- Retry, Timeout, Circuit Breaker (Resilience4j).
+- Fallback para status pendente e reprocessamento.
+
+## 5) Testes de API
+
+Coleções de testes estão em [docs/API](API/). Utilize Bruno/Postman/Insomnia para validar endpoints, fluxos de sucesso e cenários de indisponibilidade.
+
+## 6) Referência aos Diagramas
+
+Todos os fluxos principais estão ilustrados em [docs/diagrams](diagrams/). Consulte os arquivos `.puml` para visualizar sequências de autenticação, pedido, pagamento e resiliência.
 | `CATALOG-SERVICE` | dinâmica |
 | `ORDER-SERVICE` | dinâmica |
 | `PAYMENT-SERVICE` | dinâmica |

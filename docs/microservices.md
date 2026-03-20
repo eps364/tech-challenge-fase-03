@@ -1,40 +1,71 @@
-# Microservices - Visão Simplificada
+# Microservices - Visão Geral e Fluxos
 
-Este documento resume os microservices do projeto e lista os endpoints disponíveis com permissão e descrição.
+## Documentação Swagger/OpenAPI
 
-## api-gateway
-- **Responsabilidade:** entrada única das APIs, roteamento, validação JWT e verificação de blacklist Redis.
-- **Segurança:** valida assinatura JWT via Keycloak JWKS e, antes de encaminhar qualquer requisição autenticada, consulta o Redis para verificar se o `jti` do token foi blacklistado — retornando `401` imediatamente em caso positivo.
-- **Autorização dinâmica de rotas:** as regras de acesso são carregadas do Redis (`gateway:security:rules`). Se não houver configuração persistida, o gateway usa regras padrão de fallback equivalentes ao comportamento original.
-- **Tratamento de erros:** centralizado neste serviço com RFC 7807 (`ProblemDetail`) com `title`, `status`, `detail`, `instance` e `timestamp`. Os microserviços internos não duplicam esse comportamento para os códigos abaixo.
-  - `401 Unauthorized` — JWT ausente, inválido, expirado ou blacklistado. Tratado por `SecurityConfig.unauthorizedEntryPoint()`.
-  - `503 Service Unavailable` — serviço downstream inacessível (`ConnectException`). Tratado por `GlobalWebExceptionHandler`. Sem stack trace exposto ao cliente.
+Todos os microserviços possuem documentação automática via Swagger UI:
+
+| Serviço              | Swagger UI                      |
+|----------------------|---------------------------------|
+| auth-service         | http://localhost:8081/swagger-ui.html |
+| client-service       | http://localhost:8082/swagger-ui.html |
+| catalog-service      | http://localhost:8083/swagger-ui.html |
+| order-service        | http://localhost:8084/swagger-ui.html |
+| payment-service      | http://localhost:8085/swagger-ui.html |
+| restaurant-service   | http://localhost:8086/swagger-ui.html |
+| orchestrator-service | http://localhost:8087/swagger-ui.html |
+
+Consulte cada serviço para visualizar endpoints, payloads, status, exemplos e contratos OpenAPI.
+
+
+Este documento resume os microservices, endpoints, eventos, resiliência e fluxos principais do projeto.
+
+## Referência aos Diagramas
+Consulte os diagramas em [docs/diagrams](diagrams/) para visualizar:
+- Fluxo de pedido e pagamento: [arquitetura-sequencia-pedido-pagamento.puml](diagrams/arquitetura-sequencia-pedido-pagamento.puml)
+- Fluxo completo: [flow-order.puml](diagrams/flow-order.puml)
+- Sequência de autenticação: [arquitetura-sequencia-atual.puml](diagrams/arquitetura-sequencia-atual.puml)
+
+## Principais Eventos e Resiliência
+- Eventos obrigatórios: `pedido.criado`, `pagamento.aprovado`, `pagamento.pendente` (RabbitMQ/Kafka).
+- Resiliência: Retry, Timeout, Circuit Breaker (Resilience4j), fallback para status pendente, reprocessamento automático.
+- Todos os fluxos de pagamento são tolerantes a falhas: se o serviço externo estiver indisponível, o pedido é marcado como `PENDENTE_PAGAMENTO` e reprocessado automaticamente.
+- Os eventos de pendência e reprocessamento são rastreáveis via RabbitMQ e logs dos serviços.
+- Reprocessamento: Worker consome pendências e atualiza status.
+
+## Microservices
+
+### api-gateway
+- Entrada única das APIs, roteamento, validação JWT, verificação de blacklist Redis.
+- Valida assinatura JWT via Keycloak JWKS.
+- Consulta Redis para blacklist de tokens.
+- Regras de autorização dinâmicas carregadas do Redis.
+- Tratamento de erros centralizado (RFC 7807).
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
-| GET | `/auth-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `auth-service`. |
-| GET | `/order-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `order-service`. |
-| GET | `/payment-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `payment-service`. |
-| GET | `/restaurant-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `restaurant-service`. |
-| GET | `/client-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `client-service`. |
-| GET | `/catalog-service/test/public` | Sim (este serviço) | Pública | Encaminha para endpoint público do `catalog-service`. |
-| GET | `/gateway/security/routes` | Sim (este serviço) | `admin` | Lista regras dinâmicas de autorização do gateway salvas no Redis. |
-| POST | `/gateway/security/routes` | Sim (este serviço) | `admin` | Cria uma regra de autorização e retorna a regra com `id` inteiro. |
-| PUT | `/gateway/security/routes/{id}` | Sim (este serviço) | `admin` | Atualiza uma regra específica pelo `id`. |
-| DELETE | `/gateway/security/routes/{id}` | Sim (este serviço) | `admin` | Remove uma regra específica pelo `id`. |
-| PUT | `/gateway/security/routes` | Sim (este serviço) | `admin` | Substitui toda a lista de regras dinâmicas de autorização do gateway. |
-| Todos | `/**` (demais rotas) | Sim (este serviço) | JWT obrigatório | Requisições não listadas como públicas exigem autenticação. |
+| GET | `/auth-service/test/public` | Sim | Pública | Encaminha para endpoint público do `auth-service`. |
+| GET | `/order-service/test/public` | Sim | Pública | Encaminha para endpoint público do `order-service`. |
+| GET | `/payment-service/test/public` | Sim | Pública | Encaminha para endpoint público do `payment-service`. |
+| GET | `/restaurant-service/test/public` | Sim | Pública | Encaminha para endpoint público do `restaurant-service`. |
+| GET | `/client-service/test/public` | Sim | Pública | Encaminha para endpoint público do `client-service`. |
+| GET | `/catalog-service/test/public` | Sim | Pública | Encaminha para endpoint público do `catalog-service`. |
+| GET | `/gateway/security/routes` | Sim | `admin` | Lista regras dinâmicas de autorização do gateway. |
+| POST | `/gateway/security/routes` | Sim | `admin` | Cria uma regra de autorização. |
+| PUT | `/gateway/security/routes/{id}` | Sim | `admin` | Atualiza uma regra específica. |
+| DELETE | `/gateway/security/routes/{id}` | Sim | `admin` | Remove uma regra específica. |
+| PUT | `/gateway/security/routes` | Sim | `admin` | Substitui toda a lista de regras. |
+| Todos | `/**` | Sim | JWT obrigatório | Demais rotas exigem autenticação. |
 
-## service-registry
-- **Responsabilidade:** descoberta de serviços com Eureka.
+### service-registry
+- Descoberta de serviços com Eureka.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
-| N/A | N/A | Não | N/A | Não há endpoints de negócio documentados neste projeto para o `service-registry`. |
+| N/A | N/A | Não | N/A | Não há endpoints de negócio para o `service-registry`. |
 
-## auth-service
-- **Responsabilidade:** autenticação/autorização e integração com Keycloak.
-- **Banco dedicado:** `auth-service-db`.
+### auth-service
+- Autenticação/autorização, integração com Keycloak.
+- Banco dedicado: `auth-service-db`.
 
 | Método | Endpoint | Via Gateway | Permissão | Descrição |
 |---|---|---|---|---|
