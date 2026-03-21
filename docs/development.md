@@ -42,18 +42,24 @@ Em caso de erro de permissão:
 }
 ```
 
-## 1) Subir ambiente completo
 
-Use o arquivo base + override de desenvolvimento:
+## 1) Subir ambiente completo (Hot Reload)
+
+Use o arquivo base + override de desenvolvimento (com stage dev dos Dockerfiles):
 
 ```bash
-docker compose -f compose.yml -f compose.dev.yml up -d
+docker compose -f compose.yml -f compose.dev.yml up --build --force-recreate
 ```
 
-Se alterou o `compose.dev.yml`, recrie os containers:
+Esse comando:
+- Garante rebuild das imagens de desenvolvimento (stage dev)
+- Sobe todos os serviços Java em modo hot reload (Spring Boot DevTools)
+- Infraestrutura (DBs, Keycloak, RabbitMQ, etc) permanece igual ao compose base
+
+Para parar:
 
 ```bash
-docker compose -f compose.yml -f compose.dev.yml up -d --force-recreate
+docker compose -f compose.yml -f compose.dev.yml down
 ```
 
 ## 2) Logs dos serviços Java
@@ -112,19 +118,25 @@ Todos os fluxos principais estão ilustrados em [docs/diagrams](diagrams/). Cons
 | `RESTAURANT-SERVICE` | dinâmica |
 | `ORCHESTRATOR-SERVICE` | dinâmica |
 
-## 4) Fluxo para refletir alterações no código (Hot Reload)
 
-Com os serviços em `spring-boot:run` e Spring Boot DevTools ativo, ao salvar o código o Spring reinicia automaticamente.
+## 4) Hot Reload: como funciona
 
-Cada serviço monta apenas sua própria pasta, isolando o reload:
 
-- Alterações em `order-service/` reiniciam somente `order-service`.
-- Alterações em `auth-service/` reiniciam somente `auth-service`.
-- O mesmo vale para os demais serviços Java.
+### Dockerfile dev: sem COPY, só volume
 
-> **Nota:** O DevTools monitora as **classes compiladas** (`target/classes`). IDEs com compilação automática (IntelliJ, VS Code + Extension Pack for Java) disparam o reload no save. Em editores de texto simples, execute `mvn compile` para refletir a mudança.
+Todos os serviços Spring Boot agora possuem um stage `dev` no Dockerfile. **No estágio dev, não há mais `COPY . .` — apenas `VOLUME /workspace`**. Assim, o código do host é montado diretamente no container, permitindo hot reload instantâneo sem duplicação de arquivos.
 
-Se precisar forçar restart de um serviço específico:
+O build de produção continua usando `COPY . .` para empacotar o código na imagem final.
+
+O compose.dev.yml utiliza o stage dev para rodar cada serviço em modo desenvolvimento/hot reload.
+
+Ao salvar o código fonte, o Spring Boot DevTools reinicia automaticamente apenas o serviço alterado.
+
+Exemplo: alterou código em `order-service/` → só o container do order-service reinicia.
+
+> **Nota:** O DevTools monitora as classes compiladas (`target/classes`). IDEs com compilação automática (IntelliJ, VS Code + Extension Pack for Java) disparam o reload ao salvar. Se usar editor simples, rode `mvn compile` para refletir a mudança.
+
+Para reiniciar manualmente um serviço específico:
 
 ```bash
 docker compose -f compose.yml -f compose.dev.yml restart order-service
@@ -167,20 +179,21 @@ Para parar e remover o cache de dependências:
 docker compose -f compose.yml -f compose.dev.yml down -v
 ```
 
+
 ## Estrutura dos arquivos Compose
 
 | Arquivo | Função |
 |---|---|
-| `compose.yml` | Configuração base: infraestrutura (BDs, Keycloak, RabbitMQ) + imagens de produção dos MSs |
-| `compose.dev.yml` | Override de desenvolvimento: substitui MSs por containers Maven com hot reload |
+| `compose.yml` | Configuração base: infraestrutura (DBs, Keycloak, RabbitMQ, procpag) + imagens de produção dos MSs |
+| `compose.dev.yml` | Override de desenvolvimento: builda os MSs usando o stage dev do Dockerfile, rodando Maven + DevTools para hot reload |
 
 ## Observações
 
-- O override substitui os serviços Java para rodarem com imagem `maven:3.9.9-eclipse-temurin-21` e `spring-boot:run`.
-- Bancos, Keycloak, RabbitMQ e `procpag` continuam vindos do `compose.yml` base.
-- Cada serviço monta seu módulo + `pom.xml` raiz (modo leitura) para manter a herança Maven do projeto pai.
-- Todos os MSs que dependem do `service-registry` usam `condition: service_healthy`, garantindo ordem de inicialização correta.
-- O `orchestrator-service` foi adicionado ao compose (incluindo `Dockerfile` próprio em `orchestrator-service/Dockerfile`).
+
+- O override agora usa build context e target: dev para cada serviço Java, aproveitando o novo stage dev dos Dockerfiles.
+- Bancos, Keycloak, RabbitMQ e `procpag` continuam vindos do compose base.
+- O volume m2-cache é compartilhado entre todos os serviços Java para acelerar builds.
+- O orchestrator-service também segue esse padrão.
 
 ## Payment Event Flow (RabbitMQ)
 

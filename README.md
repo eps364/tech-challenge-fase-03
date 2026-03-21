@@ -31,19 +31,33 @@ Este repositório contém os serviços:
 Na raiz do projeto:
 
 ```bash
-docker compose up --build
+docker compose -f compose.yml -f compose.dev.yml up --build
 ```
 
 Para parar:
 
 ```bash
-docker compose down
+docker compose -f compose.yml -f compose.dev.yml down
 ```
 
-## Modo desenvolvimento
+## Modo desenvolvimento (Hot Reload)
 
-Para desenvolvimento com hot reload em containers, use o guia:
 
+Todos os serviços Spring Boot possuem Dockerfile multi-stage com um stage `dev` para desenvolvimento/hot reload.
+
+**No estágio dev, não há mais `COPY . .` — apenas `VOLUME /workspace`**. Assim, o código do host é montado diretamente no container, permitindo hot reload instantâneo sem duplicação de arquivos.
+
+O build de produção continua usando `COPY . .` para empacotar o código na imagem final.
+
+O arquivo `compose.dev.yml` faz override dos serviços Java para rodar com Maven e Spring Boot DevTools, permitindo hot reload automático ao salvar o código.
+
+Para desenvolvimento integrado (infraestrutura + hot reload):
+
+```bash
+docker compose -f compose.yml -f compose.dev.yml up --build --force-recreate
+```
+
+Consulte detalhes e dicas em:
 - [docs/development.md](docs/development.md)
 
 ## Testes de API (Bruno)
@@ -169,14 +183,17 @@ cd auth-service
 ./mvnw spring-boot:run
 ```
 
+## Recriar containers e rebuild completo
+
+Para forçar o rebuild das imagens e recriar todos os containers (útil após alterações em Dockerfile ou variáveis de ambiente):
+
+```bash
+docker compose -f compose.yml -f compose.dev.yml up --build --force-recreate
+```
+
+Esse comando garante que todas as imagens serão reconstruídas e os containers reiniciados do zero.
+
 ## Observações
 
 - O projeto Compose está nomeado como `tech-challenge-fase-03`.
 - Os nomes de containers seguem o padrão `tech-challenge-fase-03-{service}-{instancia}`.
-
-
-# Mensageria
-
-- AkHQ: http://localhost:8085
-
-- RABBIT MQ: http://localhost:15672

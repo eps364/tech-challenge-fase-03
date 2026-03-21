@@ -81,25 +81,38 @@ Exemplo de endpoints do API Gateway:
 - **Fluxo**: Pedido criado → evento → pagamento processado (ou pendente) → reprocessamento automático se necessário
 - **Diagramas**: [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
 
+
 # 5. Banco de Dados e Containers
 
 - Cada serviço possui banco Postgres dedicado (`<service>-db`), credenciais padrão: `postgres/password`
-- Orquestração completa via `compose.yml` e `compose.dev.yml`
+- Orquestração completa via `compose.yml` (infraestrutura) e `compose.dev.yml` (hot reload dos MSs Java)
 - Serviços auxiliares: Redis, RabbitMQ, Keycloak, procpag
+- Todos os serviços Spring Boot possuem Dockerfile multi-stage com stage `dev` para desenvolvimento/hot reload
+- **No estágio dev, não há mais `COPY . .` — apenas `VOLUME /workspace`**. Assim, o código do host é montado diretamente no container, permitindo hot reload instantâneo sem duplicação de arquivos.
+- O build de produção continua usando `COPY . .` para empacotar o código na imagem final.
 
-# 6. Execução e Testes
 
-## 6.1. Subir ambiente completo
+## 6. Execução e Testes
+
+### 6.1. Subir ambiente completo (Hot Reload)
 ```bash
-docker compose -f compose.yml -f compose.dev.yml up -d
+docker compose -f compose.yml -f compose.dev.yml up --build --force-recreate
+```
+
+Esse comando:
+- Garante rebuild das imagens de desenvolvimento (stage dev dos Dockerfiles)
+- Sobe todos os serviços Java em modo hot reload (Spring Boot DevTools)
+- Infraestrutura (DBs, Keycloak, RabbitMQ, etc) permanece igual ao compose base
+
+Para parar:
+```bash
+docker compose -f compose.yml -f compose.dev.yml down
 ```
 
 - Coleções Bruno/Postman em `docs/API/` e coleção Postman principal em `docs/TechChallenge-Fase03.postman_collection.json`
 - Para testar rapidamente todos os fluxos, importe a coleção Postman (`docs/TechChallenge-Fase03.postman_collection.json`) no Postman ou Insomnia e preencha a variável `jwt` com o token obtido no login.
 - Swagger UI disponível em cada serviço
-- Coleções Bruno/Postman em `docs/API/` e coleção Postman principal em `docs/TechChallenge-Fase03.postman_collection.json`
-- Para testar rapidamente todos os fluxos, importe a coleção Postman (`docs/TechChallenge-Fase03.postman_collection.json`) no Postman ou Insomnia e preencha a variável `jwt` com o token obtido no login.
-- Swagger UI disponível em cada serviço
+
 
 ## 6.3. Testes automatizados
 - Rodar testes: `./mvnw test`
@@ -114,6 +127,7 @@ docker compose -f compose.yml -f compose.dev.yml up -d
 - **Testes**: Unitários, integração, collections de API
 - **Documentação**: Markdown em `/docs`, diagramas em `/docs/diagrams`, OpenAPI/Swagger
 
+
 # 8. Documentação Técnica
 
 | Tipo | Localização |
@@ -122,7 +136,8 @@ docker compose -f compose.yml -f compose.dev.yml up -d
 | OpenAPI | `/v3/api-docs` de cada serviço |
 | Diagramas | `/docs/diagrams/` |
 | Collections | `/docs/API/` e `/docs/TechChallenge-Fase03.postman_collection.json` |
-| Compose | `compose.yml`, `compose.dev.yml` |
+| Compose | `compose.yml`, `compose.dev.yml` (hot reload) |
+| Dockerfile | Cada serviço possui multi-stage com stage dev para desenvolvimento |
 
 # 9. Conclusão
 
