@@ -1,4 +1,4 @@
-package br.com.fiap.orchestrator.core.domain;
+package br.com.fiap.order.core.domain;
 
 public class Address {
     private final String street;
