@@ -1,7 +1,7 @@
 # Build stage - Maven + OpenJDK 21
 FROM maven:3.9-eclipse-temurin-21 AS builder
-WORKDIR /workspace
-COPY . /workspace
+WORKDIR /
+COPY . .
 RUN --mount=type=cache,target=/root/.m2 mvn -pl catalog-service -am -B -DskipTests package
 
 # Runtime stage - JRE 21 (menor footprint)
@@ -16,3 +16,9 @@ RUN groupadd -r app && \
 COPY --from=builder --chown=2000:2000 /workspace/catalog-service/target/*.jar app.jar
 
 ENTRYPOINT ["sh","-c","exec java -jar /app/app.jar"]
+
+# Dev stage for hot reload (Spring Boot Devtools)
+FROM maven:3.9-eclipse-temurin-21 AS dev
+WORKDIR /workspace
+COPY ../.. /workspace
+CMD ["mvn", "spring-boot:run", "-pl", "catalog-service", "-Dspring-boot.run.fork=false", "-Dspring-boot.devtools.restart.enabled=true"]
