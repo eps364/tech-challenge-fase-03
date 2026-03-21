@@ -1,0 +1,22 @@
+meta {
+  name: 🔐 🛠️ Gateway Security - List Rules
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{base_url}}/gateway/security/routes
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Lista as regras de seguranca dinamicas do API Gateway armazenadas no Redis.
+  Cada regra retorna um id inteiro para permitir update/delete por id.
+  Requer autenticacao com role admin.
+}

@@ -1,23 +1,35 @@
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 spring:
   application:
     name: catalog-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
 
   datasource:
     url: jdbc:postgresql://catalog-service-db:5432/catalog-service-db
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
+    defer-datasource-initialization: true
 # Actuator configuration
 management:
   endpoints:
@@ -36,3 +48,11 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+logging:
+  level:
+    br.com.fiap.catalog: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

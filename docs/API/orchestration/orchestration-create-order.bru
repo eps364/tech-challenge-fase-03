@@ -1,0 +1,53 @@
+meta {
+  name: 🎼 🙋 Orchestration - Criar Pedido
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/orchestrator-service/orchestrator/requests
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "restaurantId": "{{restaurant_id}}",
+    "items": [
+      {
+        "productId": "{{product_id}}",
+        "quantity": 2
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  product_id: a1b2c3d4-1001-0001-0001-000000000001
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  if (data && data.id) {
+    bru.setEnvVar("order_id", data.id);
+  }
+}
+
+docs {
+  Cria um pedido via orchestrator-service.
+  
+  O clientId é extraído automaticamente do token JWT.
+  O orchestrator busca os dados do cliente no client-service,
+  resolve os produtos no catalog-service,
+  monta o objeto enriquecido
+  e cria o pedido no order-service.
+  
+  Requer autenticação.
+}

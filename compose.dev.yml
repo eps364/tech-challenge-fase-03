@@ -1,96 +1,223 @@
+
+# Compose override para desenvolvimento: apenas serviços Java com hot reload
 services:
   service-registry:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/service-registry
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: service-registry/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./service-registry:/workspace/service-registry
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: service-registry/src/main/java
+          action: sync+restart
+          target: /workspace/service-registry/src/main/java
+        - path: service-registry/src/main/resources
+          action: sync+restart
+          target: /workspace/service-registry/src/main/resources
   api-gateway:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/api-gateway
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./api-gateway:/workspace/api-gateway
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: api-gateway/src/main/java
+          action: sync+restart
+          target: /workspace/api-gateway/src/main/java
+        - path: api-gateway/src/main/resources
+          action: sync+restart
+          target: /workspace/api-gateway/src/main/resources
   auth-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/auth-service
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./auth-service:/workspace/auth-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: auth-service/src/main/java
+          action: sync+restart
+          target: /workspace/auth-service/src/main/java
+        - path: auth-service/src/main/resources
+          action: sync+restart
+          target: /workspace/auth-service/src/main/resources
   client-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/client-service
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: client-service/Dockerfile
+      target: dev
+    restart: on-failure
+    depends_on:
+      - auth-service
     volumes:
-      - ./client-service:/workspace/client-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: client-service/src/main/java
+          action: sync+restart
+          target: /workspace/client-service/src/main/java
+        - path: client-service/src/main/resources
+          action: sync+restart
+          target: /workspace/client-service/src/main/resources
   catalog-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/catalog-service
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: catalog-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./catalog-service:/workspace/catalog-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: catalog-service/src/main/java
+          action: sync+restart
+          target: /workspace/catalog-service/src/main/java
+        - path: catalog-service/src/main/resources
+          action: sync+restart
+          target: /workspace/catalog-service/src/main/resources
   order-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/order-service
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./order-service:/workspace/order-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: order-service/src/main/java
+          action: sync+restart
+          target: /workspace/order-service/src/main/java
+        - path: order-service/src/main/resources
+          action: sync+restart
+          target: /workspace/order-service/src/main/resources
   payment-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/payment-service
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./payment-service:/workspace/payment-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
-
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: payment-service/src/main/java
+          action: sync+restart
+          target: /workspace/payment-service/src/main/java
+        - path: payment-service/src/main/resources
+          action: sync+restart
+          target: /workspace/payment-service/src/main/resources
   restaurant-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    working_dir: /workspace/restaurant-service
-    command: mvn spring-boot:run
+    build:
+      context: .
+      dockerfile: restaurant-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - ./restaurant-service:/workspace/restaurant-service
-      - ./pom.xml:/workspace/pom.xml:ro
-      - ~/.m2:/root/.m2
+      - m2-cache:/root/.m2
     environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: restaurant-service/src/main/java
+          action: sync+restart
+          target: /workspace/restaurant-service/src/main/java
+        - path: restaurant-service/src/main/resources
+          action: sync+restart
+          target: /workspace/restaurant-service/src/main/resources
+  orchestrator-service:
+    build:
+      context: .
+      dockerfile: orchestrator-service/Dockerfile
+      target: dev
+    restart: on-failure
+    volumes:
+      - m2-cache:/root/.m2
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_RESTART_POLL_INTERVAL=2000
+      - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
+      - SPRING_PROFILES_ACTIVE=dev
+      - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
+    networks:
+      - fase3net
+    develop:
+      watch:
+        - path: orchestrator-service/src/main/java
+          action: sync+restart
+          target: /workspace/orchestrator-service/src/main/java
+        - path: orchestrator-service/src/main/resources
+          action: sync+restart
+          target: /workspace/orchestrator-service/src/main/resources
+volumes:
+  m2-cache:

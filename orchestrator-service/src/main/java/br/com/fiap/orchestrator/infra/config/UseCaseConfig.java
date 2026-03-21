@@ -1,9 +1,9 @@
 package br.com.fiap.orchestrator.infra.config;
 
-import br.com.fiap.orchestrator.core.gateway.QueuePublisherPort;
-import br.com.fiap.orchestrator.core.usecase.enviar_para_clientes.EnviarParaClientesUseCase;
-import br.com.fiap.orchestrator.core.usecase.enviar_para_pedidos.EnviarParaPedidosUseCase;
-import br.com.fiap.orchestrator.core.usecase.enviar_para_restaurantes.EnviarParaRestaurantesUseCase;
+import br.com.fiap.orchestrator.core.gateway.CatalogGateway;
+import br.com.fiap.orchestrator.core.gateway.ClientGateway;
+import br.com.fiap.orchestrator.core.gateway.OrderGateway;
+import br.com.fiap.orchestrator.core.usecase.CreateOrderOrchestrationUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,17 +11,15 @@ import org.springframework.context.annotation.Configuration;
 public class UseCaseConfig {
 
     @Bean
-    EnviarParaClientesUseCase enviarParaClientesUseCase(QueuePublisherPort publisher) {
-        return new EnviarParaClientesUseCase(publisher);
-    }
-
-    @Bean
-    EnviarParaRestaurantesUseCase enviarParaRestaurantesUseCase(QueuePublisherPort publisher) {
-        return new EnviarParaRestaurantesUseCase(publisher);
-    }
-
-    @Bean
-    EnviarParaPedidosUseCase enviarParaPedidosUseCase(QueuePublisherPort publisher) {
-        return new EnviarParaPedidosUseCase(publisher);
+    public CreateOrderOrchestrationUseCase createOrderOrchestrationUseCase(
+            ClientGateway clientGateway,
+            CatalogGateway catalogGateway,
+            OrderGateway orderGateway
+    ) {
+        return new CreateOrderOrchestrationUseCase(
+                clientGateway,
+                catalogGateway,
+                orderGateway
+        );
     }
 }

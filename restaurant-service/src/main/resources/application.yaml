@@ -1,11 +1,14 @@
 spring:
   application:
     name: restaurant-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
   rabbitmq:
     host: rabbitmq
     port: 5672
@@ -19,9 +22,15 @@ spring:
     url: jdbc:postgresql://restaurant-service-db:5432/restaurant-service-db
     username: postgres
     password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
+    defer-datasource-initialization: true
 
 
 app:
@@ -29,12 +38,21 @@ app:
     exchange: ex.main
     queues:
       in:
-        orquestradorRestaurantes: Orquestrador-Restaurantes.queue
-      out:
-        restaurantesOrquestrador: Restaurantes-Orquestrador.queue
+        orderPaidRestaurant: Order-Paid-Restaurant.queue
+
+keycloak:
+  admin:
+    url: http://keycloak:8080
+    realm: tech-challenge
+    admin-username: admin
+    admin-password: admin
+    admin-client-id: admin-cli
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 # Actuator configuration
 management:
@@ -54,3 +72,11 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+logging:
+  level:
+    br.com.fiap.restaurant: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

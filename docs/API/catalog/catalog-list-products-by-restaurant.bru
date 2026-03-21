@@ -1,0 +1,20 @@
+meta {
+  name: 📦 🌐 Catalog - List Products By Restaurant
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{base_url}}/catalog-service/products/restaurant/{{restaurant_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Lista produtos filtrando por restaurantId.
+  Endpoint publico (GET).
+}

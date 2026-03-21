@@ -1,6 +1,13 @@
 spring:
   application:
     name: api-gateway
+  mvc:
+    problemdetails:
+      enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: 6379
   cloud:
     gateway:
       routes:
@@ -40,20 +47,39 @@ spring:
             - Path=/catalog-service/**
           filters:
             - StripPrefix=1
+        - id: orchestrator-service
+          uri: lb://ORCHESTRATOR-SERVICE
+          predicates:
+            - Path=/orchestrator-service/**
+          filters:
+            - StripPrefix=1
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
 
 server:
   port: 8761
+  error:
+    include-stacktrace: never
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    br.com.fiap.apigateway: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"
 
 eureka:
   client:
-    register-with-eureka: false
-    fetch-registry: true
+    enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
 
-
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

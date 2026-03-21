@@ -1,0 +1,20 @@
+meta {
+  name: 🎼 🙋 Orchestration Service - Private
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/orchestrator-service/test/private
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Endpoint privado para validar autenticação no orchestrator-service.
+}

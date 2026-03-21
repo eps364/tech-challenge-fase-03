@@ -1,16 +1,52 @@
 spring:
   application:
     name: auth-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
+  datasource:
+    url: jdbc:postgresql://auth-service-db:5432/auth-service-db
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: 6379
+
+logging:
+  level:
+    br.com.fiap.authservice: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_SERVER_URL:http://keycloak:8080}
+  realm: ${KEYCLOAK_REALM:tech-challenge}
+  resource: ${KEYCLOAK_CLIENT_ID:auth-service}
+  credentials-secret: ${KEYCLOAK_CLIENT_SECRET:auth-service-secret}
+  admin-user: ${KEYCLOAK_ADMIN_USER:admin}
+  admin-password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+  public-client-id: ${KEYCLOAK_PUBLIC_CLIENT_ID:frontend-client}
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
-# Actuator configuration
 management:
   endpoints:
     web:
@@ -18,13 +54,11 @@ management:
         include: "*"
       base-path: /actuator
 
-# Eurika configuration
 eureka:
   client:
     enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
-
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

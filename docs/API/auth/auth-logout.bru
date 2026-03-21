@@ -1,0 +1,15 @@
+meta {
+  name: 🔐 🙋 Auth Service - Logout
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/auth-service/auth/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{jwt_token}}
+}

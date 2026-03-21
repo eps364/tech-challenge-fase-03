@@ -1,6 +1,7 @@
 {
   "realm": "tech-challenge",
   "enabled": true,
+  "accessTokenLifespan": 900,
   "clients": [
     {
       "clientId": "api-gateway",
@@ -37,6 +38,20 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "restaurant-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "orchestrator-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "orchestrator-service-secret",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "catalog-service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "catalog-service-secret",
       "serviceAccountsEnabled": true
     },
     {
@@ -148,6 +163,26 @@
       "clientRoles": {
         "account": ["manage-account", "view-profile"]
       }
+    },
+    {
+      "username": "owner",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "owner@techchallenge.local",
+      "firstName": "Owner",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "owner",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["owner","user"],
+      "clientRoles": {
+        "account": ["manage-account", "view-profile"]
+      }
     }
   ],
   "roles": {
@@ -163,6 +198,10 @@
       {
         "name": "owner",
         "description": "Owner role"
+      },
+      {
+        "name": "system",
+        "description": "System role for internal integrations"
       }
     ]
   }

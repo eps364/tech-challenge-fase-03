@@ -5,9 +5,14 @@ actor Cliente
 participant "API Gateway\n:8761" as APIGW
 participant "Service Registry\nEureka :8762" as EUREKA
 participant "Auth Service" as AUTH
-database "Auth DB\nPostgres" as AUTHDB
-participant "Keycloak\n:8000" as KC
 database "Keycloak DB" as KCDB
+database "Order DB\nPostgres" as ORDERDB
+database "Restaurant DB\nPostgres" as RESTDB
+database "Payment DB\nPostgres" as PAYDB
+
+database "Auth DB\nPostgres" as AUTHDB
+database "Redis\n:6379" as REDIS
+participant "Keycloak\n:8080" as KC
 participant "Order Service" as ORDER
 database "Order DB\nPostgres" as ORDERDB
 participant "Restaurant Service" as REST
@@ -15,7 +20,7 @@ database "Restaurant DB\nPostgres" as RESTDB
 participant "Payment Service" as PAY
 database "Payment DB\nPostgres" as PAYDB
 participant "ProcPag\n:8089" as PROCPAG
-queue "Kafka" as KAFKA
+queue "RabbitMQ\n:5672" as BROKER
 participant "Payment Worker\n(reprocessamento)" as WORKER
 
 == Inicialização ==
@@ -37,23 +42,34 @@ KC --> AUTH: JWT / erro
 AUTH --> APIGW: resposta de autenticação
 APIGW --> Cliente: token JWT
 
+== Logout ==
+Cliente -> APIGW: POST /auth/logout (Bearer JWT)
+APIGW -> APIGW: verifica blacklist Redis (jti)
+APIGW -> AUTH: encaminha logout
+AUTH -> KC: revoga sessão (userId)
+AUTH -> REDIS: blacklist:<jti> com TTL
+AUTH --> APIGW: 204 No Content
+APIGW --> Cliente: 204 No Content
+
 == Acesso protegido ==
-Cliente -> APIGW: POST /orders (Bearer JWT)
+Cliente -> APIGW: POST /orchestrator/requests (Bearer JWT)
+APIGW -> REDIS: hasKey(blacklist:<jti>)
 APIGW -> APIGW: valida JWT e perfil de acesso
 
 == Pedido e pagamento ==
-APIGW -> EUREKA: resolve order-service
-APIGW -> ORDER: cria pedido
+APIGW -> EUREKA: resolve orchestrator-service
+
+alt serviço downstream indisponível (ConnectException)
+	APIGW --> Cliente: 503 Service Unavailable (RFC 7807 ProblemDetail)
+else serviço disponível
+APIGW -> ORQ: inicia orquestração
+ORQ -> REST: valida restaurante/itens via Feign
+REST --> ORQ: validação OK
+ORQ -> ORDER: cria pedido via Feign (/orders/orchestrated)
 ORDER -> ORDERDB: persiste pedido inicial
 
-ORDER -> EUREKA: resolve restaurant-service
-ORDER -> REST: valida restaurante/itens
-REST -> RESTDB: consulta dados de restaurante
-RESTDB --> REST: dados do restaurante
-REST --> ORDER: validação OK
-
-ORDER -> KAFKA: publica pedido.criado
-PAY -> KAFKA: consome pedido.criado
+ORDER -> BROKER: publica pedido.criado (Kafka)
+PAY -> BROKER: consome pedido.criado (Kafka)
 PAY -> PAYDB: cria transação local
 
 group Resiliência no pagamento
@@ -63,27 +79,29 @@ end
 alt pagamento autorizado
 	PROCPAG --> PAY: autorizado
 	PAY -> PAYDB: transação = PAGO
-	PAY -> KAFKA: publica pagamento.aprovado
-	ORDER -> KAFKA: consome pagamento.aprovado
+	PAY -> BROKER: publica pagamento.aprovado
+	ORDER -> BROKER: consome pagamento.aprovado
 	ORDER -> ORDERDB: pedido = PAGO
 	ORDER --> APIGW: status final
 	APIGW --> Cliente: 201 Created + PAGO
 else falha/timeout/circuito aberto
 	PROCPAG --> PAY: erro / indisponível
 	PAY -> PAYDB: transação = PENDENTE
-	PAY -> KAFKA: publica pagamento.pendente
-	ORDER -> KAFKA: consome pagamento.pendente
+	PAY -> BROKER: publica pagamento.pendente
+	ORDER -> BROKER: consome pagamento.pendente
 	ORDER -> ORDERDB: pedido = PENDENTE_PAGAMENTO
 	ORDER --> APIGW: pedido aceito com pendência
 	APIGW --> Cliente: 201 Created + PENDENTE_PAGAMENTO
 
 	== Reprocessamento automático ==
-	WORKER -> KAFKA: consome pagamento.pendente
+	WORKER -> BROKER: consome pagamento.pendente
 	WORKER -> PROCPAG: nova tentativa de cobrança
 	PROCPAG --> WORKER: autorizado
-	WORKER -> KAFKA: publica pagamento.aprovado
-	ORDER -> KAFKA: consome pagamento.aprovado
+	WORKER -> BROKER: publica pagamento.aprovado
+	ORDER -> BROKER: consome pagamento.aprovado
 	ORDER -> ORDERDB: pedido = PAGO
+end
+
 end
 
 @enduml

@@ -1,0 +1,32 @@
+meta {
+  name: 🔐 🌐 Auth Service - Login 'owner'
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/auth-service/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "owner",
+    "password": "owner"
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+
+  if (data && data.access_token) {
+    bru.setEnvVar("jwt_token", data.access_token);
+  }
+  if (data && data.userId) {
+    bru.setEnvVar("user_id", data.userId);
+  }
+  if (data && data.refresh_token) {
+    bru.setEnvVar("refresh_token", data.refresh_token);
+  }
+}

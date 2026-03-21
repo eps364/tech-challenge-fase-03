@@ -1,0 +1,21 @@
+meta {
+  name: 🔐 🛠️ Gateway Security - Delete Rule By Id
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{base_url}}/gateway/security/routes/16
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Remove uma regra existente pelo id.
+  Se o id nao existir, retorna 404.
+}

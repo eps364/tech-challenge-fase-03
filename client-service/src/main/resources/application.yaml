@@ -1,38 +1,33 @@
 spring:
   application:
     name: client-service
+  mvc:
+    problemdetails:
+      enabled: true
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        default-requeue-rejected: false
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
   datasource:
     url: jdbc:postgresql://client-service-db:5432/client-service-db
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
   jpa:
     hibernate:
-      ddl-auto: validate
-app:
-  rabbit:
-    exchange: ex.main
-    queues:
-      in:
-        orquestradorClientes: Orquestrador-Clientes.queue
-      out:
-        clientesOrquestrador: Clientes-Orquestrador.queue
+      ddl-auto: none
+    defer-datasource-initialization: true
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
 management:
   endpoints:
@@ -50,3 +45,11 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+logging:
+  level:
+    br.com.fiap.client: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

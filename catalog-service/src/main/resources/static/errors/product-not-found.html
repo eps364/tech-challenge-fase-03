@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error: Product Not Found</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #222; }
+    h1 { font-size: 1.6rem; border-bottom: 2px solid #d00; padding-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { text-align: left; padding: 8px 12px; border: 1px solid #ddd; }
+    th { background: #f5f5f5; }
+    code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    pre { background: #f8f8f8; border: 1px solid #ddd; padding: 16px; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Problem Type: Product Not Found</h1>
+
+  <table>
+    <tr><th>Type URI</th><td><code>/errors/product-not-found</code></td></tr>
+    <tr><th>HTTP Status</th><td><code>404 Not Found</code></td></tr>
+    <tr><th>Standard</th><td>RFC 7807 — Problem Details for HTTP APIs</td></tr>
+  </table>
+
+  <h2>Description</h2>
+  <p>
+    This error occurs when a requested product cannot be found in the catalog.
+    The <code>detail</code> field in the response body will contain the product ID that was not found.
+  </p>
+
+  <h2>Example Response</h2>
+  <pre>{
+  "type": "/errors/product-not-found",
+  "title": "Product Not Found",
+  "status": 404,
+  "detail": "Product not found: 42"
+}</pre>
+
+  <h2>How to Resolve</h2>
+  <ul>
+    <li>Check that the product ID in the request path is correct.</li>
+    <li>Use <code>GET /products</code> to list all available products and their IDs.</li>
+  </ul>
+</body>
+</html>

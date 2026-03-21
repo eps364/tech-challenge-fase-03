@@ -11,27 +11,24 @@ database "Restaurant DB\nPostgres" as RESTDB
 participant "Payment Service" as PAY
 database "Payment DB\nPostgres" as PAYDB
 participant "ProcPag\n:8089" as PROCPAG
-queue "Kafka" as KAFKA
+queue "RabbitMQ\n:5672" as BROKER
+participant "Orchestrator Service" as ORQ
 participant "Payment Worker\n(reprocessamento)" as WORKER
 
-== Criação do pedido ==
-Cliente -> APIGW: POST /orders (Bearer JWT)
-APIGW -> EUREKA: resolve order-service
-APIGW -> ORDER: cria pedido
+== Criação do pedido (Orquestrada) ==
+Cliente -> APIGW: POST /orchestrator/requests (Bearer JWT)
+APIGW -> EUREKA: resolve orchestrator-service
+APIGW -> ORQ: inicia orquestração
+ORQ -> REST: valida restaurante/itens
+REST --> ORQ: validação OK
+ORQ -> ORDER: cria pedido (/orders/orchestrated)
 ORDER -> ORDERDB: persiste pedido inicial
 
-== Validação de restaurante ==
-ORDER -> EUREKA: resolve restaurant-service
-ORDER -> REST: valida restaurante/itens
-REST -> RESTDB: consulta dados
-RESTDB --> REST: dados do restaurante
-REST --> ORDER: validação OK
-
 == Evento de criação ==
-ORDER -> KAFKA: publica evento pedido.criado
+ORDER -> BROKER: publica ORDER_CREATED (Kafka topic: orders-created)
+PAY -> BROKER: consome ORDER_CREATED
 
 == Processamento assíncrono de pagamento ==
-PAY -> KAFKA: consome pedido.criado
 PAY -> PAYDB: cria transação local
 
 group Resiliência (Retry + Timeout + Circuit Breaker)
@@ -41,26 +38,26 @@ end
 alt pagamento autorizado
 	PROCPAG --> PAY: autorizado
 	PAY -> PAYDB: atualiza transação = PAGO
-	PAY -> KAFKA: publica pagamento.aprovado
-	ORDER -> KAFKA: consome pagamento.aprovado
+	PAY -> BROKER: publica PAYMENT_APPROVED\n(Kafka topic: payment-status)
+	ORDER -> BROKER: consome PAYMENT_APPROVED
 	ORDER -> ORDERDB: atualiza pedido = PAGO
 	ORDER --> APIGW: pedido atualizado
 	APIGW --> Cliente: status final = PAGO
 else falha/timeout/circuito aberto
 	PROCPAG --> PAY: erro / indisponível
 	PAY -> PAYDB: atualiza transação = PENDENTE
-	PAY -> KAFKA: publica pagamento.pendente
-	ORDER -> KAFKA: consome pagamento.pendente
+	PAY -> BROKER: publica PAYMENT_PENDING\n(Kafka topic: payment-status)
+	ORDER -> BROKER: consome PAYMENT_PENDING
 	ORDER -> ORDERDB: atualiza pedido = PENDENTE_PAGAMENTO
 	ORDER --> APIGW: pedido aceito com pendência
 	APIGW --> Cliente: status = PENDENTE_PAGAMENTO
 
 	== Reprocessamento automático ==
-	WORKER -> KAFKA: consome pagamento.pendente
+	WORKER -> BROKER: consome pendências (interno ao Payment Service)
 	WORKER -> PROCPAG: tenta novamente cobrança
 	PROCPAG --> WORKER: autorizado
-	WORKER -> KAFKA: publica pagamento.aprovado
-	ORDER -> KAFKA: consome pagamento.aprovado
+	WORKER -> BROKER: publica PAYMENT_APPROVED\n(Kafka topic: payment-status)
+	ORDER -> BROKER: consome PAYMENT_APPROVED
 	ORDER -> ORDERDB: atualiza pedido = PAGO
 end
 

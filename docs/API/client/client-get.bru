@@ -1,0 +1,16 @@
+meta {
+  name: 👤 🙋 Client - Get
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{base_url}}/client-service/clients/{{user_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}

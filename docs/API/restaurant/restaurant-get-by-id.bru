@@ -1,0 +1,21 @@
+meta {
+  name: 🍽️ 🌐 Restaurant - Buscar por ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/restaurant-service/restaurants/{{restaurant_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Busca um restaurante pelo seu ID (UUID).
+  Endpoint público — não requer autenticação.
+  Retorna 404 se o restaurante não for encontrado.
+}

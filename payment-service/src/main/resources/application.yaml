@@ -1,16 +1,76 @@
 spring:
   application:
     name: payment-service
+  mvc:
+    problemdetails:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://payment-service-db:5432/payment-service-db
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8000/realms/tech-challenge
+          issuer-uri: http://keycloak:8080/realms/tech-challenge
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: payment-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+feign:
+  client:
+    config:
+      procpagClient:
+        connectTimeout: 2000
+        readTimeout: 3000
+
+app:
+  procpag:
+    base-url: http://procpag:8089
+  payment:
+    max-attempts: 3
+    polling-delay-ms: 5000
+  kafka:
+    topics:
+      orderCreated: orders.created
+      paymentStatus: payments.status
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      procpag:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 10s
+        failure-rate-threshold: 50
+  retry:
+    instances:
+      procpag:
+        max-attempts: 3
+        wait-duration: 500ms
 
 server:
   port: 0
+  error:
+    include-stacktrace: never
+    include-message: always
 
-# Actuator configuration
 management:
   endpoints:
     web:
@@ -18,13 +78,19 @@ management:
         include: "*"
       base-path: /actuator
 
-# Eurika configuration
 eureka:
   client:
     enabled: true
     service-url:
       defaultZone: http://service-registry:8762/eureka
-
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+logging:
+  level:
+    br.com.fiap.payment: INFO
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] [%thread] %-5level %logger{36} - %msg%n"

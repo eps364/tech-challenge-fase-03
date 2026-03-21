@@ -1,5 +1,5 @@
 meta {
-  name: Payment Service - Private
+  name: 💳 🙋 Payment Service - Private
   type: http
   seq: 11
 }
@@ -13,4 +13,9 @@ get {
 headers {
   Accept: application/json
   Authorization: Bearer {{jwt_token}}
+}
+
+docs {
+  Endpoint autenticado de smoke test do payment-service.
+  Confirma leitura do JWT e acesso protegido antes de validar o processamento de pagamento por eventos.
 }

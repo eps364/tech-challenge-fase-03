@@ -1,0 +1,33 @@
+meta {
+  name: 🔐 🛠️ Gateway Security - Update Rule By Id
+  type: http
+  seq: 13
+}
+
+put {
+  url: {{base_url}}/gateway/security/routes/16
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+  Authorization: Bearer {{jwt_token}}
+}
+
+body:json {
+  {
+    "id": 16,
+    "method": "POST",
+    "pathPattern": "/catalog-service/products/**",
+    "access": "HAS_ANY_ROLE",
+    "roles": ["owner", "admin"]
+  }
+}
+
+docs {
+  Atualiza uma regra existente pelo id.
+  O id do path deve existir. Se nao existir, retorna 404.
+  O id no body e opcional; o id do path e o que vale na atualizacao.
+}

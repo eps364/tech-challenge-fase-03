@@ -1,0 +1,38 @@
+meta {
+  name: 💳 🌐 Procpag - Enviar Requisicao
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{procpag_url}}/requisicao
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "valor": 10.21,
+    "pagamento_id": "{{order_id}}",
+    "cliente_id": "{{user_id}}"
+  }
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  if (data && data.pagamento_id) {
+    bru.setEnvVar("pagamento_id", data.pagamento_id);
+  }
+}
+
+docs {
+  Envia uma requisicao de pagamento para o servico externo procpag.
+  Este endpoint pode responder com 200, 408 ou 502.
+  Use pagamento_id para correlacionar com a consulta de status.
+}

@@ -1,0 +1,20 @@
+meta {
+  name: 💳 🌐 Procpag - Consultar Requisicao
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{procpag_url}}/requisicao/{{order_id}}
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+docs {
+  Consulta o status do pagamento a partir do pagamento_id.
+  Retorna 200 quando a requisicao for localizada.
+}
