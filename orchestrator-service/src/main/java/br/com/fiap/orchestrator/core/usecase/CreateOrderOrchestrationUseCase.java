@@ -35,7 +35,7 @@ public class CreateOrderOrchestrationUseCase {
         this.orderGateway = orderGateway;
     }
 
-    public void execute(UUID clientId, CreateOrderRequest input) {
+    public br.com.fiap.orchestrator.core.dto.responses.OrderAcceptedResponse execute(UUID clientId, CreateOrderRequest input) {
         logger.info("Starting order orchestration for client {} with request: restaurantId={}, items={}", clientId, input.restaurantId(), input.items().size());
         Client client = findClient(clientId);
         List<UUID> productIds = extractProductIds(input);
@@ -49,8 +49,9 @@ public class CreateOrderOrchestrationUseCase {
         OrderDraft orderDraft = buildOrderDraft(client, input, items, total);
         logger.info("Built order draft: {}", orderDraft);
 
-        orderGateway.createOrder(orderDraft);
-        logger.info("Order created successfully for client {}", clientId);
+        var orderResponse = orderGateway.createOrder(orderDraft);
+        logger.info("Order created successfully for client {}: orderId={}", clientId, orderResponse.id());
+        return new br.com.fiap.orchestrator.core.dto.responses.OrderAcceptedResponse(orderResponse.id(), "Order accepted and will be processed.");
     }
 
     private Client findClient(UUID clientId) {

@@ -26,7 +26,7 @@ import br.com.fiap.authservice.core.usecase.RegisterUserUseCase;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements br.com.fiap.authservice.infra.web.controller.api.AuthAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 

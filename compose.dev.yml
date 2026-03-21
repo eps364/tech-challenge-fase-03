@@ -1,33 +1,13 @@
-# Usage: docker compose -f compose.yml -f compose.dev.yml up
-# Para subir apenas um serviço em modo dev:
-#   docker compose -f compose.yml -f compose.dev.yml up order-service
-#
-# DO NOT use --build with this file. The application services use the official
-# maven:3.9.9-eclipse-temurin-21 image from Docker Hub. Using --build would
-# compile the Dockerfiles from compose.yml (JRE-only images) and tag them as
-# the Maven image, removing 'mvn' from PATH and breaking hot reload.
-#
-# To rebuild only infrastructure (e.g. Keycloak):
-#   docker compose -f compose.yml -f compose.dev.yml build keycloak
-#   docker compose -f compose.yml -f compose.dev.yml up
-#
-# Overrides application services to run via Maven with Spring DevTools hot reload.
-# Infrastructure (DBs, RabbitMQ, Keycloak, procpag) is provided by compose.yml.
 
+# Compose override para desenvolvimento: apenas serviços Java com hot reload
 services:
   service-registry:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/service-registry/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl service-registry -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl service-registry -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
-    ports:
-      - "8762:8762"
+    build:
+      context: .
+      dockerfile: service-registry/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -35,29 +15,23 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
-    # Aumenta tolerância para o startup lento do Maven (cold cache ~3-5min, warm ~30s)
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8762/actuator/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 20
-      start_period: 90s
     networks:
       - fase3net
-
+    develop:
+      watch:
+        - path: service-registry/src/main/java
+          action: sync+restart
+          target: /workspace/service-registry/src/main/java
+        - path: service-registry/src/main/resources
+          action: sync+restart
+          target: /workspace/service-registry/src/main/resources
   api-gateway:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/api-gateway/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl api-gateway -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl api-gateway -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
-    ports:
-      - "8761:8761"
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -67,23 +41,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
-    depends_on:
-      service-registry:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
+    develop:
+      watch:
+        - path: api-gateway/src/main/java
+          action: sync+restart
+          target: /workspace/api-gateway/src/main/java
+        - path: api-gateway/src/main/resources
+          action: sync+restart
+          target: /workspace/api-gateway/src/main/resources
   auth-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/auth-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl auth-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl auth-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -93,27 +65,23 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
-    depends_on:
-      auth-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      keycloak:
-        condition: service_started
-
+    develop:
+      watch:
+        - path: auth-service/src/main/java
+          action: sync+restart
+          target: /workspace/auth-service/src/main/java
+        - path: auth-service/src/main/resources
+          action: sync+restart
+          target: /workspace/auth-service/src/main/resources
   client-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/client-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl client-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl client-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: client-service/Dockerfile
+      target: dev
+    restart: on-failure
+    depends_on:
+      - auth-service
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -123,25 +91,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
-    depends_on:
-      client-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-
+    develop:
+      watch:
+        - path: client-service/src/main/java
+          action: sync+restart
+          target: /workspace/client-service/src/main/java
+        - path: client-service/src/main/resources
+          action: sync+restart
+          target: /workspace/client-service/src/main/resources
   catalog-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/catalog-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl catalog-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl catalog-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: catalog-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -151,23 +115,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
-    depends_on:
-      catalog-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-
+    develop:
+      watch:
+        - path: catalog-service/src/main/java
+          action: sync+restart
+          target: /workspace/catalog-service/src/main/java
+        - path: catalog-service/src/main/resources
+          action: sync+restart
+          target: /workspace/catalog-service/src/main/resources
   order-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/order-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl order-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl order-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -177,27 +139,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
-    depends_on:
-      order-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-
+    develop:
+      watch:
+        - path: order-service/src/main/java
+          action: sync+restart
+          target: /workspace/order-service/src/main/java
+        - path: order-service/src/main/resources
+          action: sync+restart
+          target: /workspace/order-service/src/main/resources
   payment-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    ports:
-      - "5008:5005"
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/payment-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl payment-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl payment-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -205,26 +161,23 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - fase3net
-    depends_on:
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-
+    develop:
+      watch:
+        - path: payment-service/src/main/java
+          action: sync+restart
+          target: /workspace/payment-service/src/main/java
+        - path: payment-service/src/main/resources
+          action: sync+restart
+          target: /workspace/payment-service/src/main/resources
   restaurant-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/restaurant-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl restaurant-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl restaurant-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: restaurant-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -234,27 +187,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
-    depends_on:
-      restaurant-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-
+    develop:
+      watch:
+        - path: restaurant-service/src/main/java
+          action: sync+restart
+          target: /workspace/restaurant-service/src/main/java
+        - path: restaurant-service/src/main/resources
+          action: sync+restart
+          target: /workspace/restaurant-service/src/main/resources
   orchestrator-service:
-    build: null
-    image: maven:3.9.9-eclipse-temurin-21
-    entrypoint: []
-    working_dir: /workspace
-    ports:
-      - "5005:5005"
-    command:
-      - bash
-      - -c
-      - "touch /tmp/.stamp; (while sleep 2; do find /workspace/orchestrator-service/src -name '*.java' -newer /tmp/.stamp 2>/dev/null | grep -q . && mvn compile -pl orchestrator-service -am -DskipTests -q && touch /tmp/.stamp; done) & mvn spring-boot:run -pl orchestrator-service -DskipTests -Dspring-boot.run.fork=false -Dspring-boot.devtools.restart.enabled=true"
+    build:
+      context: .
+      dockerfile: orchestrator-service/Dockerfile
+      target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -262,14 +209,15 @@ services:
       - SPRING_DEVTOOLS_RESTART_QUIET_PERIOD=1000
       - SPRING_PROFILES_ACTIVE=dev
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
-      - JAVA_TOOL_OPTIONS= -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - fase3net
-    depends_on:
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-
+    develop:
+      watch:
+        - path: orchestrator-service/src/main/java
+          action: sync+restart
+          target: /workspace/orchestrator-service/src/main/java
+        - path: orchestrator-service/src/main/resources
+          action: sync+restart
+          target: /workspace/orchestrator-service/src/main/resources
 volumes:
   m2-cache:

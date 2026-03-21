@@ -22,10 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.fiap.restaurant.core.dto.AddOwnerRequest;
 import br.com.fiap.restaurant.core.dto.RestaurantRequest;
 import br.com.fiap.restaurant.core.dto.RestaurantResponse;
-import br.com.fiap.restaurant.core.usecase.AddOwnerToRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.CreateRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.DeleteRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.GetRestaurantUseCase;import br.com.fiap.restaurant.core.usecase.ListOwnedRestaurantsUseCase;import br.com.fiap.restaurant.core.usecase.ListRestaurantsUseCase;import br.com.fiap.restaurant.core.usecase.UpdateRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.AddOwnerToRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.CreateRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.DeleteRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.GetRestaurantUseCase;
+import br.com.fiap.restaurant.core.usecase.ListOwnedRestaurantsUseCase;
+import br.com.fiap.restaurant.core.usecase.ListRestaurantsUseCase;
+import br.com.fiap.restaurant.core.usecase.UpdateRestaurantUseCase;
 @RestController
 @RequestMapping("/restaurants")
-public class RestaurantController {
+public class RestaurantController implements br.com.fiap.restaurant.infra.web.controller.api.RestaurantAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
 

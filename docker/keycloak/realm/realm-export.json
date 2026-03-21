@@ -1,6 +1,7 @@
 {
   "realm": "tech-challenge",
   "enabled": true,
+  "accessTokenLifespan": 900,
   "clients": [
     {
       "clientId": "api-gateway",
@@ -178,7 +179,7 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["owner"],
+      "realmRoles": ["owner","user"],
       "clientRoles": {
         "account": ["manage-account", "view-profile"]
       }

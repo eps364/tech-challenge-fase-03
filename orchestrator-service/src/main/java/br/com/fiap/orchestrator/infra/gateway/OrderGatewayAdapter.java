@@ -1,5 +1,11 @@
 package br.com.fiap.orchestrator.infra.gateway;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import br.com.fiap.orchestrator.core.domain.OrderDraft;
 import br.com.fiap.orchestrator.core.domain.OrderItemDraft;
 import br.com.fiap.orchestrator.core.dto.requests.order.AddressRequest;
@@ -7,11 +13,7 @@ import br.com.fiap.orchestrator.core.dto.requests.order.CreateOrderRequest;
 import br.com.fiap.orchestrator.core.dto.requests.order.OrderItemRequest;
 import br.com.fiap.orchestrator.core.gateway.OrderGateway;
 import br.com.fiap.orchestrator.infra.client.OrderFeignClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
+import br.com.fiap.orchestrator.core.dto.responses.OrderResponse;
 
 @Component
 public class OrderGatewayAdapter implements OrderGateway {
@@ -25,7 +27,7 @@ public class OrderGatewayAdapter implements OrderGateway {
     }
 
     @Override
-    public void createOrder(OrderDraft orderDraft) {
+    public OrderResponse createOrder(OrderDraft orderDraft) {
         logger.info("Creating order for client {} with total {}", orderDraft.getClientId(), orderDraft.getTotal());
         try {
             List<OrderItemRequest> items = orderDraft.getItems()
@@ -45,8 +47,9 @@ public class OrderGatewayAdapter implements OrderGateway {
             );
             logger.debug("Built create order request: {}", request);
 
-            orderFeignClient.createOrder(request);
-            logger.info("Order created successfully for client {}", orderDraft.getClientId());
+            OrderResponse response = orderFeignClient.createOrder(request);
+            logger.info("Order created successfully for client {}: orderId={}", orderDraft.getClientId(), response.id());
+            return response;
         } catch (Exception e) {
             logger.error("Error creating order for client {}: {}", orderDraft.getClientId(), e.getMessage(), e);
             throw e;

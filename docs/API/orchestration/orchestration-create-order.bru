@@ -18,13 +18,25 @@ headers {
 
 body:json {
   {
-    "restaurantId": "41f07c9c-91dc-4f8c-9e60-959b88c7c197",
+    "restaurantId": "{{restaurant_id}}",
     "items": [
       {
-        "productId": "5d51f300-d395-4733-83e6-397b57f3d06a",
+        "productId": "{{product_id}}",
         "quantity": 2
       }
     ]
+  }
+}
+
+vars:pre-request {
+  product_id: a1b2c3d4-1001-0001-0001-000000000001
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  if (data && data.id) {
+    bru.setEnvVar("order_id", data.id);
   }
 }
 

@@ -19,7 +19,7 @@ body:json {
 
 script:post-response {
   const data = res.getBody();
-
+  
   if (data && data.access_token) {
     bru.setEnvVar("jwt_token", data.access_token);
   }

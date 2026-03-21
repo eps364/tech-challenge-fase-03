@@ -1,17 +1,16 @@
-package br.com.fiap.authservice.infra.exception;
-
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import br.com.fiap.authservice.core.domain.ValidationException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -61,5 +60,20 @@ public class GlobalExceptionHandler {
         problem.setTitle("Internal Server Error");
         problem.setType(URI.create("urn:problem:auth:internal-error"));
         return problem;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ProblemDetail handleRuntime(RuntimeException ex) {
+        // Standard message for invalid credentials (in English)
+        if ("Invalid credentials".equals(ex.getMessage())) {
+            ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid username or password");
+            problem.setTitle("Invalid credentials");
+            problem.setType(URI.create("urn:problem:auth:invalid-credentials"));
+            return problem;
+        }
+        // fallback for other runtime exceptions
+        return handleGeneric(ex);
     }
 }
