@@ -10,12 +10,16 @@ get {
   auth: bearer
 }
 
+headers {
+  Accept: application/json
+}
+
 auth:bearer {
   token: {{jwt_token}}
 }
 
-headers {
-  Accept: application/json
+vars:pre-request {
+  payment_id: 5915cb4b-f0bf-4d81-9191-c47c1577f2ddbe6d7aec-b823-4350-b4c5-77c01e07a67f
 }
 
 docs {
