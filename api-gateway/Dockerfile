@@ -1,7 +1,7 @@
 # Build stage - Maven + OpenJDK 21
 FROM maven:3.9-eclipse-temurin-21 AS builder
-WORKDIR /workspace
-COPY . /workspace
+WORKDIR /
+COPY . .
 RUN --mount=type=cache,target=/root/.m2 mvn -pl api-gateway -am -B -DskipTests package
 
 # Runtime stage - JRE 21 (menor footprint)
@@ -16,3 +16,11 @@ RUN groupadd -r app && \
 COPY --from=builder --chown=2000:2000 /workspace/api-gateway/target/*.jar app.jar
 
 ENTRYPOINT ["sh","-c","exec java -jar /app/app.jar"]
+
+# Dev stage - para hot reload e desenvolvimento
+FROM maven:3.9-eclipse-temurin-21 AS dev
+WORKDIR /
+VOLUME /workspace
+ENV SPRING_DEVTOOLS_RESTART_ENABLED=true
+ENV SPRING_PROFILES_ACTIVE=dev
+CMD ["mvn", "spring-boot:run", "-pl", "api-gateway", "-Dspring-boot.run.fork=false", "-Dspring-boot.devtools.restart.enabled=true"]
