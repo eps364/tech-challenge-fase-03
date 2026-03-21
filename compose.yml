@@ -1,6 +1,58 @@
 name: tech-challenge-fase-03
-
 services:
+  # 0 - service-registry
+  service-registry:
+    build:
+      context: .
+      dockerfile: ./service-registry/Dockerfile
+    ports:
+      - "8762:8762"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8762/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - fase3net
+
+  # 0 - api-gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "8761:8761"
+    restart: on-failure
+    networks:
+      - fase3net
+    depends_on:
+      service-registry:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  # 1 - keycloak
+  keycloak-db:
+    image: postgres:15
+    ports:
+      - "5433:5432"
+    restart: on-failure
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fase3net
 
   keycloak:
     build:
@@ -21,6 +73,7 @@ services:
       KC_DB_PASSWORD: root
     volumes:
       - ./docker/keycloak/realm:/opt/keycloak/data/import:ro
+    restart: on-failure
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -54,24 +107,7 @@ services:
     networks:
       - fase3net
 
-  keycloak-db:
-    image: postgres:15
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-    volumes:
-      - keycloak_db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d keycloak"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - fase3net
-
+  # 2 - auth-service
   auth-service-db:
     image: postgres:15
     environment:
@@ -80,9 +116,62 @@ services:
       POSTGRES_DB: auth-service-db
     volumes:
       - auth-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
     networks:
       - fase3net
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    restart: on-failure
+    networks:
+      - fase3net
+    depends_on:
+      redis:
+        condition: service_healthy
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      keycloak-init:
+        condition: service_completed_successfully
+      auth-service-db:
+        condition: service_started
+
+  # 3 - orchestrator-service
+  orchestrator-service-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: orchestrator-service-db
+    volumes:
+      - orchestrator-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
+    networks:
+      - fase3net
+
+  orchestrator-service:
+    build:
+      context: .
+      dockerfile: ./orchestrator-service/Dockerfile
+    restart: on-failure
+    networks:
+      - fase3net
+    ports:
+      - "5005:5005"
+    depends_on:
+      orchestrator-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      keycloak-init:
+        condition: service_completed_successfully
+
+  # 4 - client-service
   client-service-db:
     image: postgres:15
     environment:
@@ -91,9 +180,26 @@ services:
       POSTGRES_DB: client-service-db
     volumes:
       - client-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
     networks:
       - fase3net
 
+  client-service:
+    build:
+      context: .
+      dockerfile: ./client-service/Dockerfile
+    restart: on-failure
+    networks:
+      - fase3net
+    depends_on:
+      client-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  # 5 - catalog-service
   catalog-service-db:
     image: postgres:15
     environment:
@@ -102,9 +208,30 @@ services:
       POSTGRES_DB: catalog-service-db
     volumes:
       - catalog-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
     networks:
       - fase3net
 
+  catalog-service:
+    build:
+      context: .
+      dockerfile: ./catalog-service/Dockerfile
+    restart: on-failure
+    networks:
+      - fase3net
+    ports:
+      - "5006:5005"
+    depends_on:
+      catalog-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      restaurant-service:
+        condition: service_started
+
+  # 6 - order-service
   order-service-db:
     image: postgres:15
     ports:
@@ -115,9 +242,30 @@ services:
       POSTGRES_DB: order-service-db
     volumes:
       - order-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
     networks:
       - fase3net
 
+  order-service:
+    build:
+      context: .
+      dockerfile: ./order-service/Dockerfile
+    restart: on-failure
+    ports:
+      - "5007:5005"
+    networks:
+      - fase3net
+    depends_on:
+      order-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  # 7 - payment-service
   payment-service-db:
     image: postgres:15
     ports:
@@ -128,9 +276,30 @@ services:
       POSTGRES_DB: payment-service-db
     volumes:
       - payment-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
     networks:
       - fase3net
 
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./payment-service/Dockerfile
+    restart: on-failure
+    networks:
+      - fase3net
+    ports:
+      - "5008:5005"
+    depends_on:
+      payment-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  # 8 - restaurant-service
   restaurant-service-db:
     image: postgres:15
     environment:
@@ -139,9 +308,30 @@ services:
       POSTGRES_DB: restaurant-service-db
     volumes:
       - restaurant-service-db_data:/var/lib/postgresql/data
+    restart: on-failure
     networks:
       - fase3net
 
+  restaurant-service:
+    build:
+      context: .
+      dockerfile: ./restaurant-service/Dockerfile
+    restart: on-failure
+    ports:
+      - "5009:5005"
+    networks:
+      - fase3net
+    depends_on:
+      restaurant-service-db:
+        condition: service_started
+      service-registry:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  # Infra services
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -150,6 +340,7 @@ services:
       - "15672:15672"
     volumes:
       - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    restart: on-failure
     environment:
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: >
         -rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
@@ -159,6 +350,7 @@ services:
   kafka:
     image: apache/kafka:latest
     container_name: kafka
+    restart: on-failure
     ports:
       - "9094:9094"
     environment:
@@ -180,6 +372,7 @@ services:
   akhq:
     image: tchiotludo/akhq:latest
     container_name: akhq
+    restart: on-failure
     depends_on:
       - kafka
     ports:
@@ -196,6 +389,7 @@ services:
 
   procpag:
     image: docker.io/erickemprobr/procpag:latest
+    restart: on-failure
     platform: linux/amd64
     ports:
       - "8089:8089"
@@ -206,6 +400,7 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    restart: on-failure
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -213,155 +408,6 @@ services:
       retries: 5
     networks:
       - fase3net
-
-  service-registry:
-    build:
-      context: .
-      dockerfile: ./service-registry/Dockerfile
-    ports:
-      - "8762:8762"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8762/actuator/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - fase3net
-
-  api-gateway:
-    build:
-      context: .
-      dockerfile: ./api-gateway/Dockerfile
-    ports:
-      - "8761:8761"
-    networks:
-      - fase3net
-    depends_on:
-      service-registry:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-
-  auth-service:
-    build:
-      context: .
-      dockerfile: ./auth-service/Dockerfile
-    networks:
-      - fase3net
-    depends_on:
-      auth-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-
-  client-service:
-    build:
-      context: .
-      dockerfile: ./client-service/Dockerfile
-    networks:
-      - fase3net
-    depends_on:
-      client-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-
-  catalog-service:
-    build:
-      context: .
-      dockerfile: ./catalog-service/Dockerfile
-    networks:
-      - fase3net
-    ports:
-      - "5006:5005"
-    depends_on:
-      catalog-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-
-  order-service:
-    build:
-      context: .
-      dockerfile: ./order-service/Dockerfile
-    ports:
-      - "5007:5005"
-    networks:
-      - fase3net
-    depends_on:
-      order-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-      keycloak:
-        condition: service_healthy
-
-  payment-service:
-    build:
-      context: .
-      dockerfile: ./payment-service/Dockerfile
-    networks:
-      - fase3net
-    depends_on:
-      payment-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-      keycloak:
-        condition: service_healthy
-    ports:
-      - "5008:5005"
-
-  restaurant-service:
-    build:
-      context: .
-      dockerfile: ./restaurant-service/Dockerfile
-    ports:
-      - "5009:5005"
-    networks:
-      - fase3net
-    depends_on:
-      restaurant-service-db:
-        condition: service_started
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-      keycloak:
-        condition: service_healthy
-
-  orchestrator-service:
-    build:
-      context: .
-      dockerfile: ./orchestrator-service/Dockerfile
-    networks:
-      - fase3net
-    ports:
-      - "5005:5005"
-    depends_on:
-      service-registry:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-      keycloak:
-        condition: service_healthy
-      keycloak-init:
-        condition: service_completed_successfully
 
 networks:
   fase3net:
@@ -374,3 +420,4 @@ volumes:
   payment-service-db_data:
   restaurant-service-db_data:
   keycloak_db_data:
+  orchestrator-service-db_data:

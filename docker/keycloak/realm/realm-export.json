@@ -1,6 +1,7 @@
 {
   "realm": "tech-challenge",
   "enabled": true,
+  "accessTokenLifespan": 900,
   "clients": [
     {
       "clientId": "api-gateway",

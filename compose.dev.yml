@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: service-registry/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -17,13 +17,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: service-registry/src/main/java
+          action: sync+restart
+          target: /workspace/service-registry/src/main/java
+        - path: service-registry/src/main/resources
+          action: sync+restart
+          target: /workspace/service-registry/src/main/resources
   api-gateway:
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -33,13 +41,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: api-gateway/src/main/java
+          action: sync+restart
+          target: /workspace/api-gateway/src/main/java
+        - path: api-gateway/src/main/resources
+          action: sync+restart
+          target: /workspace/api-gateway/src/main/resources
   auth-service:
     build:
       context: .
       dockerfile: auth-service/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -49,13 +65,23 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: auth-service/src/main/java
+          action: sync+restart
+          target: /workspace/auth-service/src/main/java
+        - path: auth-service/src/main/resources
+          action: sync+restart
+          target: /workspace/auth-service/src/main/resources
   client-service:
     build:
       context: .
       dockerfile: client-service/Dockerfile
       target: dev
+    restart: on-failure
+    depends_on:
+      - auth-service
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -65,13 +91,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: client-service/src/main/java
+          action: sync+restart
+          target: /workspace/client-service/src/main/java
+        - path: client-service/src/main/resources
+          action: sync+restart
+          target: /workspace/client-service/src/main/resources
   catalog-service:
     build:
       context: .
       dockerfile: catalog-service/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -81,13 +115,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: catalog-service/src/main/java
+          action: sync+restart
+          target: /workspace/catalog-service/src/main/java
+        - path: catalog-service/src/main/resources
+          action: sync+restart
+          target: /workspace/catalog-service/src/main/resources
   order-service:
     build:
       context: .
       dockerfile: order-service/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -97,13 +139,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: order-service/src/main/java
+          action: sync+restart
+          target: /workspace/order-service/src/main/java
+        - path: order-service/src/main/resources
+          action: sync+restart
+          target: /workspace/order-service/src/main/resources
   payment-service:
     build:
       context: .
       dockerfile: payment-service/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -113,13 +163,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: payment-service/src/main/java
+          action: sync+restart
+          target: /workspace/payment-service/src/main/java
+        - path: payment-service/src/main/resources
+          action: sync+restart
+          target: /workspace/payment-service/src/main/resources
   restaurant-service:
     build:
       context: .
       dockerfile: restaurant-service/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -129,13 +187,21 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: restaurant-service/src/main/java
+          action: sync+restart
+          target: /workspace/restaurant-service/src/main/java
+        - path: restaurant-service/src/main/resources
+          action: sync+restart
+          target: /workspace/restaurant-service/src/main/resources
   orchestrator-service:
     build:
       context: .
       dockerfile: orchestrator-service/Dockerfile
       target: dev
+    restart: on-failure
     volumes:
-      - .:/workspace
       - m2-cache:/root/.m2
     environment:
       - SPRING_DEVTOOLS_RESTART_ENABLED=true
@@ -145,5 +211,13 @@ services:
       - MAVEN_OPTS=-XX:+TieredCompilation -XX:TieredStopAtLevel=4 -Xms256m -Xmx512m
     networks:
       - fase3net
+    develop:
+      watch:
+        - path: orchestrator-service/src/main/java
+          action: sync+restart
+          target: /workspace/orchestrator-service/src/main/java
+        - path: orchestrator-service/src/main/resources
+          action: sync+restart
+          target: /workspace/orchestrator-service/src/main/resources
 volumes:
   m2-cache:
