@@ -283,8 +283,6 @@ services:
       - fase3net
     ports:
       - "5006:5005"
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       catalog-service-db:
         condition: service_started
@@ -299,8 +297,6 @@ services:
       dockerfile: ./order-service/Dockerfile
     ports:
       - "5007:5005"
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     networks:
       - fase3net
     depends_on:
@@ -330,8 +326,6 @@ services:
         condition: service_healthy
     ports:
       - "5008:5005"
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
   restaurant-service:
     build:
@@ -339,8 +333,6 @@ services:
       dockerfile: ./restaurant-service/Dockerfile
     ports:
       - "5009:5005"
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     networks:
       - fase3net
     depends_on:
@@ -361,8 +353,6 @@ services:
       - fase3net
     ports:
       - "5005:5005"
-    environment:
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     depends_on:
       service-registry:
         condition: service_healthy
