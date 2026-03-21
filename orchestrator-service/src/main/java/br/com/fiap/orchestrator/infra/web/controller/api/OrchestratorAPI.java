@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import br.com.fiap.orchestrator.core.dto.requests.orchestration.CreateOrderRequest;
+import br.com.fiap.orchestrator.core.dto.responses.OrderAcceptedResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,10 +18,10 @@ public interface OrchestratorAPI {
 
     @Operation(summary = "Create orchestrated order", description = "Creates an order via orchestration")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "202", description = "Order orchestration started successfully"),
+        @ApiResponse(responseCode = "201", description = "Order accepted and will be processed."),
         @ApiResponse(responseCode = "400", description = "Invalid input data"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping("/requests")
-    void criarPedido(@RequestBody CreateOrderRequest event);
+    org.springframework.http.ResponseEntity<OrderAcceptedResponse> criarPedido(@RequestBody CreateOrderRequest event);
 }
