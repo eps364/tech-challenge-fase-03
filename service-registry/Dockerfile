@@ -1,7 +1,9 @@
 FROM maven:3.9-eclipse-temurin-21 AS builder
-WORKDIR /
-COPY . .
+WORKDIR /workspace
+# Copia todo o monorepo para dentro do container
+COPY ../../ .
 RUN --mount=type=cache,target=/root/.m2 mvn -pl service-registry -am clean package -DskipTests
+
 
 FROM eclipse-temurin:21-jre-noble
 WORKDIR /app
@@ -20,5 +22,6 @@ ENTRYPOINT ["java","-jar","/app/app.jar"]
 # Dev stage for hot reload (Spring Boot Devtools)
 FROM maven:3.9-eclipse-temurin-21 AS dev
 WORKDIR /workspace
-COPY ../.. /workspace
+COPY ../../ .
+VOLUME ["/workspace"]
 CMD ["mvn", "spring-boot:run", "-pl", "service-registry", "-Dspring-boot.run.fork=false", "-Dspring-boot.devtools.restart.enabled=true"]
