@@ -179,7 +179,7 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["owner"],
+      "realmRoles": ["owner","user"],
       "clientRoles": {
         "account": ["manage-account", "view-profile"]
       }
