@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +63,26 @@ public class OrderController implements br.com.fiap.order.infra.web.controller.a
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error finding order {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<OrderResponse>> findByAuthenticatedClient(@AuthenticationPrincipal Jwt jwt) {
+        UUID clientId = null;
+        try {
+            clientId = UUID.fromString(jwt.getSubject());
+        } catch (Exception e) {
+            logger.error("Could not extract clientId from JWT subject: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().build();
+        }
+        logger.info("Received find orders for authenticated client: {}", clientId);
+        try {
+            List<OrderResponse> response = findOrdersByClientIdUseCase.execute(clientId);
+            logger.info("Found {} orders for client {}", response.size(), clientId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error finding orders for client {}: {}", clientId, e.getMessage(), e);
             throw e;
         }
     }
