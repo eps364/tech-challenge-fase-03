@@ -1,21 +1,5 @@
 # Desenvolvimento e Execução
 
-## 0) Documentação Swagger/OpenAPI
-
-Todos os microserviços possuem documentação automática via Swagger UI:
-
-| Serviço              | Swagger UI                      |
-|----------------------|---------------------------------|
-| auth-service         | http://localhost:8081/swagger-ui.html |
-| client-service       | http://localhost:8082/swagger-ui.html |
-| catalog-service      | http://localhost:8083/swagger-ui.html |
-| order-service        | http://localhost:8084/swagger-ui.html |
-| payment-service      | http://localhost:8085/swagger-ui.html |
-| restaurant-service   | http://localhost:8086/swagger-ui.html |
-| orchestrator-service | http://localhost:8087/swagger-ui.html |
-
-Consulte cada serviço para visualizar endpoints, payloads, status, exemplos e contratos OpenAPI.
-
 ### Exemplos de ProblemDetail (RFC 7807)
 
 Os endpoints seguem o padrão de erro RFC 7807. Exemplo de resposta:

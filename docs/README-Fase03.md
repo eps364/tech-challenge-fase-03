@@ -34,141 +34,6 @@ Implementar um sistema de pedidos online baseado em microsserviços, com autenti
 
 ## 2.1. Visão Geral
 
-#### Siglas e Significados
-
-| Sigla | Significado |
-|-------|-------------|
-| JWT   | JSON Web Token |
-| RBAC  | Role-Based Access Control |
-| CORS  | Cross-Origin Resource Sharing |
-| API   | Application Programming Interface |
-| DB    | Database |
-| CRUD  | Create, Read, Update, Delete |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-| CRUD  | Create, Read, Update, Delete |
-| API   | Application Programming Interface |
-| RFC   | Request for Comments |
-| TTL   | Time To Live |
-| ACK   | Acknowledgment |
-| NACK  | Negative Acknowledgment |
-| MS    | Microservice |
-| REST  | Representational State Transfer |
-| CI/CD | Continuous Integration / Continuous Deployment |
-| BI    | Business Intelligence |
-| DevTools | Developer Tools |
-| Dev   | Development |
-| DBMS  | Database Management System |
-| DBaaS | Database as a Service |
-
 O sistema adota arquitetura de microsserviços, cada um com banco dedicado, comunicação via REST e eventos, autenticação centralizada (Keycloak), resiliência com Resilience4j e mensageria para integração assíncrona.
 
 ### Componentes principais
@@ -236,7 +101,7 @@ Estes diagramas ilustram os principais cenários de autenticação, registro, cr
 
 
 
-## Endpoints Principais por Fluxo
+## 3.1 Endpoints Principais por Fluxo
 
 Os endpoints abaixo refletem os fluxos dos diagramas apresentados:
 
@@ -287,6 +152,18 @@ Os endpoints abaixo refletem os fluxos dos diagramas apresentados:
 > Observação: O endpoint principal para criação de pedidos no fluxo resiliente é o do orchestrator-service, que orquestra a comunicação entre order-service e payment-service, garantindo resiliência e consistência de status.
 
 
+## 3.2 Acesso aos serviços
+
+Abaixo a lista das URLs de serviços e credenciais para acesso para a administração e testes:
+
+| Serviço | URL | Login/Password |
+|---|---|---|
+| Service Discovery - Eureka | http://localhost:8762/ | - |
+| API Gateway | http://localhost:8761 | - |
+| AKHQ Kafka | http://localhost:8085 | - |
+| RabbitMQ | http://localhost:15672 | guest / guest |
+
+
 # 4. Eventos e Resiliência
 
 - **Eventos**: `pedido.criado`, `pagamento.aprovado`, `pagamento.pendente` (RabbitMQ/Kafka)
@@ -335,15 +212,13 @@ docker compose -f compose.yml -f compose.dev.yml down
 
 # 8. Repositório do Código
 
-O Repositório: [https://github.com/eps364/tech-challenge-fase-03](https://github.com/eps364/tech-challenge-fase-03) é um fork do repositório base fornecido pelo professor, contendo a implementação completa do Tech Challenge Fase 03, seguindo os requisitos e boas práticas de desenvolvimento de software.
-> Fork do repositório base: [https://github.com/proferickmuller/adjt-fase3-inicial](https://github.com/proferickmuller/adjt-fase3-inicial)
-
+O Repositório: [https://github.com/eps364/tech-challenge-fase-03](https://github.com/eps364/tech-challenge-fase-03) é um fork do repositório base: [https://github.com/proferickmuller/adjt-fase3-inicial](https://github.com/proferickmuller/adjt-fase3-inicial), fornecido pelo professor, contendo a implementação completa do Tech Challenge Fase 03, seguindo os requisitos e boas práticas de desenvolvimento de software.
 
 # 9. Vídeo Explicativo da API
 
 Vídeo explicativo detalhando a API, suas funcionalidades e como utilizá-la está disponível em:
 
-**URL:** https://youtu.be/{link_do_video}
+**URL:** https://youtu.be/ty0HnIIt4O4
 
 
 # 10. Conclusão
@@ -363,6 +238,118 @@ O Tech Challenge Fase 03 entrega uma solução distribuída, resiliente e segura
 | API   | Application Programming Interface |
 | DB    | Database |
 | CRUD  | Create, Read, Update, Delete |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
+| RFC   | Request for Comments |
+| TTL   | Time To Live |
+| ACK   | Acknowledgment |
+| NACK  | Negative Acknowledgment |
+| MS    | Microservice |
+| REST  | Representational State Transfer |
+| CI/CD | Continuous Integration / Continuous Deployment |
+| BI    | Business Intelligence |
+| DevTools | Developer Tools |
+| Dev   | Development |
+| DBMS  | Database Management System |
+| DBaaS | Database as a Service |
+| CRUD  | Create, Read, Update, Delete |
+| API   | Application Programming Interface |
 | RFC   | Request for Comments |
 | TTL   | Time To Live |
 | ACK   | Acknowledgment |
