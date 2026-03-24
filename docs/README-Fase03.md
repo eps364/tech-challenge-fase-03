@@ -69,6 +69,7 @@ Exemplo de endpoints do API Gateway:
 | Método | Endpoint | Permissão | Descrição |
 |---|---|---|---|
 | POST | /auth-service/auth/login | Público | Autenticação/login |
+| POST | /auth-service/auth/logout | JWT | Logout do usuário, revoga o token JWT, adiciona à blacklist e invalida a sessão |
 | POST | /client-service/clients | Público | Cadastro de cliente |
 | POST | /order-service/orders | JWT | Criação de pedido |
 | GET | /order-service/orders/{id} | JWT | Consulta pedido por ID |
@@ -118,10 +119,12 @@ docker compose -f compose.yml -f compose.dev.yml down
 - Rodar testes: `./mvnw test`
 - Cobertura: `./mvnw clean test jacoco:report`
 
+
 # 7. Qualidade, Segurança e Práticas
 
 - **Arquitetura Limpa**: Separação core/infra, domínio rico, DTOs em core, adapters em infra
 - **Segurança**: JWT, RBAC, CORS, blacklist Redis, endpoints protegidos
+	- **Logout seguro**: O endpoint `/auth-service/auth/logout` revoga o token JWT do usuário, adicionando o `jti` à blacklist no Redis (com TTL igual ao tempo restante do token). O API Gateway bloqueia tokens revogados em todas as requisições, garantindo logout imediato e seguro.
 - **Resiliência**: Circuit Breaker, Retry, Timeout, fallback, eventos de reprocessamento
 - **Exception Handling**: RFC 7807 (ProblemDetail), handlers globais
 - **Testes**: Unitários, integração, collections de API
