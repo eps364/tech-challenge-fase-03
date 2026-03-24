@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant Cliente
+    participant APIGateway as API Gateway
+    participant AuthService as Auth Service
+    participant Keycloak as Keycloak
+    participant ClientService as Client Service
+
+    %% Fluxo de Registro de Usuário
+    Cliente->>APIGateway: Envia dados para registro (register)
+    APIGateway->>AuthService: Encaminha requisição de registro
+    AuthService->>Keycloak: Cria usuário e atribui role "user"
+    Keycloak-->>AuthService: Usuário criado com role
+    AuthService-->>APIGateway: Confirmação de registro
+    APIGateway-->>Cliente: Usuário registrado com sucesso
+
+    %% Fluxo de Cadastro de Dados do Cliente
+    Cliente->>APIGateway: Envia dados pessoais (CPF, endereço, etc)
+    APIGateway->>ClientService: POST /clients
+    ClientService-->>APIGateway: Confirmação de cadastro
+    APIGateway-->>Cliente: Dados cadastrados com sucesso

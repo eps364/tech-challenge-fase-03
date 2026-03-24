@@ -15,6 +15,7 @@ import br.com.fiap.orchestrator.core.domain.OrderItemDraft;
 import br.com.fiap.orchestrator.core.domain.Product;
 import br.com.fiap.orchestrator.core.dto.requests.orchestration.CreateOrderItemRequest;
 import br.com.fiap.orchestrator.core.dto.requests.orchestration.CreateOrderRequest;
+import br.com.fiap.orchestrator.core.exception.OrchestrationInvalidRequestException;
 import br.com.fiap.orchestrator.core.gateway.CatalogGateway;
 import br.com.fiap.orchestrator.core.gateway.ClientGateway;
 import br.com.fiap.orchestrator.core.gateway.OrderGateway;
@@ -38,6 +39,7 @@ public class CreateOrderOrchestrationUseCase {
     public br.com.fiap.orchestrator.core.dto.responses.OrderAcceptedResponse execute(UUID clientId, CreateOrderRequest input) {
         logger.info("Starting order orchestration for client {} with request: restaurantId={}, items={}", clientId, input.restaurantId(), input.items().size());
         Client client = findClient(clientId);
+        validateClientCpfAndAddress(client);
         List<UUID> productIds = extractProductIds(input);
         logger.info("Extracted product IDs: {}", productIds);
         Map<UUID, Product> resolvedProducts = resolveProducts(input.restaurantId(), productIds);
@@ -52,6 +54,25 @@ public class CreateOrderOrchestrationUseCase {
         var orderResponse = orderGateway.createOrder(orderDraft);
         logger.info("Order created successfully for client {}: orderId={}", clientId, orderResponse.id());
         return new br.com.fiap.orchestrator.core.dto.responses.OrderAcceptedResponse(orderResponse.id(), "Order accepted and will be processed.");
+    }
+
+    private void validateClientCpfAndAddress(Client client) {
+        if (client == null) {
+            throw new OrchestrationInvalidRequestException("Cliente não encontrado", "clientId");
+        }
+        if (client.getCpf() == null || client.getCpf().isBlank()) {
+            throw new OrchestrationInvalidRequestException("CPF do cliente não cadastrado. Cadastre o CPF antes de realizar pedidos.", "cpf");
+        }
+        var address = client.getAddress();
+        if (address == null
+                || address.getStreet() == null || address.getStreet().isBlank()
+                || address.getNumber() == null || address.getNumber().isBlank()
+                || address.getCity() == null || address.getCity().isBlank()
+                || address.getNeighborhood() == null || address.getNeighborhood().isBlank()
+                || address.getState() == null || address.getState().isBlank()
+                || address.getZipCode() == null || address.getZipCode().isBlank()) {
+            throw new OrchestrationInvalidRequestException("Endereço do cliente incompleto. Cadastre o endereço completo antes de realizar pedidos.", "address");
+        }
     }
 
     private Client findClient(UUID clientId) {
