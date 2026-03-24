@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant Cliente
+    participant APIGateway as API Gateway
+    participant OrderService as Order Service
+
+    %% Consulta de Status do Pedido (getOrder)
+    Cliente->>APIGateway: Consulta status do pedido (getOrder)
+    APIGateway->>OrderService: Encaminha consulta de pedido
+    OrderService-->>APIGateway: Retorna dados do pedido (inclui status do pagamento)
+    APIGateway-->>Cliente: Retorna status atualizado do pedido

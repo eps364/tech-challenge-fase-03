@@ -17,3 +17,317 @@ headers {
 docs {
   Endpoint público. Não requer autenticação.
 }
+
+example {
+  name: 200
+  
+  request: {
+    url: {{base_url}}/catalog-service/products
+    method: GET
+    mode: none
+    headers: {
+      Accept: application/json
+    }
+  }
+  
+  response: {
+    headers: {
+      transfer-encoding: chunked
+      x-content-type-options: nosniff
+      x-xss-protection: 0
+      cache-control: no-cache, no-store, max-age=0, must-revalidate
+      pragma: no-cache
+      expires: 0
+      x-frame-options: DENY
+      content-type: application/json
+      date: Tue, 24 Mar 2026 03:24:16 GMT
+      referrer-policy: no-referrer
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "id": "a1b2c3d4-1001-0001-0001-000000000001",
+            "name": "Pizza Margherita",
+            "price": 49.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000001",
+            "foodType": "Pizza"
+          },
+          {
+            "id": "a1b2c3d4-1002-0001-0001-000000000001",
+            "name": "Pizza Calabresa",
+            "price": 54.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000001",
+            "foodType": "Pizza"
+          },
+          {
+            "id": "a1b2c3d4-1003-0001-0001-000000000001",
+            "name": "Lasanha Bolonhesa",
+            "price": 39.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000001",
+            "foodType": "Massa"
+          },
+          {
+            "id": "a1b2c3d4-1004-0001-0001-000000000001",
+            "name": "Tiramisu",
+            "price": 22.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000001",
+            "foodType": "Sobremesa"
+          },
+          {
+            "id": "a1b2c3d4-2001-0001-0001-000000000002",
+            "name": "Combinado Sushi 16 peças",
+            "price": 69.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000002",
+            "foodType": "Sushi"
+          },
+          {
+            "id": "a1b2c3d4-2002-0001-0001-000000000002",
+            "name": "Temaki Salmão",
+            "price": 29.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000002",
+            "foodType": "Temaki"
+          },
+          {
+            "id": "a1b2c3d4-2003-0001-0001-000000000002",
+            "name": "Yakissoba",
+            "price": 34.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000002",
+            "foodType": "Prato Quente"
+          },
+          {
+            "id": "a1b2c3d4-2004-0001-0001-000000000002",
+            "name": "Guioza",
+            "price": 18.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000002",
+            "foodType": "Entrada"
+          },
+          {
+            "id": "a1b2c3d4-3001-0001-0001-000000000003",
+            "name": "Picanha na Brasa",
+            "price": 89.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000003",
+            "foodType": "Carne"
+          },
+          {
+            "id": "a1b2c3d4-3002-0001-0001-000000000003",
+            "name": "Costela Bovina",
+            "price": 79.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000003",
+            "foodType": "Carne"
+          },
+          {
+            "id": "a1b2c3d4-3003-0001-0001-000000000003",
+            "name": "Arroz Carreteiro",
+            "price": 24.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000003",
+            "foodType": "Acompanhamento"
+          },
+          {
+            "id": "a1b2c3d4-3004-0001-0001-000000000003",
+            "name": "Pudim de Leite",
+            "price": 16.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000003",
+            "foodType": "Sobremesa"
+          },
+          {
+            "id": "a1b2c3d4-4001-0001-0001-000000000004",
+            "name": "Ravioli de Ricota",
+            "price": 42.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000004",
+            "foodType": "Massa"
+          },
+          {
+            "id": "a1b2c3d4-4002-0001-0001-000000000004",
+            "name": "Fettuccine Alfredo",
+            "price": 44.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000004",
+            "foodType": "Massa"
+          },
+          {
+            "id": "a1b2c3d4-4003-0001-0001-000000000004",
+            "name": "Bruschetta",
+            "price": 19.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000004",
+            "foodType": "Entrada"
+          },
+          {
+            "id": "a1b2c3d4-4004-0001-0001-000000000004",
+            "name": "Panna Cotta",
+            "price": 21.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000004",
+            "foodType": "Sobremesa"
+          },
+          {
+            "id": "a1b2c3d4-5001-0001-0001-000000000005",
+            "name": "Tapioca de Carne Seca",
+            "price": 17.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000005",
+            "foodType": "Tapioca"
+          },
+          {
+            "id": "a1b2c3d4-5002-0001-0001-000000000005",
+            "name": "Cuscuz Nordestino",
+            "price": 14.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000005",
+            "foodType": "Prato Típico"
+          },
+          {
+            "id": "a1b2c3d4-5003-0001-0001-000000000005",
+            "name": "Bolo de Rolo",
+            "price": 12.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000005",
+            "foodType": "Sobremesa"
+          },
+          {
+            "id": "a1b2c3d4-5004-0001-0001-000000000005",
+            "name": "Suco de Cajá",
+            "price": 8.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000005",
+            "foodType": "Bebida"
+          },
+          {
+            "id": "a1b2c3d4-6001-0001-0001-000000000006",
+            "name": "Hambúrguer Black Bull",
+            "price": 29.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000006",
+            "foodType": "Lanche"
+          },
+          {
+            "id": "a1b2c3d4-6002-0001-0001-000000000006",
+            "name": "Cheeseburger",
+            "price": 24.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000006",
+            "foodType": "Lanche"
+          },
+          {
+            "id": "a1b2c3d4-6003-0001-0001-000000000006",
+            "name": "Batata Frita",
+            "price": 13.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000006",
+            "foodType": "Acompanhamento"
+          },
+          {
+            "id": "a1b2c3d4-6004-0001-0001-000000000006",
+            "name": "Milkshake Chocolate",
+            "price": 15.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000006",
+            "foodType": "Bebida"
+          },
+          {
+            "id": "a1b2c3d4-7001-0001-0001-000000000007",
+            "name": "Moqueca de Peixe",
+            "price": 59.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000007",
+            "foodType": "Peixe"
+          },
+          {
+            "id": "a1b2c3d4-7002-0001-0001-000000000007",
+            "name": "Camarão ao Alho",
+            "price": 69.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000007",
+            "foodType": "Camarão"
+          },
+          {
+            "id": "a1b2c3d4-7003-0001-0001-000000000007",
+            "name": "Risoto de Frutos do Mar",
+            "price": 64.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000007",
+            "foodType": "Risoto"
+          },
+          {
+            "id": "a1b2c3d4-7004-0001-0001-000000000007",
+            "name": "Ceviche",
+            "price": 27.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000007",
+            "foodType": "Entrada"
+          },
+          {
+            "id": "a1b2c3d4-8001-0001-0001-000000000008",
+            "name": "Feijoada",
+            "price": 39.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000008",
+            "foodType": "Prato Principal"
+          },
+          {
+            "id": "a1b2c3d4-8002-0001-0001-000000000008",
+            "name": "Bife à Parmegiana",
+            "price": 34.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000008",
+            "foodType": "Prato Principal"
+          },
+          {
+            "id": "a1b2c3d4-8003-0001-0001-000000000008",
+            "name": "Arroz Doce",
+            "price": 9.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000008",
+            "foodType": "Sobremesa"
+          },
+          {
+            "id": "a1b2c3d4-8004-0001-0001-000000000008",
+            "name": "Suco de Laranja",
+            "price": 6.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000008",
+            "foodType": "Bebida"
+          },
+          {
+            "id": "a1b2c3d4-9001-0001-0001-000000000009",
+            "name": "Salada de Quinoa",
+            "price": 22.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000009",
+            "foodType": "Salada"
+          },
+          {
+            "id": "a1b2c3d4-9002-0001-0001-000000000009",
+            "name": "Hambúrguer de Grão-de-Bico",
+            "price": 27.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000009",
+            "foodType": "Lanche"
+          },
+          {
+            "id": "a1b2c3d4-9003-0001-0001-000000000009",
+            "name": "Strogonoff de Cogumelos",
+            "price": 29.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000009",
+            "foodType": "Prato Principal"
+          },
+          {
+            "id": "a1b2c3d4-9004-0001-0001-000000000009",
+            "name": "Brownie Vegano",
+            "price": 12.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000009",
+            "foodType": "Sobremesa"
+          },
+          {
+            "id": "a1b2c3d4-1010-0001-0001-000000000010",
+            "name": "Frango Grelhado",
+            "price": 24.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000010",
+            "foodType": "Grelhado"
+          },
+          {
+            "id": "a1b2c3d4-1011-0001-0001-000000000010",
+            "name": "Peito de Frango ao Limão",
+            "price": 26.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000010",
+            "foodType": "Grelhado"
+          },
+          {
+            "id": "a1b2c3d4-1012-0001-0001-000000000010",
+            "name": "Salada Caesar",
+            "price": 19.90,
+            "restaurantId": "a1b2c3d4-0001-0001-0001-000000000010",
+            "foodType": "Salada"
+          }
+        ]
+      '''
+    }
+  }
+}

@@ -14,3 +14,58 @@ headers {
   Accept: application/json
   Authorization: Bearer {{jwt_token}}
 }
+
+example {
+  name: 200
+  
+  request: {
+    url: {{base_url}}/client-service/clients/{{user_id}}
+    method: GET
+    mode: none
+    headers: {
+      Accept: application/json
+      Authorization: Bearer {{jwt_token}}
+    }
+  }
+  
+  response: {
+    headers: {
+      transfer-encoding: chunked
+      x-content-type-options: nosniff
+      x-xss-protection: 0
+      cache-control: no-cache, no-store, max-age=0, must-revalidate
+      pragma: no-cache
+      expires: 0
+      x-frame-options: DENY
+      content-type: application/json
+      date: Tue, 24 Mar 2026 03:23:18 GMT
+      referrer-policy: no-referrer
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": "6370bc19-e306-410f-8ff9-233cfb55fc49",
+          "cpf": "91374243000",
+          "active": true,
+          "address": {
+            "id": "b341d45c-2bb6-4c57-b4b4-37f3d47c2cef",
+            "street": "Rua das Flores",
+            "number": "123",
+            "neighborhood": "Centro",
+            "complement": "Apto 101",
+            "city": "Sao Paulo",
+            "state": "SP",
+            "zipCode": "01001000"
+          }
+        }
+      '''
+    }
+  }
+}

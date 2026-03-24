@@ -1,7 +1,7 @@
 meta {
   name: 🔐 🌐 Auth Service - Login
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
@@ -28,5 +28,61 @@ script:post-response {
   }
   if (data && data.refresh_token) {
     bru.setEnvVar("refresh_token", data.refresh_token);
+  }
+}
+
+example {
+  name: 200
+  
+  request: {
+    url: {{base_url}}/auth-service/auth/login
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "username": "{{username}}",
+        "password": "{{password}}"
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      transfer-encoding: chunked
+      x-content-type-options: nosniff
+      x-xss-protection: 0
+      cache-control: no-cache, no-store, max-age=0, must-revalidate
+      pragma: no-cache
+      expires: 0
+      x-frame-options: DENY
+      content-type: application/json
+      date: Tue, 24 Mar 2026 03:23:42 GMT
+      referrer-policy: no-referrer
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "userId": "d3c19493-c8c0-4f1c-ab53-397300300346",
+          "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJsZVgzYl9FaTlTM1RrWXdTTXVLUkkwMTNWZjRlYlhaQ2pZNUtWcXFFRDVzIn0.eyJleHAiOjE3NzQzMjM1MjIsImlhdCI6MTc3NDMyMjYyMiwianRpIjoib25ydHJvOmU1Nzc1Y2ZlLWM4N2UtYzZhMC1kZGQzLWNmYmJiZjUxYTliNiIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy90ZWNoLWNoYWxsZW5nZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJkM2MxOTQ5My1jOGMwLTRmMWMtYWI1My0zOTczMDAzMDAzNDYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJmcm9udGVuZC1jbGllbnQiLCJzaWQiOiJuQlFoNW1HcTZPdHZYMkN3TWtGVGFHTkUiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLXRlY2gtY2hhbGxlbmdlIiwidW1hX2F1dGhvcml6YXRpb24iLCJ1c2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJOb3ZvIFVzdWFyaW8iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyNSIsImdpdmVuX25hbWUiOiJOb3ZvIiwiZmFtaWx5X25hbWUiOiJVc3VhcmlvIiwiZW1haWwiOiJ1c2VyNTBAZXhhbXBsZS5jb20ifQ.O-ilV6DcseyMijw3fV4T7CkBrMVtXz88YHMG6HY9YiYvSxaGSBOfkDZz2ii4GbltwvUg7g8y6ScUrsITqRfSWrBn2LoSCvPqccPq3_8wBPSvq-FClG-1HWQIeN0gdI8OUJNpbCGMUjrNyCBcHUzaRQ5OkNgZ7w7TaJBtuOhce_v2c2EvYQSqKB2pbjVHEE7RfpuTj5n85ZRcxw4RmUMKKiGE4BmXzvJ4zTElfj1IAovDADKtEFtFeEuVQxHsrgQpETX00SgxiKE98uk927cyRI9cQCnmwhWMoURUJGSyCfNXEmkCtKeqJkMEQZaiCNYUFi7KqMPsXqhfSeuUluTj_w",
+          "refresh_token": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJjZWU1NGVjMC0xZWIwLTQ0M2EtOTVmMS1lNTljOTRjY2JkZmQifQ.eyJleHAiOjE3NzQzMjQ0MjIsImlhdCI6MTc3NDMyMjYyMiwianRpIjoiNDMwNWMzYTgtMGNmMC03OTI1LTFkMjQtNGU5ZjNiMTc2ZGRmIiwiaXNzIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3RlY2gtY2hhbGxlbmdlIiwiYXVkIjoiaHR0cDovL2tleWNsb2FrOjgwODAvcmVhbG1zL3RlY2gtY2hhbGxlbmdlIiwic3ViIjoiZDNjMTk0OTMtYzhjMC00ZjFjLWFiNTMtMzk3MzAwMzAwMzQ2IiwidHlwIjoiUmVmcmVzaCIsImF6cCI6ImZyb250ZW5kLWNsaWVudCIsInNpZCI6Im5CUWg1bUdxNk90dlgyQ3dNa0ZUYUdORSIsInNjb3BlIjoid2ViLW9yaWdpbnMgcHJvZmlsZSBhY3Igcm9sZXMgZW1haWwgYmFzaWMifQ.BhgrIIg-iq0GOvUtCln9Q8foXvGMVH1jezxdj5TvuVPfJZmP3eAezCUkwulqJVRiRG0BY_MzbLEQsTWhbRPPyw",
+          "expires_in": 900,
+          "refresh_expires_in": 1800,
+          "token_type": "Bearer",
+          "roles": [
+            "offline_access",
+            "default-roles-tech-challenge",
+            "uma_authorization",
+            "user"
+          ]
+        }
+      '''
+    }
   }
 }

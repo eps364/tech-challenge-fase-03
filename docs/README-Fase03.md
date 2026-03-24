@@ -17,9 +17,6 @@ Restaurantes buscam uma solução unificada para pedidos online, reduzindo custo
 
 ## 1.2. Objetivo do projeto
 
-
-Coleção Postman para testes: [`docs/TechChallenge-Fase03.postman_collection.json`](docs/TechChallenge-Fase03.postman_collection.json)
-
 Implementar um sistema de pedidos online baseado em microsserviços, com autenticação JWT, comunicação assíncrona via eventos, resiliência a falhas e arquitetura limpa.
 
 ### Funcionalidades principais
@@ -29,6 +26,8 @@ Implementar um sistema de pedidos online baseado em microsserviços, com autenti
 - Integração com serviço externo de pagamento
 - Resiliência: fallback para status pendente e reprocessamento automático
 - API Gateway, Service Registry, mensageria (RabbitMQ/Kafka), Redis (blacklist JWT)
+
+Coleção Postman para testes: [`docs/TechChallenge-Fase03.postman_collection.json`](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/TechChallenge-Fase03.postman_collection.json)
 
 # 2. Arquitetura do Sistema
 
@@ -52,10 +51,13 @@ O sistema adota arquitetura de microsserviços, cada um com banco dedicado, comu
 - **procpag**: Serviço externo de pagamento
 
 ### Diagrama de fluxo principal
-Ver [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
+
+> TODO LINK
+Ver [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
 
 # 3. Endpoints Principais
 
+> TODO LINK
 Consulte Swagger UI de cada serviço:
 - auth-service: http://localhost:8081/swagger-ui.html
 - client-service: http://localhost:8082/swagger-ui.html
@@ -77,10 +79,13 @@ Exemplo de endpoints do API Gateway:
 
 # 4. Eventos e Resiliência
 
+> TODO LINK
+
 - **Eventos**: `pedido.criado`, `pagamento.aprovado`, `pagamento.pendente` (RabbitMQ/Kafka)
 - **Resiliência**: Retry, Timeout, Circuit Breaker (Resilience4j), fallback para status pendente, reprocessamento automático
 - **Fluxo**: Pedido criado → evento → pagamento processado (ou pendente) → reprocessamento automático se necessário
-- **Diagramas**: [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
+- **Diagramas**: [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
+- 
 
 
 # 5. Banco de Dados e Containers
@@ -110,9 +115,9 @@ Para parar:
 docker compose -f compose.yml -f compose.dev.yml down
 ```
 
-- Coleções Bruno/Postman em `docs/API/` e coleção Postman principal em `docs/TechChallenge-Fase03.postman_collection.json`
-- Para testar rapidamente todos os fluxos, importe a coleção Postman (`docs/TechChallenge-Fase03.postman_collection.json`) no Postman ou Insomnia e preencha a variável `jwt` com o token obtido no login.
-- Swagger UI disponível em cada serviço
+#### Coleções para teste:
+- Collection Bruno [docs/API](https://github.com/eps364/tech-challenge-fase-03/tree/main/docs/API)
+- Collection Postman [docs/TechChallenge-Fase03.postman_collection.json](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/TechChallenge-Fase03.postman_collection.json)
 
 
 ## 6.3. Testes automatizados
@@ -124,24 +129,23 @@ docker compose -f compose.yml -f compose.dev.yml down
 
 - **Arquitetura Limpa**: Separação core/infra, domínio rico, DTOs em core, adapters em infra
 - **Segurança**: JWT, RBAC, CORS, blacklist Redis, endpoints protegidos
-	- **Logout seguro**: O endpoint `/auth-service/auth/logout` revoga o token JWT do usuário, adicionando o `jti` à blacklist no Redis (com TTL igual ao tempo restante do token). O API Gateway bloqueia tokens revogados em todas as requisições, garantindo logout imediato e seguro.
+	- **Logout seguro**: O endpoint `/auth-service/auth/logout` revoga o token JWT do usuário, adicionando o `jti` (jti, identificador único do token) à blacklist no Redis (com TTL igual ao tempo restante do token). O API Gateway bloqueia tokens revogados em todas as requisições, garantindo logout imediato e seguro.
 - **Resiliência**: Circuit Breaker, Retry, Timeout, fallback, eventos de reprocessamento
 - **Exception Handling**: RFC 7807 (ProblemDetail), handlers globais
 - **Testes**: Unitários, integração, collections de API
 - **Documentação**: Markdown em `/docs`, diagramas em `/docs/diagrams`, OpenAPI/Swagger
 
 
-# 8. Documentação Técnica
+# 8. Repositório do Código
 
-| Tipo | Localização |
-|------|-------------|
-| Swagger UI | http://localhost:8081/swagger-ui.html (etc) |
-| OpenAPI | `/v3/api-docs` de cada serviço |
-| Diagramas | `/docs/diagrams/` |
-| Collections | `/docs/API/` e `/docs/TechChallenge-Fase03.postman_collection.json` |
-| Compose | `compose.yml`, `compose.dev.yml` (hot reload) |
-| Dockerfile | Cada serviço possui multi-stage com stage dev para desenvolvimento |
+O Repositório: [https://github.com/eps364/tech-challenge-fase-03](https://github.com/eps364/tech-challenge-fase-03) é um fork do repositório base fornecido pelo professor, contendo a implementação completa do Tech Challenge Fase 03, seguindo os requisitos e boas práticas de desenvolvimento de software.
+> Fork do repositório base: [https://github.com/proferickmuller/adjt-fase3-inicial](https://github.com/proferickmuller/adjt-fase3-inicial)
 
-# 9. Conclusão
 
-O Tech Challenge Fase 03 entrega uma solução distribuída, resiliente e segura, com arquitetura limpa, eventos assíncronos, fallback e reprocessamento, pronta para ambientes produtivos e escaláveis.
+# 9. Vídeo Explicativo da API
+
+> TODO LINK
+
+# 10. Conclusão
+
+O Tech Challenge Fase 03 entrega uma solução distribuída, resiliente e segura, com arquitetura limpa, eventos assíncronos, fallback e reprocessamento, pronta para ambientes produtivos e escaláveis. A implementação segue as melhores práticas de desenvolvimento, garantindo qualidade, segurança e facilidade de manutenção.
