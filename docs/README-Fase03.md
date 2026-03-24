@@ -14,6 +14,7 @@
 Restaurantes buscam uma solução unificada para pedidos online, reduzindo custos e aumentando a eficiência operacional. O desafio é criar uma plataforma distribuída, resiliente e segura, permitindo aos clientes realizar pedidos, pagamentos e acompanhar o status, mesmo diante de falhas em serviços externos.
 
 **Repositório:** https://github.com/eps364/tech-challenge-fase-03
+**Coleção Postman:** [`docs/TechChallenge-Fase03.postman_collection.json`](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/TechChallenge-Fase03.postman_collection.json)
 
 ## 1.2. Objetivo do projeto
 
@@ -27,7 +28,7 @@ Implementar um sistema de pedidos online baseado em microsserviços, com autenti
 - Resiliência: fallback para status pendente e reprocessamento automático
 - API Gateway, Service Registry, mensageria (RabbitMQ/Kafka), Redis (blacklist JWT)
 
-Coleção Postman para testes: [`docs/TechChallenge-Fase03.postman_collection.json`](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/TechChallenge-Fase03.postman_collection.json)
+
 
 # 2. Arquitetura do Sistema
 
@@ -50,43 +51,88 @@ O sistema adota arquitetura de microsserviços, cada um com banco dedicado, comu
 - **Keycloak**: Autenticação centralizada
 - **procpag**: Serviço externo de pagamento
 
-### Diagrama de fluxo principal
+### Diagramas dos principais Fluxos
 
-> TODO LINK
-Ver [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
+Os principais fluxos do sistema estão ilustrados abaixo
+
+#### Fluxo de Autenticação e Logout
+<img src="diagrams/auth-logout-flow.svg" alt="Fluxo de Autenticação e Logout" style="max-width:100%;">
+
+#### Fluxo de Registro de Usuário
+<img src="diagrams/register-user-flow.svg" alt="Fluxo de Registro de Usuário" style="max-width:100%;">
+
+#### Fluxo de Criação de Pedido
+<img src="diagrams/order-create-flow.svg" alt="Fluxo de Criação de Pedido" style="max-width:100%;">
+
+#### Fluxo de Pagamento com Resiliência
+<img src="diagrams/payment-flow.svg" alt="Fluxo de Pagamento com Resiliência" style="max-width:100%;">
+
+#### Fluxo de Consulta de Pedido
+<img src="diagrams/get-order-flow.svg" alt="Fluxo de Consulta de Pedido" style="max-width:100%;">
+
+Estes diagramas ilustram os principais cenários de autenticação, registro, criação de pedidos, processamento de pagamento (com fallback e reprocessamento) e consulta de status, alinhados à arquitetura distribuída e resiliente do projeto.
 
 # 3. Endpoints Principais
 
-> TODO LINK
-Consulte Swagger UI de cada serviço:
-- auth-service: http://localhost:8081/swagger-ui.html
-- client-service: http://localhost:8082/swagger-ui.html
-- catalog-service: http://localhost:8083/swagger-ui.html
-- order-service: http://localhost:8084/swagger-ui.html
-- payment-service: http://localhost:8085/swagger-ui.html
-- restaurant-service: http://localhost:8086/swagger-ui.html
-- orchestrator-service: http://localhost:8087/swagger-ui.html
 
-Exemplo de endpoints do API Gateway:
+
+## Endpoints Principais por Fluxo
+
+Os endpoints abaixo refletem os fluxos dos diagramas apresentados:
+
+### Autenticação e Logout
 | Método | Endpoint | Permissão | Descrição |
 |---|---|---|---|
+| POST | /auth-service/auth/register | Público | Registro de novo usuário |
 | POST | /auth-service/auth/login | Público | Autenticação/login |
 | POST | /auth-service/auth/logout | JWT | Logout do usuário, revoga o token JWT, adiciona à blacklist e invalida a sessão |
-| POST | /client-service/clients | Público | Cadastro de cliente |
-| POST | /order-service/orders | JWT | Criação de pedido |
+| POST | /auth-service/auth/refresh | JWT (refresh) | Gera novo token JWT a partir do refresh token |
+
+### Cadastro de Dados do Cliente
+| Método | Endpoint | Permissão | Descrição |
+|---|---|---|---|
+| POST | /client-service/clients/{userId} | JWT | Cadastro de dados pessoais do cliente |
+| GET | /client-service/clients/{userId} | JWT | Consulta dados do cliente |
+| PUT | /client-service/clients/{userId} | JWT | Atualiza dados do cliente |
+| DELETE | /client-service/clients/{userId} | JWT | Remove cadastro do cliente |
+
+### Catálogo de Produtos
+| Método | Endpoint | Permissão | Descrição |
+|---|---|---|---|
+| GET | /catalog-service/products | Público | Lista produtos disponíveis |
+| GET | /catalog-service/products/{id} | Público | Consulta produto por ID |
+
+### Criação e Consulta de Pedido
+| Método | Endpoint | Permissão | Descrição |
+|---|---|---|---|
+| POST | /orchestrator-service/orchestrator/requests | JWT | Criação de pedido (via orquestrador) |
+| POST | /order-service/orders | JWT | Criação de pedido (direto, legado) |
 | GET | /order-service/orders/{id} | JWT | Consulta pedido por ID |
-| POST | /payment-service/payments | JWT | Processa pagamento |
+| GET | /order-service/orders | JWT | Lista pedidos do cliente autenticado |
+
+### Pagamento
+| Método | Endpoint | Permissão | Descrição |
+|---|---|---|---|
+| POST | /payment-service/payments | JWT | Processa pagamento de pedido |
+| GET | /payment-service/payments/{id} | JWT | Consulta status do pagamento |
+
+### Restaurantes
+| Método | Endpoint | Permissão | Descrição |
+|---|---|---|---|
+| GET | /restaurant-service/restaurants | Público | Lista restaurantes |
+| GET | /restaurant-service/restaurants/{id} | Público | Consulta restaurante por ID |
+| POST | /restaurant-service/restaurants | JWT | Criação de restaurante |
+| PUT | /restaurant-service/restaurants/{id} | JWT | Atualiza restaurante |
+| DELETE | /restaurant-service/restaurants/{id} | JWT | Remove restaurante |
+
+> Observação: O endpoint principal para criação de pedidos no fluxo resiliente é o do orchestrator-service, que orquestra a comunicação entre order-service e payment-service, garantindo resiliência e consistência de status.
+
 
 # 4. Eventos e Resiliência
-
-> TODO LINK
 
 - **Eventos**: `pedido.criado`, `pagamento.aprovado`, `pagamento.pendente` (RabbitMQ/Kafka)
 - **Resiliência**: Retry, Timeout, Circuit Breaker (Resilience4j), fallback para status pendente, reprocessamento automático
 - **Fluxo**: Pedido criado → evento → pagamento processado (ou pendente) → reprocessamento automático se necessário
-- **Diagramas**: [docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/diagrams/arquitetura-sequencia-pedido-pagamento.puml)
-- 
-
 
 # 5. Banco de Dados e Containers
 
@@ -96,7 +142,6 @@ Exemplo de endpoints do API Gateway:
 - Todos os serviços Spring Boot possuem Dockerfile multi-stage com stage `dev` para desenvolvimento/hot reload
 - **No estágio dev, não há mais `COPY . .` — apenas `VOLUME /workspace`**. Assim, o código do host é montado diretamente no container, permitindo hot reload instantâneo sem duplicação de arquivos.
 - O build de produção continua usando `COPY . .` para empacotar o código na imagem final.
-
 
 ## 6. Execução e Testes
 
@@ -120,11 +165,6 @@ docker compose -f compose.yml -f compose.dev.yml down
 - Collection Postman [docs/TechChallenge-Fase03.postman_collection.json](https://github.com/eps364/tech-challenge-fase-03/blob/main/docs/TechChallenge-Fase03.postman_collection.json)
 
 
-## 6.3. Testes automatizados
-- Rodar testes: `./mvnw test`
-- Cobertura: `./mvnw clean test jacoco:report`
-
-
 # 7. Qualidade, Segurança e Práticas
 
 - **Arquitetura Limpa**: Separação core/infra, domínio rico, DTOs em core, adapters em infra
@@ -132,9 +172,7 @@ docker compose -f compose.yml -f compose.dev.yml down
 	- **Logout seguro**: O endpoint `/auth-service/auth/logout` revoga o token JWT do usuário, adicionando o `jti` (jti, identificador único do token) à blacklist no Redis (com TTL igual ao tempo restante do token). O API Gateway bloqueia tokens revogados em todas as requisições, garantindo logout imediato e seguro.
 - **Resiliência**: Circuit Breaker, Retry, Timeout, fallback, eventos de reprocessamento
 - **Exception Handling**: RFC 7807 (ProblemDetail), handlers globais
-- **Testes**: Unitários, integração, collections de API
 - **Documentação**: Markdown em `/docs`, diagramas em `/docs/diagrams`, OpenAPI/Swagger
-
 
 # 8. Repositório do Código
 
