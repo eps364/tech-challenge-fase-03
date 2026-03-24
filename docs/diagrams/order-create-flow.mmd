@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant Cliente
+    participant APIGateway as API Gateway
+    participant Orchestrator as Orchestrator Service
+    participant OrderService as Order Service
+
+    %% Fluxo de Criação de Pedido
+    Cliente->>APIGateway: Solicita criação de pedido
+    APIGateway->>Orchestrator: Encaminha requisição de novo pedido
+    Orchestrator->>OrderService: Cria pedido
+    OrderService-->>Orchestrator: Pedido criado (status: CREATED)
+    Orchestrator-->>APIGateway: Confirmação de criação
+    APIGateway-->>Cliente: Retorna pedido criado (status: CREATED)

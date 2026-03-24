@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant Cliente
+    participant APIGateway as API Gateway
+    participant Orchestrator as Orchestrator Service
+    participant OrderService as Order Service
+    participant PaymentService as Payment Service
+    participant External as Pagamento Externo
+    participant Kafka as Kafka/Eventos
+
+    %% === Fluxo de Pagamento com Resiliência ===
+    Cliente->>APIGateway: Solicita pagamento do pedido
+    APIGateway->>Orchestrator: Encaminha requisição de pagamento
+    Orchestrator->>OrderService: Consulta pedido
+    OrderService-->>Orchestrator: Dados do pedido
+    Orchestrator->>PaymentService: Inicia processamento de pagamento
+    PaymentService->>External: Solicita autorização de pagamento
+    alt Pagamento autorizado
+        External-->>PaymentService: Pagamento aprovado
+        PaymentService->>Kafka: Publica evento pagamento.aprovado
+        PaymentService-->>OrderService: Atualiza status para PAID
+        OrderService-->>Orchestrator: Confirma atualização
+        Orchestrator-->>APIGateway: Confirma pagamento
+        APIGateway-->>Cliente: Pagamento aprovado
+    else Timeout/Falha/Indisponível
+        External--xPaymentService: Timeout/Falha
+        PaymentService->>Kafka: Publica evento pagamento.pendente
+        PaymentService-->>OrderService: Atualiza status para PENDING_PAYMENT
+        OrderService-->>Orchestrator: Confirma atualização
+        Orchestrator-->>APIGateway: Informa pendência
+        APIGateway-->>Cliente: Pagamento pendente, será reprocessado
+    end
+    %% Reprocessamento automático (worker/consumidor)
+    Kafka->>PaymentService: Evento pagamento.pendente detectado
+    PaymentService->>External: Reprocessa pagamento
+    External-->>PaymentService: Pagamento aprovado
+    PaymentService->>Kafka: Publica evento pagamento.aprovado
+    PaymentService-->>OrderService: Atualiza status para PAID
+    OrderService-->>Orchestrator: Confirma atualização
+

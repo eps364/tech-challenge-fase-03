@@ -1,0 +1,29 @@
+---
+title: Fluxo de Autenticação e Logout
+---
+sequenceDiagram
+
+title: Fluxo de Autenticação e Logout
+    participant Cliente
+    participant APIGateway as API Gateway
+    participant AuthService as Auth Service
+    participant Keycloak
+    participant Redis
+
+    %% Fluxo de Autenticação (Login)
+    Cliente->>APIGateway: Envia credenciais (login)
+    APIGateway->>AuthService: Encaminha credenciais
+    AuthService->>Keycloak: Valida usuário/senha
+    Keycloak-->>AuthService: Retorna token JWT
+    AuthService-->>APIGateway: Retorna token JWT
+    APIGateway-->>Cliente: Retorna token JWT
+
+    %% Fluxo de Logout
+    Cliente->>APIGateway: Solicita logout
+    APIGateway->>AuthService: Encaminha solicitação de logout
+    AuthService->>Redis: Adiciona token à blacklist
+    Redis-->>AuthService: Confirma blacklist
+    AuthService->>Keycloak: Invalida token/sessão
+    Keycloak-->>AuthService: Confirma logout
+    AuthService-->>APIGateway: Confirma logout
+    APIGateway-->>Cliente: Confirma logout
